@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.relayr.test.unit;
 
 import static org.junit.Assert.assertNotNull;
@@ -11,10 +8,6 @@ import org.junit.Test;
 
 import com.relayr.Relayr_SDKSettings;
 
-/**
- * @author yeraycallero
- *
- */
 public class Relayr_SDKSettingsTest {
 	String version;
 	
