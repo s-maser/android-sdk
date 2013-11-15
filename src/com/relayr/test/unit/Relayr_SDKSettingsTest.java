@@ -3,16 +3,16 @@ package com.relayr.test.unit;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.relayr.Relayr_SDKSettings;
 
 public class Relayr_SDKSettingsTest {
-	String version;
+	static String version;
 	
-	@Before
-	public void setup() {
+	@BeforeClass
+	public static void setupClass() {
 		version = Relayr_SDKSettings.getVersion();
 	}
 	
