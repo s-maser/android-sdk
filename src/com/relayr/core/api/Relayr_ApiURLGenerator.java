@@ -5,8 +5,8 @@ import java.util.HashMap;
 import android.net.Uri;
 import android.net.Uri.Builder;
 
-import com.relayr.core.Relayr_SDKSettings;
 import com.relayr.core.error.Relayr_Exception;
+import com.relayr.core.settings.Relayr_SDKSettings;
 
 public class Relayr_ApiURLGenerator {
 

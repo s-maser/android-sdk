@@ -3,8 +3,8 @@ package com.relayr.core.api;
 import java.util.HashMap;
 
 import com.google.gson.Gson;
-import com.relayr.core.Relayr_SDKSettings;
 import com.relayr.core.error.Relayr_Exception;
+import com.relayr.core.settings.Relayr_SDKSettings;
 import com.relayr.core.user.Relayr_User;
 
 public class Relayr_RequestBodyGenerator {
@@ -22,13 +22,13 @@ public class Relayr_RequestBodyGenerator {
 			if (appKey != null) {
 				body.put(RELAYR_APPIDFIELD, appKey);
 			} else {
-				throw new Relayr_Exception("No app key defined");
+				throw new Relayr_Exception("App key required");
 			}
 			String userId = Relayr_User.getUserId();
 			if (userId != null) {
 				body.put(RELAYR_IDFIELD, userId);
 			} else {
-				throw new Relayr_Exception("No user id defined");
+				throw new Relayr_Exception("User id required");
 			}
 		}
 		break;

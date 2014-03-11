@@ -12,4 +12,7 @@ public class Relayr_User {
 		return userId;
 	}
 
+	public static void login() {
+
+	}
 }
