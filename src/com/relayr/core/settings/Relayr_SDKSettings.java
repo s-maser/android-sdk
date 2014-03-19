@@ -43,13 +43,12 @@ public final class Relayr_SDKSettings {
 			inputStream.close();
 			String appKey = relayrProperties.getProperty(appKeyTag);
 			Relayr_SDKSettings.setAppKey(appKey);
+			return true;
 		} catch (IOException e) {
 			throw new Relayr_Exception("Can't find properties file");
 		} catch (Exception e) {
 			throw e;
 		}
-
-		return false;
 	}
 
 }

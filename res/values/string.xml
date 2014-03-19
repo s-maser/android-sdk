@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="Login">Log in</string>
+    <string name="Password">Password</string>
+    <string name="Username">Username</string>
+    <string name="Logo">Logo</string>
+    
+</resources>

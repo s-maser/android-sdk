@@ -2,9 +2,11 @@ package com.relayr.core.api;
 
 import java.io.IOException;
 
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.ParseException;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -21,7 +23,13 @@ public class Relayr_RequestParser {
 	public static Object parse(Relayr_ApiCall call, HttpResponse response) throws Relayr_Exception {
 		try {
 			checkResponseCode(response);
-			Object parsedObject = parseData(call, EntityUtils.toString(response.getEntity()));
+			HttpEntity responseEntity = response.getEntity();
+			Object parsedObject;
+			if (responseEntity == null) {
+				parsedObject = parseData(call, null);
+			} else {
+				parsedObject = parseData(call, EntityUtils.toString(response.getEntity()));
+			}
 			return parsedObject;
 		} catch (ParseException e) {
 			throw new Relayr_Exception(e.getMessage());
@@ -60,9 +68,9 @@ public class Relayr_RequestParser {
 
 	private static Object parseData(Relayr_ApiCall call, String content) throws Relayr_Exception {
 		try {
-			JSONObject json = new JSONObject(content);
 			switch (call) {
 			case UserConnectWithoutToken: {
+				JSONObject json = new JSONObject(content);
 				return json.getString(RELAYR_TOKENRESPONSEFIELD);
 			}
 			case UserConnectWithToken:
@@ -74,12 +82,16 @@ public class Relayr_RequestParser {
 				return Boolean.valueOf(true);
 			}
 			case ListAllDevices:
-			case ListClientDevices:
-			case RetrieveDevice:
-			case RetrieveDeviceConfiguration: {
+			case ListClientDevices: {
+				JSONArray json = new JSONArray(content);
 				return json;
 			}
-			default: return json;
+			case RetrieveDevice:
+			case RetrieveDeviceConfiguration: {
+				JSONObject json = new JSONObject(content);
+				return json;
+			}
+			default: return content;
 			}
 		} catch (JSONException e) {
 			throw new Relayr_Exception(e.getMessage());

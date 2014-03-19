@@ -1,5 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.relayr" >
+    package="com.relayr"
+    android:versionCode="1"
+    android:versionName="Test">
       <uses-sdk
-        android:minSdkVersion="9"/>
+        android:minSdkVersion="9"
+        android:targetSdkVersion="19"/>
 </manifest>

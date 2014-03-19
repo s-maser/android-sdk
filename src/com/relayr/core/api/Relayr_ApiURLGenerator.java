@@ -20,7 +20,8 @@ public class Relayr_ApiURLGenerator {
 	private final static String RELAYR_TYPEPARAM = "type";
 
 	public static String generate(Relayr_ApiCall call, Object... params) throws Relayr_Exception {
-		String urlString = RELAYR_URLBASE;
+		String urlString = "";
+		HashMap<String, Object> parametersCollection = new HashMap<String, Object>();
 
 		switch (call) {
 		case UserConnectWithoutToken: {
@@ -33,14 +34,12 @@ public class Relayr_ApiURLGenerator {
 			break;
 		}
 		case ListAllDevices: {
-			HashMap<String, Object> parametersCollection = new HashMap<String, Object>();
 			String token = getUserToken();
 			parametersCollection.put(RELAYR_TOKENPARAM, token);
 			if (params.length > 0) {
 				parametersCollection.put(RELAYR_TYPEPARAM, params[0]);
 			}
 			urlString += RELAYR_USERTAG + RELAYR_DEVICESTAG;
-			urlString = Relayr_ApiURLGenerator.addParametersToUri(urlString, parametersCollection);
 			break;
 		}
 		case ListClientDevices:
@@ -52,31 +51,29 @@ public class Relayr_ApiURLGenerator {
 		case RetrieveDevice:
 		case ModifyDevice:
 		case RemoveDevice: {
-			HashMap<String, Object> parametersCollection = new HashMap<String, Object>();
 			String token = getUserToken();
 			parametersCollection.put(RELAYR_TOKENPARAM, token);
 			urlString += RELAYR_DEVICESTAG + "/" + params[0];
-			urlString = Relayr_ApiURLGenerator.addParametersToUri(urlString, parametersCollection);
 			break;
 		}
 		case RetrieveDeviceConfiguration:
 		case ConfigureDevice:
 		case DeleteDevice: {
-			HashMap<String, Object> parametersCollection = new HashMap<String, Object>();
 			String token = getUserToken();
 			parametersCollection.put(RELAYR_TOKENPARAM, token);
 			urlString += RELAYR_DEVICESTAG + "/" + params[0] + RELAYR_CONFIGTAG;
-			urlString = Relayr_ApiURLGenerator.addParametersToUri(urlString, parametersCollection);
 			break;
 		}
 		}
 
+		urlString = Relayr_ApiURLGenerator.addParametersToUri(urlString, parametersCollection);
+		System.out.println("Generated url: " + urlString);
 		return urlString;
 	}
 
 	private static String addParametersToUri(final String url, final HashMap<String, Object> params) {
 		Builder uriBuilder;
-		uriBuilder = Uri.parse(url).buildUpon();
+		uriBuilder = Uri.parse(RELAYR_URLBASE).buildUpon();
 		uriBuilder.path(url);
 		for (String value:params.keySet()) {
 			uriBuilder.appendQueryParameter(value, (String) params.get(value));

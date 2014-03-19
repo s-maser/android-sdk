@@ -1,9 +1,11 @@
-package com.relayr;
+package com.relayr.core.activity;
 
-import android.app.Activity;
-
+import com.relayr.Relayr_Application;
+import com.relayr.Relayr_SDK;
 import com.relayr.core.settings.Relayr_ActivityStack;
 import com.relayr.core.settings.Relayr_SDKStatus;
+
+import android.app.Activity;
 
 public class Relayr_Activity extends Activity {
 
