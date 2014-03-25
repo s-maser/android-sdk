@@ -35,5 +35,4 @@ test on Eclipse: http://javarevisited.blogspot.nl/2013/03/how-to-write-unit-test
 ##Release
 - Export the *android-sdk-code* project to a jar file.
 - Copy the android-sdk-code.jar file to the libs directory of the *android-sdk* library.
-- Compress the *android-sdk* library (into a zip file for example).
-- Create a new realese at https://github.com/relayr/android-sdk and create a link to download the zip file.
+- Create a new realese at https://github.com/relayr/android-sdk and create a link to download a zip the project files.
