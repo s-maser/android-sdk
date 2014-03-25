@@ -15,7 +15,7 @@ to store all the classes involved in the SDK funtionalities. The second one is t
 costumers with the SDK classes included as a jar file.
 
 New classes have to be included in the android-sdk-code. To generate the library jar:
-1. Select the project
+1.  Select the project
 2. Click on File (at the top menu) 
 3. Export 
 4. JAR file
