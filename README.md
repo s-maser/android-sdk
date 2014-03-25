@@ -15,12 +15,12 @@ to store all the classes involved in the SDK funtionalities. The second one is t
 costumers with the SDK classes included as a jar file.
 
 New classes have to be included in the android-sdk-code. To generate the library jar:
-# Select the project
-# Click on File (at the top menu) 
-# Export 
-# JAR file
-# Select just the 'src' folder of the *android-sdk-code* project to export. Define the destination path and click on finish
-# Include the jar file in the livs folder of the *android-sdk project*.
+1. Select the project
+2. Click on File (at the top menu) 
+3. Export 
+4. JAR file
+5. Select just the 'src' folder of the *android-sdk-code* project to export. Define the destination path and click on finish
+6. Include the jar file in the livs folder of the *android-sdk project*.
 
 Check the *Relayr-Android SDK - User's documentation* to know how to add the *android-sdk* library into an Android app.
 
