@@ -8,6 +8,7 @@ import org.json.JSONObject;
 import com.relayr.core.api.Relayr_ApiCall;
 import com.relayr.core.api.Relayr_ApiConnector;
 import com.relayr.core.error.Relayr_Exception;
+import com.relayr.core.event_listeners.LoginEventListener;
 import com.relayr.core.settings.Relayr_SDKSettings;
 import com.relayr.core.settings.Relayr_SDKStatus;
 import com.relayr.core.storage.Relayr_DataStorage;
@@ -15,22 +16,18 @@ import com.relayr.core.user.Relayr_User;
 
 public class Relayr_SDK {
 
+	static LoginEventListener loginEventListener;
+
 	public static void init() throws Exception {
 		if (!Relayr_SDKStatus.isActive()) {
 			if (Relayr_SDKSettings.checkConfigValues()) {
 				Relayr_DataStorage.loadLocalData();
 				Relayr_SDKStatus.setActive(true);
-				String token = Relayr_SDKSettings.getUserToken();
+				String token = Relayr_User.getUserToken();
 				if (token == null) {
 					Relayr_User.login();
-				} else {
-					Object[] parameters = {};
-					boolean userValidated = (Boolean) Relayr_ApiConnector.doCall(Relayr_ApiCall.UserConnectWithToken, parameters);
-					if (!userValidated) {
-						token = (String) Relayr_ApiConnector.doCall(Relayr_ApiCall.UserConnectWithoutToken, parameters);
-						Relayr_SDKSettings.setToken(token);
-					}
 				}
+				setLoginEventListener(null);
 			}
 		}
 	}
@@ -148,5 +145,21 @@ public class Relayr_SDK {
 		} else {
 			throw new Relayr_Exception("SDK no active", null);
 		}
+	}
+
+	public static void setLoginEventListener(LoginEventListener listener) {
+		loginEventListener = listener;
+	}
+
+	public static LoginEventListener getLoginEventListener() {
+		return loginEventListener;
+	}
+
+	public boolean isUserLogged() {
+		return Relayr_User.isUserLogged();
+	}
+
+	public boolean logout() {
+		return Relayr_User.logout();
 	}
 }

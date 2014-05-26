@@ -100,11 +100,9 @@ public class Relayr_ApiRequest {
 
 	private static Relayr_ApiCallMethod getCallMethod(Relayr_ApiCall call) {
 		switch (call) {
-		case UserConnectWithoutToken:
 		case AddDevice: {
 			return Relayr_ApiCallMethod.POST;
 		}
-		case UserConnectWithToken:
 		case ModifyDevice:
 		case ConfigureDevice: {
 			return Relayr_ApiCallMethod.PUT;
@@ -112,7 +110,8 @@ public class Relayr_ApiRequest {
 		case ListAllDevices:
 		case ListClientDevices:
 		case RetrieveDevice:
-		case RetrieveDeviceConfiguration: {
+		case RetrieveDeviceConfiguration:
+		case UserAuthorization: {
 			return Relayr_ApiCallMethod.GET;
 		}
 		case RemoveDevice:

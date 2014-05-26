@@ -10,6 +10,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.util.Log;
+
 import com.relayr.core.error.Relayr_Exception;
 
 public class Relayr_RequestParser {
@@ -17,8 +19,6 @@ public class Relayr_RequestParser {
 	private static String RELAYR_INTERNALERRORMESSAGE = "Internal service error. Try in a few minutes.";
 	private static String RELAYR_INTERNETCONNECTIONERRORMESSAGE = "Not posible to reach Relayr server. Check your internet settings. You will be identified as an anonymous user.";
 	private static String RELAYR_DUMMYERRORMESSAGE = "Dummy error message";
-
-	private static String RELAYR_TOKENRESPONSEFIELD = "token";
 
 	public static Object parse(Relayr_ApiCall call, HttpResponse response) throws Relayr_Exception {
 		try {
@@ -40,6 +40,7 @@ public class Relayr_RequestParser {
 
 	private static void checkResponseCode(HttpResponse response) throws Relayr_Exception {
 		int statusCode = response.getStatusLine().getStatusCode();
+		Log.d("Relayr_RequestParser", "Status code detected: " + statusCode);
 
 		switch (statusCode) {
 		case 0: {
@@ -69,11 +70,6 @@ public class Relayr_RequestParser {
 	private static Object parseData(Relayr_ApiCall call, String content) throws Relayr_Exception {
 		try {
 			switch (call) {
-			case UserConnectWithoutToken: {
-				JSONObject json = new JSONObject(content);
-				return json.getString(RELAYR_TOKENRESPONSEFIELD);
-			}
-			case UserConnectWithToken:
 			case AddDevice:
 			case ModifyDevice:
 			case RemoveDevice:

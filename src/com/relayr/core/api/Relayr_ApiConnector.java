@@ -7,7 +7,15 @@ public class Relayr_ApiConnector {
 	public static Object doCall(Relayr_ApiCall call, Object... params) throws Relayr_Exception {
 		System.out.println("Generate api call " + apiCallToString(call) + " with parameters: " + params);
 		if (checkCorrectParameters(call, params)) {
-			return Relayr_ApiRequest.execute(call, params);
+			switch (call) {
+				case UserAuthorization:{
+					return Relayr_ApiURLGenerator.generate(call, params);
+				}
+
+				default: {
+					return Relayr_ApiRequest.execute(call, params);
+				}
+			}
 		} else {
 			throw new Relayr_Exception("Incorrect parameters in api call");
 		}
@@ -15,11 +23,8 @@ public class Relayr_ApiConnector {
 
 	private static String apiCallToString(Relayr_ApiCall call) {
 		switch (call) {
-		case UserConnectWithoutToken : {
-			return "UserConnectWithoutToken";
-		}
-		case UserConnectWithToken: {
-			return "UserConnectWithToken";
+		case UserAuthorization : {
+			return "UserAuthorization";
 		}
 		case ListAllDevices: {
 			return "ListAllDevices";
@@ -54,9 +59,8 @@ public class Relayr_ApiConnector {
 
 	private static boolean checkCorrectParameters(Relayr_ApiCall call, Object... params) {
 		switch (call) {
-		case UserConnectWithoutToken:
-		case UserConnectWithToken:
-		case ListClientDevices: {
+		case ListClientDevices:
+		case UserAuthorization: {
 			return (params.length == 0);
 		}
 		case ListAllDevices: {

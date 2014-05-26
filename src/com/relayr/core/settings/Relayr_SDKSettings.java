@@ -11,7 +11,7 @@ public final class Relayr_SDKSettings {
 
 	private static String VERSION = "0.0.1";
 	private static String appKey;
-	private static String token;
+
 	private static String propertiesFileName = "relayrsdk.properties";
 	private static String appKeyTag = "appKey";
 
@@ -25,14 +25,6 @@ public final class Relayr_SDKSettings {
 
 	public static String getAppKey() {
 		return appKey;
-	}
-
-	public static void setToken(String newToken) {
-		token = newToken;
-	}
-
-	public static String getUserToken() {
-		return token;
 	}
 
 	public static boolean checkConfigValues() throws Exception {

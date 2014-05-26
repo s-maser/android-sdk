@@ -9,7 +9,6 @@ import com.relayr.core.user.Relayr_User;
 
 public class Relayr_RequestBodyGenerator {
 
-	private final static String RELAYR_APPIDFIELD = "appid";
 	private final static String RELAYR_IDFIELD = "id";
 	private final static String RELAYR_DEVICEIDFIELD = "deviceid";
 
@@ -17,22 +16,6 @@ public class Relayr_RequestBodyGenerator {
 		HashMap<String,Object> body = new HashMap<String,Object>();
 
 		switch(call) {
-		case UserConnectWithoutToken: {
-			String appKey = Relayr_SDKSettings.getAppKey();
-			if (appKey != null) {
-				body.put(RELAYR_APPIDFIELD, appKey);
-			} else {
-				throw new Relayr_Exception("App key required");
-			}
-			String userId = Relayr_User.getUserId();
-			if (userId != null) {
-				body.put(RELAYR_IDFIELD, userId);
-			} else {
-				throw new Relayr_Exception("User id required");
-			}
-		}
-		break;
-
 		case AddDevice: {
 			body.put(RELAYR_DEVICEIDFIELD, params[0]);
 		}
@@ -40,7 +23,7 @@ public class Relayr_RequestBodyGenerator {
 
 		case ModifyDevice: {
 			body = (HashMap<String,Object>)params[1];
-			body.put(RELAYR_IDFIELD, Relayr_SDKSettings.getUserToken());
+			body.put(RELAYR_IDFIELD, Relayr_User.getUserToken());
 		}
 		break;
 
@@ -49,7 +32,7 @@ public class Relayr_RequestBodyGenerator {
 		}
 		break;
 
-		case UserConnectWithToken:
+		case UserAuthorization:
 		case ListAllDevices:
 		case ListClientDevices:
 		case RetrieveDevice:

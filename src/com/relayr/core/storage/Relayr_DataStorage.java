@@ -6,7 +6,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 
 import com.relayr.Relayr_Application;
-import com.relayr.core.settings.Relayr_SDKSettings;
+import com.relayr.core.user.Relayr_User;
 
 
 public class Relayr_DataStorage {
@@ -19,13 +19,13 @@ public class Relayr_DataStorage {
 		Activity currentActivity = Relayr_Application.currentActivity();
 		localStorage = currentActivity.getSharedPreferences(storageIdentifier, Context.MODE_PRIVATE);
 		Editor edit = localStorage.edit();
-		edit.putString(tokenField, Relayr_SDKSettings.getUserToken());
+		edit.putString(tokenField, Relayr_User.getUserToken());
 		edit.apply();
 	}
 
 	public static void loadLocalData() {
 		Activity currentActivity = Relayr_Application.currentActivity();
 		localStorage = currentActivity.getSharedPreferences(storageIdentifier, Context.MODE_PRIVATE);
-		Relayr_SDKSettings.setToken(localStorage.getString(tokenField, null));
+		Relayr_User.setToken(localStorage.getString(tokenField, null));
 	}
 }

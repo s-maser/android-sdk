@@ -1,31 +1,25 @@
 package com.relayr.core.activity;
 
-import java.util.Date;
-
-import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.os.AsyncTask;
+import android.content.res.Configuration;
+import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
+import android.util.Log;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
-import com.relayr.R;
+import com.relayr.Relayr_SDK;
 import com.relayr.core.api.Relayr_ApiCall;
 import com.relayr.core.api.Relayr_ApiConnector;
 import com.relayr.core.error.Relayr_Exception;
-import com.relayr.core.settings.Relayr_SDKSettings;
+import com.relayr.core.event_listeners.LoginEventListener;
 import com.relayr.core.user.Relayr_User;
 
 public class Relayr_LoginActivity extends Relayr_Activity {
 
-	private final int RELAYR_MISSPARAMETER = 0;
-	private final int RELAYR_LOGINFAIL = 1;
-	private final int RELAYR_ERROR = 2;
+	WebView mWebView;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -33,78 +27,66 @@ public class Relayr_LoginActivity extends Relayr_Activity {
 		int layoutID = getResources().getIdentifier("login_view", "layout", getPackageName());
 		System.out.println(layoutID);
 		setContentView(layoutID);
-	}
 
+		int webViewID = getResources().getIdentifier("relayr_login_view", "id", getPackageName());
+		mWebView = (WebView)findViewById(webViewID);
 
-	public void loginAction(View v) {
-		new AsyncTask<Void, Void, Void>() {
+		mWebView.setWebChromeClient(new WebChromeClient());
+		mWebView.setVerticalScrollBarEnabled(false);
+
+		WebSettings webSettings = mWebView.getSettings();
+		webSettings.setAppCacheEnabled(true);
+		webSettings.setCacheMode(WebSettings.LOAD_DEFAULT);
+
+		mWebView.setVisibility(View.VISIBLE);
+
+		mWebView.setWebViewClient(new WebViewClient(){
 			@Override
-			protected Void doInBackground(Void... params) {
-				int nameTextID = getResources().getIdentifier("nameField", "id", getPackageName());
-				int passwordTextID = getResources().getIdentifier("passwordField", "id", getPackageName());
-				EditText username = (EditText)findViewById(nameTextID);
-				EditText password = (EditText)findViewById(passwordTextID);
-
-				String usernameText = username.getText().toString();
-				String passwordText = password.getText().toString();
-
-				if (!usernameText.isEmpty() && !passwordText.isEmpty()) {
-					try {
-						Object[] parameters = {};
-						Relayr_User.setUserID(usernameText);
-						String token = (String)Relayr_ApiConnector.doCall(Relayr_ApiCall.UserConnectWithoutToken, parameters);
-						if (token != null) {
-							Relayr_SDKSettings.setToken(token);
-							Relayr_LoginActivity.this.runOnUiThread(new Runnable(){
-							    public void run(){
-							    	Relayr_LoginActivity.this.onBackPressed();
-							    }
-							});
-						} else {
-							openAlert(RELAYR_LOGINFAIL, null);
-						}
-					} catch (Relayr_Exception e) {
-						openAlert(RELAYR_ERROR, e.getMessage());
+			public void onPageStarted(WebView view, String url, Bitmap favicon) {
+				Log.d("Login activity", "onPageStarted: " + url);
+				String token = getToken(url);
+				if (token != null) {
+					Relayr_User.setToken(token);
+					Relayr_LoginActivity.this.onBackPressed();
+					LoginEventListener listener = Relayr_SDK.getLoginEventListener();
+					if (listener != null) {
+						listener.onUserLoggedInSuccessfully();
 					}
-				} else {
-					openAlert(RELAYR_MISSPARAMETER, null);
 				}
-
-				return null;
 			}
-		}.execute();
+		});
+
+		loadWebViewContent();
 	}
 
-	  private void openAlert(final int status, final String errorMessage) {
-		  Relayr_LoginActivity.this.runOnUiThread(new Runnable(){
-			    public void run(){
-			    	 AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Relayr_LoginActivity.this);
-					  alertDialogBuilder.setTitle(Relayr_LoginActivity.this.getTitle());
-					  String message;
-					  switch(status) {
-					  case RELAYR_MISSPARAMETER: {
-						  message = "Please, fill in your username and password";
-						  break;
-					  }
-					  case RELAYR_LOGINFAIL: {
-						  message = "Username or password incorrect.";
-						  break;
-					  }
-					  default: message = errorMessage;
-					  }
+	@Override
+	public void onConfigurationChanged(Configuration newConfig){
+	    super.onConfigurationChanged(newConfig);
+	}
 
-					  alertDialogBuilder.setMessage(message);
-					  alertDialogBuilder.setPositiveButton("Ok",new DialogInterface.OnClickListener() {
-						  public void onClick(DialogInterface dialog,int id) {
-							dialog.cancel();
-						  }
-					  });
+	private void loadWebViewContent() {
+		String url = null;
+		try {
+			Object[] parameters = {};
+			url = (String)Relayr_ApiConnector.doCall(Relayr_ApiCall.UserAuthorization, parameters);
+			mWebView.loadUrl(url);
+		} catch (Relayr_Exception e) {
+			e.printStackTrace();
+		}
+	}
 
-					  AlertDialog alertDialog = alertDialogBuilder.create();
-					  alertDialog.show();
-			    }
-			});
+	private String getToken(String url) {
+		String tokenParam = "#access_token=";
 
-	  }
+		if (url.contains(tokenParam)) {
+			String[] urlByParameters = url.split("&");
+			int tokenPosition = urlByParameters[0].indexOf(tokenParam);
+			String token = urlByParameters[0].substring(tokenPosition + tokenParam.length());
+			Log.d("Login_Activity", "Token: " + token);
+			return token;
+		} else {
+			return null;
+		}
+	}
 
 }
