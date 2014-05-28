@@ -14,12 +14,14 @@ public class Relayr_DataStorage {
 	static SharedPreferences localStorage;
 	static String storageIdentifier = "relayrPreferences";
 	static String tokenField = "RELAYR_TOKEN";
+	static String userIDField = "RELAYR_USERID";
 
 	public static void saveLocalData() {
 		Activity currentActivity = Relayr_Application.currentActivity();
 		localStorage = currentActivity.getSharedPreferences(storageIdentifier, Context.MODE_PRIVATE);
 		Editor edit = localStorage.edit();
 		edit.putString(tokenField, Relayr_User.getUserToken());
+		edit.putString(userIDField, Relayr_User.getUserID());
 		edit.apply();
 	}
 
@@ -27,5 +29,6 @@ public class Relayr_DataStorage {
 		Activity currentActivity = Relayr_Application.currentActivity();
 		localStorage = currentActivity.getSharedPreferences(storageIdentifier, Context.MODE_PRIVATE);
 		Relayr_User.setToken(localStorage.getString(tokenField, null));
+		Relayr_User.setUserID(localStorage.getString(userIDField, null));
 	}
 }

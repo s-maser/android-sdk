@@ -2,7 +2,9 @@ package com.relayr.core.api;
 
 public enum Relayr_ApiCall {
     UserAuthorization,
-    ListAllDevices,
+    UserInfo,
+    UserDevices,
+    /*ListAllDevices,
     ListClientDevices,
     AddDevice,
     RetrieveDevice,
@@ -10,5 +12,5 @@ public enum Relayr_ApiCall {
     RemoveDevice,
     RetrieveDeviceConfiguration,
     ConfigureDevice,
-    DeleteDevice,
+    DeleteDevice,*/
 }

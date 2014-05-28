@@ -43,15 +43,20 @@ public class Relayr_LoginActivity extends Relayr_Activity {
 		mWebView.setWebViewClient(new WebViewClient(){
 			@Override
 			public void onPageStarted(WebView view, String url, Bitmap favicon) {
-				Log.d("Login activity", "onPageStarted: " + url);
 				String token = getToken(url);
 				if (token != null) {
+					Log.d("Relayr_LoginActivity", "onPageStarted token: " + token);
 					Relayr_User.setToken(token);
-					Relayr_LoginActivity.this.onBackPressed();
 					LoginEventListener listener = Relayr_SDK.getLoginEventListener();
 					if (listener != null) {
 						listener.onUserLoggedInSuccessfully();
 					}
+					try {
+						Relayr_User.synchronizeUserInfo();
+					} catch (Exception e) {
+						Log.d("Relayr_LoginActivity", "Error: " + e.getMessage());
+					}
+					Relayr_LoginActivity.this.onBackPressed();
 				}
 			}
 		});

@@ -1,11 +1,9 @@
 package com.relayr.core.api;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -26,6 +24,7 @@ import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 
 import com.relayr.core.error.Relayr_Exception;
+import com.relayr.core.user.Relayr_User;
 
 
 public class Relayr_ApiRequest {
@@ -91,16 +90,14 @@ public class Relayr_ApiRequest {
 		try {
 			response = httpClient.execute(request);
 			return Relayr_RequestParser.parse(call, response);
-		} catch (ClientProtocolException e) {
-			throw new Relayr_Exception(e.getMessage());
-		} catch (IOException e) {
+		} catch (Exception e) {
 			throw new Relayr_Exception(e.getMessage());
 		}
 	}
 
 	private static Relayr_ApiCallMethod getCallMethod(Relayr_ApiCall call) {
 		switch (call) {
-		case AddDevice: {
+		/*case AddDevice: {
 			return Relayr_ApiCallMethod.POST;
 		}
 		case ModifyDevice:
@@ -110,14 +107,16 @@ public class Relayr_ApiRequest {
 		case ListAllDevices:
 		case ListClientDevices:
 		case RetrieveDevice:
-		case RetrieveDeviceConfiguration:
-		case UserAuthorization: {
+		case RetrieveDeviceConfiguration:*/
+		case UserAuthorization:
+		case UserInfo:
+		case UserDevices: {
 			return Relayr_ApiCallMethod.GET;
 		}
-		case RemoveDevice:
+		/*case RemoveDevice:
 		case DeleteDevice: {
 			return Relayr_ApiCallMethod.DELETE;
-		}
+		}*/
 		default: return Relayr_ApiCallMethod.UNKNOWN;
 		}
 	}
@@ -167,5 +166,6 @@ public class Relayr_ApiRequest {
 	private static void setRequestHeaders(HttpRequestBase request) {
 		request.setHeader("Accept", "application/json");
 		request.setHeader("Content-Type", "application/json; charset=UTF-8");
+		request.setHeader("Authorization", "Bearer " + Relayr_User.getUserToken());
 	}
 }

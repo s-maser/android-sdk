@@ -1,12 +1,10 @@
 package com.relayr;
 
-import java.util.HashMap;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
+import java.util.ArrayList;
 
 import com.relayr.core.api.Relayr_ApiCall;
 import com.relayr.core.api.Relayr_ApiConnector;
+import com.relayr.core.device.Relayr_Device;
 import com.relayr.core.error.Relayr_Exception;
 import com.relayr.core.event_listeners.LoginEventListener;
 import com.relayr.core.settings.Relayr_SDKSettings;
@@ -22,11 +20,8 @@ public class Relayr_SDK {
 		if (!Relayr_SDKStatus.isActive()) {
 			if (Relayr_SDKSettings.checkConfigValues()) {
 				Relayr_DataStorage.loadLocalData();
+				Relayr_User.synchronizeUserInfo();
 				Relayr_SDKStatus.setActive(true);
-				String token = Relayr_User.getUserToken();
-				if (token == null) {
-					Relayr_User.login();
-				}
 				setLoginEventListener(null);
 			}
 		}
@@ -57,7 +52,7 @@ public class Relayr_SDK {
 		return Relayr_SDKStatus.isActive();
 	}
 
-	public static JSONArray listAllDevices() throws Relayr_Exception {
+	/*public static JSONArray listAllDevices() throws Relayr_Exception {
 		if (Relayr_SDKStatus.isActive()) {
 			Object[] parameters = {};
 			return (JSONArray)Relayr_ApiConnector.doCall(Relayr_ApiCall.ListAllDevices, parameters);
@@ -146,6 +141,16 @@ public class Relayr_SDK {
 			throw new Relayr_Exception("SDK no active", null);
 		}
 	}
+*/
+
+	public static ArrayList<Relayr_Device> getUserDevices() throws Relayr_Exception {
+		if (Relayr_SDKStatus.isActive()) {
+			Object[] parameters = {};
+			return (ArrayList<Relayr_Device>)Relayr_ApiConnector.doCall(Relayr_ApiCall.UserDevices, parameters);
+		} else {
+			throw new Relayr_Exception("SDK no active", null);
+		}
+	}
 
 	public static void setLoginEventListener(LoginEventListener listener) {
 		loginEventListener = listener;
@@ -153,6 +158,10 @@ public class Relayr_SDK {
 
 	public static LoginEventListener getLoginEventListener() {
 		return loginEventListener;
+	}
+
+	public void login() {
+		Relayr_User.login();
 	}
 
 	public boolean isUserLogged() {

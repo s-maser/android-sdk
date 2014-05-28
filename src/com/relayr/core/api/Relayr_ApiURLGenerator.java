@@ -13,18 +13,17 @@ import com.relayr.core.user.Relayr_User;
 public class Relayr_ApiURLGenerator {
 
 	private final static String RELAYR_URLBASE = "http://api.relayr.io/";
-	private final static String RELAYR_USERTAG = "/user";
+	private final static String RELAYR_USERSTAG = "/users";
 	private final static String RELAYR_DEVICESTAG = "/devices";
-	private final static String RELAYR_CONFIGTAG = "/config";
 	private final static String RELAYR_OAUTH2TAG = "/oauth2";
 	private final static String RELAYR_AUTHENTICATIONTAG = "/auth";
+	private final static String RELAYR_USERINFOTAG = "/user-info";
 
-	private final static String RELAYR_TOKENPARAM = "token";
-	private final static String RELAYR_TYPEPARAM = "type";
 	private final static String RELAYR_CLIENTIDPARAM = "client_id";
 	private final static String RELAYR_REDIRECTURIPARAM = "redirect_uri";
 	private final static String RELAYR_RESPONSETYPEPARAM = "response_type";
 	private final static String RELAYR_SCOPEPARAM = "scope";
+	private final static String RELAYR_MEANINGPARAM = "meaning";
 
 	private final static String RELAYR_DEFAULTRESPONSETYPE = "token";
 	private final static String RELAYR_DEFAULTSCOPE = "access-own-user-info";
@@ -42,7 +41,18 @@ public class Relayr_ApiURLGenerator {
 			parametersCollection.put(RELAYR_SCOPEPARAM, RELAYR_DEFAULTSCOPE);
 			break;
 		}
-		case ListAllDevices: {
+		case UserInfo: {
+			urlString += RELAYR_OAUTH2TAG + RELAYR_USERINFOTAG;
+			break;
+		}
+		case UserDevices: {
+			urlString += RELAYR_USERSTAG + "/" + Relayr_User.getUserID() + RELAYR_DEVICESTAG;
+			if (params.length > 0) {
+				parametersCollection.put(RELAYR_MEANINGPARAM, params[0]);
+			}
+			break;
+		}
+		/*case ListAllDevices: {
 			String token = getUserToken();
 			parametersCollection.put(RELAYR_TOKENPARAM, token);
 			if (params.length > 0) {
@@ -72,7 +82,7 @@ public class Relayr_ApiURLGenerator {
 			parametersCollection.put(RELAYR_TOKENPARAM, token);
 			urlString += RELAYR_DEVICESTAG + "/" + params[0] + RELAYR_CONFIGTAG;
 			break;
-		}
+		}*/
 		}
 
 		urlString = Relayr_ApiURLGenerator.addParametersToUri(urlString, parametersCollection);
@@ -91,11 +101,4 @@ public class Relayr_ApiURLGenerator {
 		return uri.toString();
 	}
 
-	private static String getUserToken() throws Relayr_Exception {
-		String token = Relayr_User.getUserToken();
-		if (token == null) {
-			throw new Relayr_Exception("Relayr user has not rights.");
-		}
-		return token;
-	}
 }
