@@ -8,6 +8,7 @@ import android.util.Log;
 
 import com.relayr.core.error.Relayr_Exception;
 import com.relayr.core.settings.Relayr_SDKSettings;
+import com.relayr.core.settings.Relayr_SDKStatus;
 import com.relayr.core.user.Relayr_User;
 
 public class Relayr_ApiURLGenerator {
@@ -46,43 +47,17 @@ public class Relayr_ApiURLGenerator {
 			break;
 		}
 		case UserDevices: {
-			urlString += RELAYR_USERSTAG + "/" + Relayr_User.getUserID() + RELAYR_DEVICESTAG;
+			Relayr_User user = Relayr_SDKStatus.getCurrentUser();
+			urlString += RELAYR_USERSTAG + "/" + ((user != null)? user.getId():"") + RELAYR_DEVICESTAG;
 			if (params.length > 0) {
 				parametersCollection.put(RELAYR_MEANINGPARAM, params[0]);
 			}
 			break;
 		}
-		/*case ListAllDevices: {
-			String token = getUserToken();
-			parametersCollection.put(RELAYR_TOKENPARAM, token);
-			if (params.length > 0) {
-				parametersCollection.put(RELAYR_TYPEPARAM, params[0]);
-			}
-			urlString += RELAYR_USERTAG + RELAYR_DEVICESTAG;
-			break;
-		}
-		case ListClientDevices:
-		case AddDevice: {
-			String token = getUserToken();
-			urlString += RELAYR_DEVICESTAG + "/" + token + "/";
-			break;
-		}
-		case RetrieveDevice:
-		case ModifyDevice:
-		case RemoveDevice: {
-			String token = getUserToken();
-			parametersCollection.put(RELAYR_TOKENPARAM, token);
+		case DeviceInfo: {
 			urlString += RELAYR_DEVICESTAG + "/" + params[0];
 			break;
 		}
-		case RetrieveDeviceConfiguration:
-		case ConfigureDevice:
-		case DeleteDevice: {
-			String token = getUserToken();
-			parametersCollection.put(RELAYR_TOKENPARAM, token);
-			urlString += RELAYR_DEVICESTAG + "/" + params[0] + RELAYR_CONFIGTAG;
-			break;
-		}*/
 		}
 
 		urlString = Relayr_ApiURLGenerator.addParametersToUri(urlString, parametersCollection);

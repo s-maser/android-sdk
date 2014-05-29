@@ -24,7 +24,7 @@ import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 
 import com.relayr.core.error.Relayr_Exception;
-import com.relayr.core.user.Relayr_User;
+import com.relayr.core.settings.Relayr_SDKStatus;
 
 
 public class Relayr_ApiRequest {
@@ -97,26 +97,12 @@ public class Relayr_ApiRequest {
 
 	private static Relayr_ApiCallMethod getCallMethod(Relayr_ApiCall call) {
 		switch (call) {
-		/*case AddDevice: {
-			return Relayr_ApiCallMethod.POST;
-		}
-		case ModifyDevice:
-		case ConfigureDevice: {
-			return Relayr_ApiCallMethod.PUT;
-		}
-		case ListAllDevices:
-		case ListClientDevices:
-		case RetrieveDevice:
-		case RetrieveDeviceConfiguration:*/
+		case DeviceInfo:
 		case UserAuthorization:
 		case UserInfo:
 		case UserDevices: {
 			return Relayr_ApiCallMethod.GET;
 		}
-		/*case RemoveDevice:
-		case DeleteDevice: {
-			return Relayr_ApiCallMethod.DELETE;
-		}*/
 		default: return Relayr_ApiCallMethod.UNKNOWN;
 		}
 	}
@@ -166,6 +152,6 @@ public class Relayr_ApiRequest {
 	private static void setRequestHeaders(HttpRequestBase request) {
 		request.setHeader("Accept", "application/json");
 		request.setHeader("Content-Type", "application/json; charset=UTF-8");
-		request.setHeader("Authorization", "Bearer " + Relayr_User.getUserToken());
+		request.setHeader("Authorization", "Bearer " + Relayr_SDKStatus.getUserToken());
 	}
 }

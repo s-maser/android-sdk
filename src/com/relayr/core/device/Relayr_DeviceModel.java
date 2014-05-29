@@ -1,18 +1,19 @@
 package com.relayr.core.device;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+public class Relayr_DeviceModel implements Serializable {
 
-public class Relayr_DeviceModel {
-
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 	private String id;
 	private String name;
 	private String manufacturer;
-	private ArrayList<HashMap> readings;
+	private ArrayList<HashMap<String,Object>> readings;
 
 	public String getId() {
 		return id;
@@ -38,25 +39,25 @@ public class Relayr_DeviceModel {
 		this.manufacturer = manufacturer;
 	}
 
-	public ArrayList<HashMap> getReadings() {
+	public ArrayList<HashMap<String,Object>> getReadings() {
 		return readings;
 	}
 
-	public void setReadings(ArrayList<HashMap> readings) {
+	public void setReadings(ArrayList<HashMap<String,Object>> readings) {
 		this.readings = readings;
 	}
 
 	@Override
 	public String toString() {
-		String message = new String();
+		StringBuilder stringBuilder = new StringBuilder();
 
-		message += 	"[\n" +
+		stringBuilder.append("[\n" +
 						"\tid:\t" + getId() + "\n" +
 						"\tname:\t" + getName() + "\n" +
 						"\tmanufacturer:\t" + getManufacturer() + "\n" +
 						"\treadings:\t" + getReadings().toString() + "\n" +
-					"]";
+						"]");
 
-		return message;
+		return stringBuilder.toString();
 	}
 }

@@ -5,7 +5,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 
+import com.google.gson.Gson;
 import com.relayr.Relayr_Application;
+import com.relayr.core.settings.Relayr_SDKStatus;
 import com.relayr.core.user.Relayr_User;
 
 
@@ -14,21 +16,31 @@ public class Relayr_DataStorage {
 	static SharedPreferences localStorage;
 	static String storageIdentifier = "relayrPreferences";
 	static String tokenField = "RELAYR_TOKEN";
-	static String userIDField = "RELAYR_USERID";
+	static String userIDField = "RELAYR_USER";
 
 	public static void saveLocalData() {
 		Activity currentActivity = Relayr_Application.currentActivity();
 		localStorage = currentActivity.getSharedPreferences(storageIdentifier, Context.MODE_PRIVATE);
 		Editor edit = localStorage.edit();
-		edit.putString(tokenField, Relayr_User.getUserToken());
-		edit.putString(userIDField, Relayr_User.getUserID());
+		edit.putString(tokenField, Relayr_SDKStatus.getUserToken());
+		Relayr_User user = Relayr_SDKStatus.getCurrentUser();
+		String userString = null;
+		if (user != null) {
+			userString = new Gson().toJson(user).toString();
+		}
+		edit.putString(userIDField, userString);
 		edit.apply();
 	}
 
 	public static void loadLocalData() {
 		Activity currentActivity = Relayr_Application.currentActivity();
 		localStorage = currentActivity.getSharedPreferences(storageIdentifier, Context.MODE_PRIVATE);
-		Relayr_User.setToken(localStorage.getString(tokenField, null));
-		Relayr_User.setUserID(localStorage.getString(userIDField, null));
+		Relayr_SDKStatus.setUserToken(localStorage.getString(tokenField, null));
+		String userString = localStorage.getString(userIDField, null);
+		if (userString != null) {
+			Relayr_SDKStatus.setCurrentUser(new Gson().fromJson(userString, Relayr_User.class));
+		} else {
+			Relayr_SDKStatus.setCurrentUser(null);
+		}
 	}
 }

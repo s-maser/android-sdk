@@ -1,7 +1,13 @@
 package com.relayr.core.device;
 
-public class Relayr_Device {
+import java.io.Serializable;
 
+public class Relayr_Device implements Serializable {
+
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 	private String id;
 	private String title;
 	private Relayr_DeviceModel model;
@@ -41,15 +47,15 @@ public class Relayr_Device {
 
 	@Override
 	public String toString() {
-		String message = new String();
+		StringBuilder stringBuilder = new StringBuilder();
 
-		message += 	"[\n" +
-						"\tid:\t" + getId() + "\n" +
-						"\ttitle:\t" + getTitle() + "\n" +
-						"\tmodel:\t" + getModel().toString() + "\n" +
-						"\towner:\t" + getOwner() + "\n" +
-					"]";
+		stringBuilder.append("[\n" +
+				"\tid:\t" + getId() + "\n" +
+				"\ttitle:\t" + getTitle() + "\n" +
+				"\tmodel:\t" + getModel().toString() + "\n" +
+				"\towner:\t" + getOwner() + "\n" +
+				"]");
 
-		return message;
+		return stringBuilder.toString();
 	}
 }

@@ -1,68 +1,43 @@
 package com.relayr.core.user;
 
-import org.json.JSONObject;
+import java.io.Serializable;
 
-import android.app.Activity;
-import android.content.Intent;
+public class Relayr_User implements Serializable {
 
-import com.relayr.Relayr_Application;
-import com.relayr.Relayr_SDK;
-import com.relayr.core.activity.Relayr_LoginActivity;
-import com.relayr.core.api.Relayr_ApiCall;
-import com.relayr.core.api.Relayr_ApiConnector;
-import com.relayr.core.event_listeners.LoginEventListener;
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 
-public class Relayr_User {
+	private String id;
+	private String firstName;
+	private String lastName;
+	private String email;
 
-	private static String RELAYR_IDPARAM = "id";
-
-	private static String token;
-	private static String id;
-
-	public static void setToken(String newToken) {
-		token = newToken;
-	}
-
-	public static String getUserToken() {
-		return token;
-	}
-
-	public static boolean isUserLogged() {
-		return token != null;
-	}
-
-	public static void login() {
-		Activity currentActivity = Relayr_Application.currentActivity();
-		Intent loginActivity = new Intent(currentActivity, Relayr_LoginActivity.class);
-		currentActivity.startActivity(loginActivity);
-	}
-
-	public static boolean logout() {
-		token = null;
-		LoginEventListener listener = Relayr_SDK.getLoginEventListener();
-		if (listener != null) {
-			listener.onUserLoggedOutSuccessfully();
-		}
-		return (token == null);
-	}
-
-	public static void synchronizeUserInfo() throws Exception {
-		Object[] parameters = {};
-		try {
-			JSONObject userInfo = (JSONObject)Relayr_ApiConnector.doCall(Relayr_ApiCall.UserInfo, parameters);
-			if (userInfo.has(RELAYR_IDPARAM)) {
-				id = userInfo.getString(RELAYR_IDPARAM);
-			}
-		} catch (Exception e) {
-			throw e;
-		}
-	}
-
-	public static void setUserID(String userID) {
-		id = userID;
-	}
-
-	public static String getUserID() {
+	public String getId() {
 		return id;
 	}
+	public void setId(String id) {
+		this.id = id;
+	}
+	public String getFirstName() {
+		return firstName;
+	}
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+	public String getLastName() {
+		return lastName;
+	}
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+	public String getEmail() {
+		return email;
+	}
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+
 }

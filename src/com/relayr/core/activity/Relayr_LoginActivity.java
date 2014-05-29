@@ -15,7 +15,7 @@ import com.relayr.core.api.Relayr_ApiCall;
 import com.relayr.core.api.Relayr_ApiConnector;
 import com.relayr.core.error.Relayr_Exception;
 import com.relayr.core.event_listeners.LoginEventListener;
-import com.relayr.core.user.Relayr_User;
+import com.relayr.core.settings.Relayr_SDKStatus;
 
 public class Relayr_LoginActivity extends Relayr_Activity {
 
@@ -35,6 +35,7 @@ public class Relayr_LoginActivity extends Relayr_Activity {
 		mWebView.setVerticalScrollBarEnabled(false);
 
 		WebSettings webSettings = mWebView.getSettings();
+		webSettings.setJavaScriptEnabled(true);
 		webSettings.setAppCacheEnabled(true);
 		webSettings.setCacheMode(WebSettings.LOAD_DEFAULT);
 
@@ -43,19 +44,21 @@ public class Relayr_LoginActivity extends Relayr_Activity {
 		mWebView.setWebViewClient(new WebViewClient(){
 			@Override
 			public void onPageStarted(WebView view, String url, Bitmap favicon) {
+				Log.d("Login_Activity", "Webview opening: " + url);
 				String token = getToken(url);
 				if (token != null) {
 					Log.d("Relayr_LoginActivity", "onPageStarted token: " + token);
-					Relayr_User.setToken(token);
+					Relayr_SDKStatus.setUserToken(token);
 					LoginEventListener listener = Relayr_SDK.getLoginEventListener();
 					if (listener != null) {
 						listener.onUserLoggedInSuccessfully();
 					}
 					try {
-						Relayr_User.synchronizeUserInfo();
+						Relayr_SDKStatus.synchronizeUserInfo();
 					} catch (Exception e) {
 						Log.d("Relayr_LoginActivity", "Error: " + e.getMessage());
 					}
+
 					Relayr_LoginActivity.this.onBackPressed();
 				}
 			}

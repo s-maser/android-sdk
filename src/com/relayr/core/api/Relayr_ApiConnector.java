@@ -32,55 +32,20 @@ public class Relayr_ApiConnector {
 		case UserDevices: {
 			return "UserDevices";
 		}
-		/*case ListAllDevices: {
-			return "ListAllDevices";
+		case DeviceInfo: {
+			return "DeviceInfo";
 		}
-		case ListClientDevices: {
-			return "ListClientDevices";
-		}
-		case AddDevice: {
-			return "AddDevice";
-		}
-		case RetrieveDevice: {
-			return "RetrieveDevice";
-		}
-		case ModifyDevice: {
-			return "ModifyDevice";
-		}
-		case RemoveDevice: {
-			return "RemoveDevice";
-		}
-		case RetrieveDeviceConfiguration: {
-			return "RetrieveDeviceConfiguration";
-		}
-		case ConfigureDevice: {
-			return "ConfigureDevice";
-		}
-		case DeleteDevice: {
-			return "DeleteDevice";
-		}*/
 		default: return "UNKNOWN";
 		}
 	}
 
 	private static boolean checkCorrectParameters(Relayr_ApiCall call, Object... params) {
 		switch (call) {
-		/*case ListAllDevices: {
-			return (params.length < 2);
-		}
-		case AddDevice:
-		case RetrieveDevice:
-		case RemoveDevice:
-		case RetrieveDeviceConfiguration:
-		case DeleteDevice: {
-			return (params.length == 1);
-		}
-		case ModifyDevice:
-		case ConfigureDevice: {
-			return (params.length == 2);
-		}*/
 		case UserDevices: {
 			return (params.length <= 1);
+		}
+		case DeviceInfo: {
+			return (params.length == 1);
 		}
 		default: return (params.length == 0);
 		}

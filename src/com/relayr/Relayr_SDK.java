@@ -10,7 +10,6 @@ import com.relayr.core.event_listeners.LoginEventListener;
 import com.relayr.core.settings.Relayr_SDKSettings;
 import com.relayr.core.settings.Relayr_SDKStatus;
 import com.relayr.core.storage.Relayr_DataStorage;
-import com.relayr.core.user.Relayr_User;
 
 public class Relayr_SDK {
 
@@ -20,7 +19,7 @@ public class Relayr_SDK {
 		if (!Relayr_SDKStatus.isActive()) {
 			if (Relayr_SDKSettings.checkConfigValues()) {
 				Relayr_DataStorage.loadLocalData();
-				Relayr_User.synchronizeUserInfo();
+				Relayr_SDKStatus.synchronizeUserInfo();
 				Relayr_SDKStatus.setActive(true);
 				setLoginEventListener(null);
 			}
@@ -52,101 +51,19 @@ public class Relayr_SDK {
 		return Relayr_SDKStatus.isActive();
 	}
 
-	/*public static JSONArray listAllDevices() throws Relayr_Exception {
-		if (Relayr_SDKStatus.isActive()) {
-			Object[] parameters = {};
-			return (JSONArray)Relayr_ApiConnector.doCall(Relayr_ApiCall.ListAllDevices, parameters);
-		} else {
-			throw new Relayr_Exception("SDK no active", null);
-		}
-	}
-
-	public static JSONArray listAllDevicesFilteredBy(String type) throws Relayr_Exception {
-		if (Relayr_SDKStatus.isActive()) {
-			Object[] parameters = {type};
-			return (JSONArray)Relayr_ApiConnector.doCall(Relayr_ApiCall.ListAllDevices, parameters);
-		} else {
-			throw new Relayr_Exception("SDK no active", null);
-		}
-	}
-
-	public static JSONArray listClientDevices() throws Relayr_Exception {
-		if (Relayr_SDKStatus.isActive()) {
-			Object[] parameters = {};
-			return (JSONArray)Relayr_ApiConnector.doCall(Relayr_ApiCall.ListClientDevices, parameters);
-		} else {
-			throw new Relayr_Exception("SDK no active", null);
-		}
-	}
-
-	public static boolean addDevice(String deviceId) throws Relayr_Exception {
-		if (Relayr_SDKStatus.isActive()) {
-			Object[] parameters = {deviceId};
-			return (Boolean)Relayr_ApiConnector.doCall(Relayr_ApiCall.AddDevice, parameters);
-		} else {
-			throw new Relayr_Exception("SDK no active", null);
-		}
-	}
-
-	public static JSONObject retrieveDevice(String deviceId) throws Relayr_Exception {
-		if (Relayr_SDKStatus.isActive()) {
-			Object[] parameters = {deviceId};
-			return (JSONObject)Relayr_ApiConnector.doCall(Relayr_ApiCall.RetrieveDevice, parameters);
-		} else {
-			throw new Relayr_Exception("SDK no active", null);
-		}
-	}
-
-	public static boolean modifyDevice(String deviceId, HashMap<String, Object> values) throws Relayr_Exception {
-		if (Relayr_SDKStatus.isActive()) {
-			Object[] parameters = {deviceId, values};
-			return (Boolean)Relayr_ApiConnector.doCall(Relayr_ApiCall.ModifyDevice, parameters);
-		} else {
-			throw new Relayr_Exception("SDK no active", null);
-		}
-	}
-
-	public static boolean removeDevice(String deviceId) throws Relayr_Exception {
-		if (Relayr_SDKStatus.isActive()) {
-			Object[] parameters = {deviceId};
-			return (Boolean)Relayr_ApiConnector.doCall(Relayr_ApiCall.RemoveDevice, parameters);
-		} else {
-			throw new Relayr_Exception("SDK no active", null);
-		}
-	}
-
-	public static JSONObject retrieveDeviceConfiguration(String deviceId) throws Relayr_Exception {
-		if (Relayr_SDKStatus.isActive()) {
-			Object[] parameters = {deviceId};
-			return (JSONObject)Relayr_ApiConnector.doCall(Relayr_ApiCall.RetrieveDevice, parameters);
-		} else {
-			throw new Relayr_Exception("SDK no active", null);
-		}
-	}
-
-	public static boolean configureDevice(String deviceId, HashMap<String, Object> configuration) throws Relayr_Exception {
-		if (Relayr_SDKStatus.isActive()) {
-			Object[] parameters = {deviceId, configuration};
-			return (Boolean)Relayr_ApiConnector.doCall(Relayr_ApiCall.ConfigureDevice, parameters);
-		} else {
-			throw new Relayr_Exception("SDK no active", null);
-		}
-	}
-
-	public static boolean deleteDevice(String deviceId) throws Relayr_Exception {
-		if (Relayr_SDKStatus.isActive()) {
-			Object[] parameters = {deviceId};
-			return (Boolean)Relayr_ApiConnector.doCall(Relayr_ApiCall.DeleteDevice, parameters);
-		} else {
-			throw new Relayr_Exception("SDK no active", null);
-		}
-	}
-*/
-
 	public static ArrayList<Relayr_Device> getUserDevices() throws Relayr_Exception {
 		if (Relayr_SDKStatus.isActive()) {
 			Object[] parameters = {};
 			return (ArrayList<Relayr_Device>)Relayr_ApiConnector.doCall(Relayr_ApiCall.UserDevices, parameters);
+		} else {
+			throw new Relayr_Exception("SDK no active", null);
+		}
+	}
+
+	public static Relayr_Device getDeviceById(String deviceId) throws Relayr_Exception {
+		if (Relayr_SDKStatus.isActive()) {
+			Object[] parameters = {deviceId};
+			return (Relayr_Device)Relayr_ApiConnector.doCall(Relayr_ApiCall.DeviceInfo, parameters);
 		} else {
 			throw new Relayr_Exception("SDK no active", null);
 		}
@@ -160,15 +77,15 @@ public class Relayr_SDK {
 		return loginEventListener;
 	}
 
-	public void login() {
-		Relayr_User.login();
+	public static void login() {
+		Relayr_SDKStatus.login();
 	}
 
-	public boolean isUserLogged() {
-		return Relayr_User.isUserLogged();
+	public static boolean isUserLogged() {
+		return Relayr_SDKStatus.isUserLogged();
 	}
 
-	public boolean logout() {
-		return Relayr_User.logout();
+	public static boolean logout() {
+		return Relayr_SDKStatus.logout();
 	}
 }
