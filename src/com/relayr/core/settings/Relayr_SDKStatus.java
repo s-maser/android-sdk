@@ -2,6 +2,7 @@ package com.relayr.core.settings;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.util.Log;
 
 import com.relayr.Relayr_Application;
@@ -72,10 +73,21 @@ public class Relayr_SDKStatus {
 	}
 
 	public static void synchronizeUserInfo() throws Relayr_Exception {
-		Object[] parameters = {};
-		Relayr_ApiConnector.doCall(Relayr_ApiCall.UserInfo, parameters);
-		Log.d("Relayr_SDKStatus", "Updating current user... ");
-		Log.d("Relayr_SDKStatus", "Current user id: " + currentUser.getId());
+		new AsyncTask<Void, Void, Void>() {
+			@Override
+			protected Void doInBackground(Void... params) {
+				try {
+					Object[] parameters = {};
+					Relayr_ApiConnector.doCall(Relayr_ApiCall.UserInfo, parameters);
+					Log.d("Relayr_SDKStatus", "Updating current user... ");
+					Log.d("Relayr_SDKStatus", "Current user id: " + currentUser.getId());
+				} catch (Relayr_Exception e) {
+					Log.d("Relayr_SDKStatus", "Error: " + e.getMessage());
+				}
+
+				return null;
+			}
+		}.execute();
 	}
 
 }
