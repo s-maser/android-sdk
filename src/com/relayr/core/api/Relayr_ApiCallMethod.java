@@ -5,5 +5,6 @@ public enum Relayr_ApiCallMethod {
 	POST,
 	PUT,
 	DELETE,
+	PATCH,
 	UNKNOWN
 }

@@ -23,6 +23,7 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 
+import com.relayr.core.api.client.Relayr_HttpPatch;
 import com.relayr.core.error.Relayr_Exception;
 import com.relayr.core.settings.Relayr_SDKStatus;
 
@@ -78,7 +79,21 @@ public class Relayr_ApiRequest {
 			request = new HttpDelete(Relayr_ApiURLGenerator.generate(call, params));
 			break;
 		}
-
+		case PATCH: {
+			try {
+				Relayr_HttpPatch patchRequest = new Relayr_HttpPatch(Relayr_ApiURLGenerator.generate(call, params));
+				String jsonBody = Relayr_RequestBodyGenerator.generateBody(call, params);
+				if (jsonBody != null) {
+					StringEntity se;
+					se = new StringEntity(jsonBody);
+					patchRequest.setEntity(se);
+				}
+				request = patchRequest;
+			} catch (UnsupportedEncodingException e) {
+				throw new Relayr_Exception(e.getMessage());
+			}
+			break;
+		}
 		default: {
 			request = new HttpPost(Relayr_ApiURLGenerator.generate(call, params));
 		}
@@ -102,6 +117,9 @@ public class Relayr_ApiRequest {
 		case UserInfo:
 		case UserDevices: {
 			return Relayr_ApiCallMethod.GET;
+		}
+		case UpdateDeviceInfo: {
+			return Relayr_ApiCallMethod.PATCH;
 		}
 		default: return Relayr_ApiCallMethod.UNKNOWN;
 		}

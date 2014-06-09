@@ -106,7 +106,9 @@ public class Relayr_RequestParser {
 			ArrayList<Relayr_Device> devices = new Gson().fromJson(content, new TypeToken<ArrayList<Relayr_Device>>(){}.getType());
 			return devices;
 		}
-		case DeviceInfo: {
+
+		case DeviceInfo:
+		case UpdateDeviceInfo: {
 			Relayr_Device device = new Gson().fromJson(content, Relayr_Device.class);
 			return device;
 		}

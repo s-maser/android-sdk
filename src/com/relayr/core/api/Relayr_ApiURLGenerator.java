@@ -54,7 +54,8 @@ public class Relayr_ApiURLGenerator {
 			}
 			break;
 		}
-		case DeviceInfo: {
+		case DeviceInfo:
+		case UpdateDeviceInfo: {
 			urlString += RELAYR_DEVICESTAG + "/" + params[0];
 			break;
 		}

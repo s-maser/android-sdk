@@ -35,6 +35,9 @@ public class Relayr_ApiConnector {
 		case DeviceInfo: {
 			return "DeviceInfo";
 		}
+		case UpdateDeviceInfo: {
+			return "UpdateDeviceInfo";
+		}
 		default: return "UNKNOWN";
 		}
 	}
@@ -46,6 +49,9 @@ public class Relayr_ApiConnector {
 		}
 		case DeviceInfo: {
 			return (params.length == 1);
+		}
+		case UpdateDeviceInfo: {
+			return (params.length == 2);
 		}
 		default: return (params.length == 0);
 		}

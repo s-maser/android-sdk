@@ -5,4 +5,5 @@ public enum Relayr_ApiCall {
     UserInfo,
     UserDevices,
     DeviceInfo,
+    UpdateDeviceInfo,
 }

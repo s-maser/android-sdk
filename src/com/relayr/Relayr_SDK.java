@@ -1,6 +1,7 @@
 package com.relayr;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import com.relayr.core.api.Relayr_ApiCall;
 import com.relayr.core.api.Relayr_ApiConnector;
@@ -64,6 +65,15 @@ public class Relayr_SDK {
 		if (Relayr_SDKStatus.isActive()) {
 			Object[] parameters = {deviceId};
 			return (Relayr_Device)Relayr_ApiConnector.doCall(Relayr_ApiCall.DeviceInfo, parameters);
+		} else {
+			throw new Relayr_Exception("SDK no active", null);
+		}
+	}
+
+	public static Relayr_Device updateDeviceAttributesById(String deviceId, HashMap<String,Object> attributes) throws Relayr_Exception {
+		if (Relayr_SDKStatus.isActive()) {
+			Object[] parameters = {deviceId, attributes};
+			return (Relayr_Device)Relayr_ApiConnector.doCall(Relayr_ApiCall.UpdateDeviceInfo, parameters);
 		} else {
 			throw new Relayr_Exception("SDK no active", null);
 		}
