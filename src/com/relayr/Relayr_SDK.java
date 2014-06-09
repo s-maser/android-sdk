@@ -21,6 +21,7 @@ public class Relayr_SDK {
 			if (Relayr_SDKSettings.checkConfigValues()) {
 				Relayr_DataStorage.loadLocalData();
 				Relayr_SDKStatus.synchronizeUserInfo();
+				Relayr_SDKStatus.synchronizeAppInfo();
 				Relayr_SDKStatus.setActive(true);
 				setLoginEventListener(null);
 			}
@@ -74,6 +75,24 @@ public class Relayr_SDK {
 		if (Relayr_SDKStatus.isActive()) {
 			Object[] parameters = {deviceId, attributes};
 			return (Relayr_Device)Relayr_ApiConnector.doCall(Relayr_ApiCall.UpdateDeviceInfo, parameters);
+		} else {
+			throw new Relayr_Exception("SDK no active", null);
+		}
+	}
+
+	public static Boolean connectDeviceToApp(String deviceId) throws Relayr_Exception {
+		if (Relayr_SDKStatus.isActive()) {
+			Object[] parameters = {deviceId};
+			return (Boolean)Relayr_ApiConnector.doCall(Relayr_ApiCall.ConnectDeviceToApp, parameters);
+		} else {
+			throw new Relayr_Exception("SDK no active", null);
+		}
+	}
+
+	public static Boolean disconnectDeviceFromApp(String deviceId) throws Relayr_Exception {
+		if (Relayr_SDKStatus.isActive()) {
+			Object[] parameters = {deviceId};
+			return (Boolean)Relayr_ApiConnector.doCall(Relayr_ApiCall.DisconnectDeviceFromApp, parameters);
 		} else {
 			throw new Relayr_Exception("SDK no active", null);
 		}

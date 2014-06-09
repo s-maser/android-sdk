@@ -6,4 +6,7 @@ public enum Relayr_ApiCall {
     UserDevices,
     DeviceInfo,
     UpdateDeviceInfo,
+    ConnectDeviceToApp,
+    DisconnectDeviceFromApp,
+    AppInfo
 }

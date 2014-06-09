@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.net.Uri.Builder;
 import android.util.Log;
 
+import com.relayr.core.app.Relayr_App;
 import com.relayr.core.error.Relayr_Exception;
 import com.relayr.core.settings.Relayr_SDKSettings;
 import com.relayr.core.settings.Relayr_SDKStatus;
@@ -19,6 +20,8 @@ public class Relayr_ApiURLGenerator {
 	private final static String RELAYR_OAUTH2TAG = "/oauth2";
 	private final static String RELAYR_AUTHENTICATIONTAG = "/auth";
 	private final static String RELAYR_USERINFOTAG = "/user-info";
+	private final static String RELAYR_APPSTAG = "/apps";
+	private final static String RELAYR_APPINFOTAG = "/app-info";
 
 	private final static String RELAYR_CLIENTIDPARAM = "client_id";
 	private final static String RELAYR_REDIRECTURIPARAM = "redirect_uri";
@@ -30,12 +33,13 @@ public class Relayr_ApiURLGenerator {
 	private final static String RELAYR_DEFAULTSCOPE = "access-own-user-info";
 
 	public static String generate(Relayr_ApiCall call, Object... params) throws Relayr_Exception {
-		String urlString = "";
+		StringBuilder urlString = new StringBuilder();
 		HashMap<String, Object> parametersCollection = new HashMap<String, Object>();
 
 		switch (call) {
 		case UserAuthorization: {
-			urlString += RELAYR_OAUTH2TAG + RELAYR_AUTHENTICATIONTAG;
+			urlString.append(RELAYR_OAUTH2TAG);
+			urlString.append(RELAYR_AUTHENTICATIONTAG);
 			parametersCollection.put(RELAYR_CLIENTIDPARAM, Relayr_SDKSettings.getAppKey());
 			parametersCollection.put(RELAYR_REDIRECTURIPARAM, Relayr_APICommons.DEFAULT_REDIRECTION_URI);
 			parametersCollection.put(RELAYR_RESPONSETYPEPARAM, RELAYR_DEFAULTRESPONSETYPE);
@@ -43,12 +47,16 @@ public class Relayr_ApiURLGenerator {
 			break;
 		}
 		case UserInfo: {
-			urlString += RELAYR_OAUTH2TAG + RELAYR_USERINFOTAG;
+			urlString.append(RELAYR_OAUTH2TAG);
+			urlString.append(RELAYR_USERINFOTAG);
 			break;
 		}
 		case UserDevices: {
+			urlString.append(RELAYR_USERSTAG);
+			urlString.append("/");
 			Relayr_User user = Relayr_SDKStatus.getCurrentUser();
-			urlString += RELAYR_USERSTAG + "/" + ((user != null)? user.getId():"") + RELAYR_DEVICESTAG;
+			urlString.append(((user != null)? user.getId():""));
+			urlString.append(RELAYR_DEVICESTAG);
 			if (params.length > 0) {
 				parametersCollection.put(RELAYR_MEANINGPARAM, params[0]);
 			}
@@ -56,15 +64,34 @@ public class Relayr_ApiURLGenerator {
 		}
 		case DeviceInfo:
 		case UpdateDeviceInfo: {
-			urlString += RELAYR_DEVICESTAG + "/" + params[0];
+			urlString.append(RELAYR_DEVICESTAG);
+			urlString.append("/");
+			urlString.append(params[0]);
+			break;
+		}
+		case ConnectDeviceToApp:
+		case DisconnectDeviceFromApp: {
+			urlString.append(RELAYR_DEVICESTAG);
+			urlString.append("/");
+			urlString.append(params[0]);
+			urlString.append(RELAYR_APPSTAG);
+			urlString.append("/");
+			Relayr_App app = Relayr_SDKStatus.getCurrentApp();
+			urlString.append(((app != null)? app.getId():""));
+			break;
+		}
+		case AppInfo: {
+			urlString.append(RELAYR_OAUTH2TAG);
+			urlString.append(RELAYR_APPINFOTAG);
 			break;
 		}
 		}
 
-		urlString = Relayr_ApiURLGenerator.addParametersToUri(urlString, parametersCollection);
-		Log.d("Relayr_ApiURLGenerator", "Generated url: " + urlString);
-		return urlString;
+		String uriString = Relayr_ApiURLGenerator.addParametersToUri(urlString.toString(), parametersCollection);
+		Log.d("Relayr_ApiURLGenerator", "Generated url: " + uriString);
+		return uriString;
 	}
+
 
 	private static String addParametersToUri(final String url, final HashMap<String, Object> params) {
 		Builder uriBuilder;

@@ -112,16 +112,16 @@ public class Relayr_ApiRequest {
 
 	private static Relayr_ApiCallMethod getCallMethod(Relayr_ApiCall call) {
 		switch (call) {
-		case DeviceInfo:
-		case UserAuthorization:
-		case UserInfo:
-		case UserDevices: {
-			return Relayr_ApiCallMethod.GET;
-		}
 		case UpdateDeviceInfo: {
 			return Relayr_ApiCallMethod.PATCH;
 		}
-		default: return Relayr_ApiCallMethod.UNKNOWN;
+		case ConnectDeviceToApp: {
+			return Relayr_ApiCallMethod.POST;
+		}
+		case DisconnectDeviceFromApp: {
+			return Relayr_ApiCallMethod.DELETE;
+		}
+		default: return Relayr_ApiCallMethod.GET;
 		}
 	}
 

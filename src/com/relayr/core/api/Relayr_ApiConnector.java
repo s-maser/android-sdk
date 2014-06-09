@@ -38,6 +38,9 @@ public class Relayr_ApiConnector {
 		case UpdateDeviceInfo: {
 			return "UpdateDeviceInfo";
 		}
+		case ConnectDeviceToApp: {
+			return "ConnectDeviceToApp";
+		}
 		default: return "UNKNOWN";
 		}
 	}
@@ -47,9 +50,12 @@ public class Relayr_ApiConnector {
 		case UserDevices: {
 			return (params.length <= 1);
 		}
-		case DeviceInfo: {
+		case DeviceInfo:
+		case ConnectDeviceToApp:
+		case DisconnectDeviceFromApp: {
 			return (params.length == 1);
 		}
+
 		case UpdateDeviceInfo: {
 			return (params.length == 2);
 		}

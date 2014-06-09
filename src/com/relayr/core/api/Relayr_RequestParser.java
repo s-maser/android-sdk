@@ -12,6 +12,7 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.relayr.core.app.Relayr_App;
 import com.relayr.core.device.Relayr_Device;
 import com.relayr.core.error.Relayr_Exception;
 import com.relayr.core.settings.Relayr_SDKStatus;
@@ -52,7 +53,8 @@ public class Relayr_RequestParser {
 		case 0: {
 			throw new Relayr_Exception(RELAYR_INTERNETCONNECTIONERRORMESSAGE);
 		}
-		case 200: {
+		case 200:
+		case 204: {
 			break;
 		}
 		case 401: {
@@ -102,6 +104,12 @@ public class Relayr_RequestParser {
 			return true;
 		}
 
+		case AppInfo: {
+			Relayr_App currentApp = new Gson().fromJson(content, Relayr_App.class);
+			Relayr_SDKStatus.setCurrentApp(currentApp);
+			return true;
+		}
+
 		case UserDevices: {
 			ArrayList<Relayr_Device> devices = new Gson().fromJson(content, new TypeToken<ArrayList<Relayr_Device>>(){}.getType());
 			return devices;
@@ -111,6 +119,11 @@ public class Relayr_RequestParser {
 		case UpdateDeviceInfo: {
 			Relayr_Device device = new Gson().fromJson(content, Relayr_Device.class);
 			return device;
+		}
+
+		case ConnectDeviceToApp:
+		case DisconnectDeviceFromApp: {
+			return true;
 		}
 
 		default: return content;

@@ -10,6 +10,7 @@ import com.relayr.Relayr_SDK;
 import com.relayr.core.activity.Relayr_LoginActivity;
 import com.relayr.core.api.Relayr_ApiCall;
 import com.relayr.core.api.Relayr_ApiConnector;
+import com.relayr.core.app.Relayr_App;
 import com.relayr.core.error.Relayr_Exception;
 import com.relayr.core.event_listeners.LoginEventListener;
 import com.relayr.core.user.Relayr_User;
@@ -19,6 +20,7 @@ public class Relayr_SDKStatus {
 	static boolean active = false;
 	static boolean backgroundMode = false;
 	static Relayr_User currentUser;
+	static Relayr_App currentApp;
 	static String userToken;
 
 	public static boolean isActive() {
@@ -43,6 +45,14 @@ public class Relayr_SDKStatus {
 
 	public static void setCurrentUser(Relayr_User currentUser) {
 		Relayr_SDKStatus.currentUser = currentUser;
+	}
+
+	public static Relayr_App getCurrentApp() {
+		return currentApp;
+	}
+
+	public static void setCurrentApp(Relayr_App currentApp) {
+		Relayr_SDKStatus.currentApp = currentApp;
 	}
 
 	public static String getUserToken() {
@@ -79,12 +89,25 @@ public class Relayr_SDKStatus {
 				try {
 					Object[] parameters = {};
 					Relayr_ApiConnector.doCall(Relayr_ApiCall.UserInfo, parameters);
-					Log.d("Relayr_SDKStatus", "Updating current user... ");
-					Log.d("Relayr_SDKStatus", "Current user id: " + currentUser.getId());
 				} catch (Relayr_Exception e) {
 					Log.d("Relayr_SDKStatus", "Error: " + e.getMessage());
 				}
 
+				return null;
+			}
+		}.execute();
+	}
+
+	public static void synchronizeAppInfo() throws Relayr_Exception {
+		new AsyncTask<Void, Void, Void>() {
+			@Override
+			protected Void doInBackground(Void... params) {
+				try {
+					Object[] parameters = {};
+					Relayr_ApiConnector.doCall(Relayr_ApiCall.AppInfo, parameters);
+				} catch (Relayr_Exception e) {
+					Log.d("Relayr_SDKStatus", "Error: " + e.getMessage());
+				}
 				return null;
 			}
 		}.execute();
