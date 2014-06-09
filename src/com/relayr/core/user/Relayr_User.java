@@ -39,5 +39,18 @@ public class Relayr_User implements Serializable {
 		this.email = email;
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder stringBuilder = new StringBuilder();
+
+		stringBuilder.append("[\n" +
+				"\tid:\t" + getId() + "\n" +
+				"\ttitle:\t" + getFirstName() + "\n" +
+				"\tmodel:\t" + getLastName().toString() + "\n" +
+				"\towner:\t" + getEmail() + "\n" +
+				"]");
+
+		return stringBuilder.toString();
+	}
 
 }

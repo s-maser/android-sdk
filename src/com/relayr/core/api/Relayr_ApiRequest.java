@@ -112,10 +112,12 @@ public class Relayr_ApiRequest {
 
 	private static Relayr_ApiCallMethod getCallMethod(Relayr_ApiCall call) {
 		switch (call) {
-		case UpdateDeviceInfo: {
+		case UpdateDeviceInfo:
+		case UpdateUserInfo: {
 			return Relayr_ApiCallMethod.PATCH;
 		}
-		case ConnectDeviceToApp: {
+		case ConnectDeviceToApp:
+		case RegisterDevice: {
 			return Relayr_ApiCallMethod.POST;
 		}
 		case DisconnectDeviceFromApp: {

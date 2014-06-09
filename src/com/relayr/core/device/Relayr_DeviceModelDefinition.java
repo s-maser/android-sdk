@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class Relayr_DeviceModel implements Serializable {
+public class Relayr_DeviceModelDefinition implements Serializable {
 
 	/**
 	 *
@@ -14,7 +14,7 @@ public class Relayr_DeviceModel implements Serializable {
 	private String name;
 	private String manufacturer;
 	private ArrayList<HashMap<String,Object>> readings;
-	private String firmwareVersion;
+	private ArrayList<HashMap<String,Object>> firmwareVersions;
 
 	public String getId() {
 		return id;
@@ -48,12 +48,13 @@ public class Relayr_DeviceModel implements Serializable {
 		this.readings = readings;
 	}
 
-	public String getFirmwareVersion() {
-		return firmwareVersion;
+	public ArrayList<HashMap<String, Object>> getFirmwareVersions() {
+		return firmwareVersions;
 	}
 
-	public void setFirmwareVersion(String firmwareVersion) {
-		this.firmwareVersion = firmwareVersion;
+	public void setFirmwareVersions(
+			ArrayList<HashMap<String, Object>> firmwareVersions) {
+		this.firmwareVersions = firmwareVersions;
 	}
 
 	@Override
@@ -65,9 +66,10 @@ public class Relayr_DeviceModel implements Serializable {
 						"\tname:\t" + getName() + "\n" +
 						"\tmanufacturer:\t" + getManufacturer() + "\n" +
 						"\treadings:\t" + getReadings().toString() + "\n" +
-						"\tfirmwareVersiona:\t" + getFirmwareVersion() + "\n" +
+						"\tfirmwareVersiona:\t" + getFirmwareVersions().toString() + "\n" +
 						"]");
 
 		return stringBuilder.toString();
 	}
 }
+

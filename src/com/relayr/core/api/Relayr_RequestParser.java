@@ -14,6 +14,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.relayr.core.app.Relayr_App;
 import com.relayr.core.device.Relayr_Device;
+import com.relayr.core.device.Relayr_DeviceModelDefinition;
 import com.relayr.core.error.Relayr_Exception;
 import com.relayr.core.settings.Relayr_SDKStatus;
 import com.relayr.core.user.Relayr_User;
@@ -54,6 +55,7 @@ public class Relayr_RequestParser {
 			throw new Relayr_Exception(RELAYR_INTERNETCONNECTIONERRORMESSAGE);
 		}
 		case 200:
+		case 201:
 		case 204: {
 			break;
 		}
@@ -98,10 +100,11 @@ public class Relayr_RequestParser {
 
 	private static Object parseData(Relayr_ApiCall call, String content) throws Relayr_Exception {
 		switch (call) {
-		case UserInfo: {
+		case UserInfo:
+		case UpdateUserInfo: {
 			Relayr_User currentUser = new Gson().fromJson(content, Relayr_User.class);
 			Relayr_SDKStatus.setCurrentUser(currentUser);
-			return true;
+			return currentUser;
 		}
 
 		case AppInfo: {
@@ -116,7 +119,8 @@ public class Relayr_RequestParser {
 		}
 
 		case DeviceInfo:
-		case UpdateDeviceInfo: {
+		case UpdateDeviceInfo:
+		case RegisterDevice: {
 			Relayr_Device device = new Gson().fromJson(content, Relayr_Device.class);
 			return device;
 		}
@@ -124,6 +128,16 @@ public class Relayr_RequestParser {
 		case ConnectDeviceToApp:
 		case DisconnectDeviceFromApp: {
 			return true;
+		}
+
+		case DeviceModels: {
+			ArrayList<Relayr_DeviceModelDefinition> models = new Gson().fromJson(content, new TypeToken<ArrayList<Relayr_DeviceModelDefinition>>(){}.getType());
+			return models;
+		}
+
+		case DeviceModelInfo: {
+			Relayr_DeviceModelDefinition model = new Gson().fromJson(content, Relayr_DeviceModelDefinition.class);
+			return model;
 		}
 
 		default: return content;

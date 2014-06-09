@@ -22,6 +22,7 @@ public class Relayr_ApiURLGenerator {
 	private final static String RELAYR_USERINFOTAG = "/user-info";
 	private final static String RELAYR_APPSTAG = "/apps";
 	private final static String RELAYR_APPINFOTAG = "/app-info";
+	private final static String RELAYR_DEVICEMODELSTAG = "/device-models";
 
 	private final static String RELAYR_CLIENTIDPARAM = "client_id";
 	private final static String RELAYR_REDIRECTURIPARAM = "redirect_uri";
@@ -49,6 +50,13 @@ public class Relayr_ApiURLGenerator {
 		case UserInfo: {
 			urlString.append(RELAYR_OAUTH2TAG);
 			urlString.append(RELAYR_USERINFOTAG);
+			break;
+		}
+		case UpdateUserInfo: {
+			urlString.append(RELAYR_USERSTAG);
+			urlString.append("/");
+			Relayr_User user = Relayr_SDKStatus.getCurrentUser();
+			urlString.append(((user != null)? user.getId():""));
 			break;
 		}
 		case UserDevices: {
@@ -83,6 +91,20 @@ public class Relayr_ApiURLGenerator {
 		case AppInfo: {
 			urlString.append(RELAYR_OAUTH2TAG);
 			urlString.append(RELAYR_APPINFOTAG);
+			break;
+		}
+		case DeviceModels: {
+			urlString.append(RELAYR_DEVICEMODELSTAG);
+			break;
+		}
+		case DeviceModelInfo: {
+			urlString.append(RELAYR_DEVICEMODELSTAG);
+			urlString.append("/");
+			urlString.append(params[0]);
+			break;
+		}
+		case RegisterDevice: {
+			urlString.append(RELAYR_DEVICESTAG);
 			break;
 		}
 		}

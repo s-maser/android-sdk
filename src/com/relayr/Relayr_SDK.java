@@ -6,11 +6,13 @@ import java.util.HashMap;
 import com.relayr.core.api.Relayr_ApiCall;
 import com.relayr.core.api.Relayr_ApiConnector;
 import com.relayr.core.device.Relayr_Device;
+import com.relayr.core.device.Relayr_DeviceModelDefinition;
 import com.relayr.core.error.Relayr_Exception;
 import com.relayr.core.event_listeners.LoginEventListener;
 import com.relayr.core.settings.Relayr_SDKSettings;
 import com.relayr.core.settings.Relayr_SDKStatus;
 import com.relayr.core.storage.Relayr_DataStorage;
+import com.relayr.core.user.Relayr_User;
 
 public class Relayr_SDK {
 
@@ -53,6 +55,15 @@ public class Relayr_SDK {
 		return Relayr_SDKStatus.isActive();
 	}
 
+	public static Relayr_Device registerDevice(String title, String modelId, String firmwareVersion, String description) throws Relayr_Exception {
+		if (Relayr_SDKStatus.isActive()) {
+			Object[] parameters = {title, modelId, firmwareVersion, description};
+			return (Relayr_Device)Relayr_ApiConnector.doCall(Relayr_ApiCall.RegisterDevice, parameters);
+		} else {
+			throw new Relayr_Exception("SDK no active", null);
+		}
+	}
+
 	public static ArrayList<Relayr_Device> getUserDevices() throws Relayr_Exception {
 		if (Relayr_SDKStatus.isActive()) {
 			Object[] parameters = {};
@@ -80,6 +91,15 @@ public class Relayr_SDK {
 		}
 	}
 
+	public static Relayr_User updateUserInfo(HashMap<String,Object> info) throws Relayr_Exception {
+		if (Relayr_SDKStatus.isActive()) {
+			Object[] parameters = {info};
+			return (Relayr_User)Relayr_ApiConnector.doCall(Relayr_ApiCall.UpdateUserInfo, parameters);
+		} else {
+			throw new Relayr_Exception("SDK no active", null);
+		}
+	}
+
 	public static Boolean connectDeviceToApp(String deviceId) throws Relayr_Exception {
 		if (Relayr_SDKStatus.isActive()) {
 			Object[] parameters = {deviceId};
@@ -93,6 +113,24 @@ public class Relayr_SDK {
 		if (Relayr_SDKStatus.isActive()) {
 			Object[] parameters = {deviceId};
 			return (Boolean)Relayr_ApiConnector.doCall(Relayr_ApiCall.DisconnectDeviceFromApp, parameters);
+		} else {
+			throw new Relayr_Exception("SDK no active", null);
+		}
+	}
+
+	public static ArrayList<Relayr_DeviceModelDefinition> getAllDeviceModels() throws Relayr_Exception {
+		if (Relayr_SDKStatus.isActive()) {
+			Object[] parameters = {};
+			return (ArrayList<Relayr_DeviceModelDefinition>)Relayr_ApiConnector.doCall(Relayr_ApiCall.DeviceModels, parameters);
+		} else {
+			throw new Relayr_Exception("SDK no active", null);
+		}
+	}
+
+	public static Relayr_DeviceModelDefinition getDeviceModelById(String deviceModelId) throws Relayr_Exception {
+		if (Relayr_SDKStatus.isActive()) {
+			Object[] parameters = {deviceModelId};
+			return (Relayr_DeviceModelDefinition)Relayr_ApiConnector.doCall(Relayr_ApiCall.DeviceModelInfo, parameters);
 		} else {
 			throw new Relayr_Exception("SDK no active", null);
 		}
