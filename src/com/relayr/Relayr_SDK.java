@@ -3,8 +3,17 @@ package com.relayr;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import android.annotation.TargetApi;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.os.Build;
+import android.util.Log;
+
 import com.relayr.core.api.Relayr_ApiCall;
 import com.relayr.core.api.Relayr_ApiConnector;
+import com.relayr.core.ble.Relayr_BleDevicesScanner;
+import com.relayr.core.ble.Relayr_BleListener;
+import com.relayr.core.ble.Relayr_BleUtils;
 import com.relayr.core.device.Relayr_Device;
 import com.relayr.core.device.Relayr_DeviceModelDefinition;
 import com.relayr.core.error.Relayr_Exception;
@@ -18,6 +27,7 @@ public class Relayr_SDK {
 
 	static LoginEventListener loginEventListener;
 
+
 	public static void init() throws Exception {
 		if (!Relayr_SDKStatus.isActive()) {
 			if (Relayr_SDKSettings.checkConfigValues()) {
@@ -26,15 +36,19 @@ public class Relayr_SDK {
 				Relayr_SDKStatus.synchronizeAppInfo();
 				Relayr_SDKStatus.setActive(true);
 				setLoginEventListener(null);
+				Relayr_BleListener.init();
 			}
 		}
 	}
 
 	public static void stop() {
 		if (Relayr_SDKStatus.isActive()) {
+			Log.d("Relayr_SDK", "Stopping service");
 			if (!Relayr_SDKStatus.isBackgroundModeActive()) {
+				Log.d("Relayr_SDK", "No background");
 				Relayr_DataStorage.saveLocalData();
 				Relayr_SDKStatus.setActive(false);
+				Relayr_BleListener.stop();
 			}
 		}
 	}
@@ -155,4 +169,5 @@ public class Relayr_SDK {
 	public static boolean logout() {
 		return Relayr_SDKStatus.logout();
 	}
+
 }

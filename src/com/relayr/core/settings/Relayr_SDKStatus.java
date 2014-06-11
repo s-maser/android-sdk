@@ -17,11 +17,16 @@ import com.relayr.core.user.Relayr_User;
 
 public class Relayr_SDKStatus {
 
-	static boolean active = false;
-	static boolean backgroundMode = false;
+	static boolean active;
+	static boolean backgroundMode;
 	static Relayr_User currentUser;
 	static Relayr_App currentApp;
 	static String userToken;
+
+	static {
+		active = false;
+		backgroundMode = false;
+	}
 
 	public static boolean isActive() {
 		return active;
