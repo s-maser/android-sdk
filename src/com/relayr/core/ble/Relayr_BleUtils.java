@@ -2,7 +2,6 @@ package com.relayr.core.ble;
 
 import android.annotation.TargetApi;
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothManager;
@@ -78,18 +77,4 @@ public class Relayr_BleUtils {
         };
     }
 
-    public boolean isWunderbarDevice(BluetoothDevice device) {
-    	switch (device.getName()) {
-    		case "WunderbarHTU":
-    		case "WunderbarGYRO":
-    		case "WunderbarLIGHT":
-    		case "WunderbarMIC":
-    		case "WunderbarBRIDG":
-    		case "WunderbarIR":
-    		case "WunderbarApp": {
-    			return true;
-    		}
-    		default: return false;
-    	}
-    }
 }

@@ -12,7 +12,7 @@ import com.relayr.core.api.Relayr_ApiCall;
 import com.relayr.core.api.Relayr_ApiConnector;
 import com.relayr.core.app.Relayr_App;
 import com.relayr.core.error.Relayr_Exception;
-import com.relayr.core.event_listeners.LoginEventListener;
+import com.relayr.core.event_listeners.Relayr_LoginEventListener;
 import com.relayr.core.user.Relayr_User;
 
 public class Relayr_SDKStatus {
@@ -80,7 +80,7 @@ public class Relayr_SDKStatus {
 
 	public static boolean logout() {
 		Relayr_SDKStatus.setUserToken(null);
-		LoginEventListener listener = Relayr_SDK.getLoginEventListener();
+		Relayr_LoginEventListener listener = Relayr_SDK.getLoginEventListener();
 		if (listener != null) {
 			listener.onUserLoggedOutSuccessfully();
 		}
