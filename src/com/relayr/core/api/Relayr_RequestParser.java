@@ -27,6 +27,7 @@ public class Relayr_RequestParser {
 
 	private static String RELAYR_ERRORMESSAGEFIELD = "error";
 	private static String RELAYR_MESSAGEFIELD = "message";
+	private static String RELAYR_ACCESSTOKENFIELD = "access_token";
 
 	public static Object parse(Relayr_ApiCall call, HttpResponse response) throws Exception {
 		HttpEntity responseEntity = response.getEntity();
@@ -105,6 +106,18 @@ public class Relayr_RequestParser {
 			Relayr_User currentUser = new Gson().fromJson(content, Relayr_User.class);
 			Relayr_SDKStatus.setCurrentUser(currentUser);
 			return currentUser;
+		}
+
+		case UserToken: {
+			try {
+				JSONObject response = new JSONObject(content);
+				if (response.has(RELAYR_ACCESSTOKENFIELD)) {
+					Relayr_SDKStatus.setUserToken(response.getString(RELAYR_ACCESSTOKENFIELD));
+				}
+			} catch (JSONException e) {
+				Log.d("Relayr_RequestParser", "Error: " + e.getMessage());
+			}
+
 		}
 
 		case AppInfo: {

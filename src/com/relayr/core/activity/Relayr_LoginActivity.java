@@ -45,21 +45,21 @@ public class Relayr_LoginActivity extends Relayr_Activity {
 			@Override
 			public void onPageStarted(WebView view, String url, Bitmap favicon) {
 				Log.d("Login_Activity", "Webview opening: " + url);
-				String token = getToken(url);
-				if (token != null) {
-					Log.d("Relayr_LoginActivity", "onPageStarted token: " + token);
-					Relayr_SDKStatus.setUserToken(token);
-					LoginEventListener listener = Relayr_SDK.getLoginEventListener();
-					if (listener != null) {
-						listener.onUserLoggedInSuccessfully();
-					}
+				String accessCode = getAccessCode(url);
+				if (accessCode != null) {
+					Log.d("Relayr_LoginActivity", "onPageStarted access code: " + accessCode);
+					Object[] params = {accessCode};
 					try {
+						Relayr_ApiConnector.doCall(Relayr_ApiCall.UserToken, params);
+						LoginEventListener listener = Relayr_SDK.getLoginEventListener();
+						if (listener != null) {
+							listener.onUserLoggedInSuccessfully();
+						}
 						Relayr_SDKStatus.synchronizeUserInfo();
 					} catch (Exception e) {
 						Log.d("Relayr_LoginActivity", "Error: " + e.getMessage());
 					}
-
-					Relayr_LoginActivity.this.onBackPressed();
+					finish();
 				}
 			}
 		});
@@ -83,15 +83,13 @@ public class Relayr_LoginActivity extends Relayr_Activity {
 		}
 	}
 
-	private String getToken(String url) {
-		String tokenParam = "#access_token=";
-
-		if (url.contains(tokenParam)) {
-			String[] urlByParameters = url.split("&");
-			int tokenPosition = urlByParameters[0].indexOf(tokenParam);
-			String token = urlByParameters[0].substring(tokenPosition + tokenParam.length());
-			Log.d("Login_Activity", "Token: " + token);
-			return token;
+	private String getAccessCode(String url) {
+		String codeParam = "?code=";
+		if (url.contains(codeParam)) {
+			int tokenPosition = url.indexOf(codeParam);
+			String code = url.substring(tokenPosition + codeParam.length());
+			Log.d("Login_Activity", "Access code: " + code);
+			return code;
 		} else {
 			return null;
 		}

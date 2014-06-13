@@ -2,6 +2,7 @@ package com.relayr.core.api;
 
 public enum Relayr_ApiCall {
     UserAuthorization,
+    UserToken,
     UserInfo,
     UserDevices,
     DeviceInfo,
