@@ -48,14 +48,8 @@ public class Relayr_LoginActivity extends Relayr_Activity {
 				String accessCode = getAccessCode(url);
 				if (accessCode != null) {
 					Log.d("Relayr_LoginActivity", "onPageStarted access code: " + accessCode);
-					Object[] params = {accessCode};
 					try {
-						Relayr_ApiConnector.doCall(Relayr_ApiCall.UserToken, params);
-						LoginEventListener listener = Relayr_SDK.getLoginEventListener();
-						if (listener != null) {
-							listener.onUserLoggedInSuccessfully();
-						}
-						Relayr_SDKStatus.synchronizeUserInfo();
+						Relayr_SDKStatus.synchronizeTokenInfo(accessCode);
 					} catch (Exception e) {
 						Log.d("Relayr_LoginActivity", "Error: " + e.getMessage());
 					}

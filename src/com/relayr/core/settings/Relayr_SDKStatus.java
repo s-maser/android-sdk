@@ -113,4 +113,24 @@ public class Relayr_SDKStatus {
 		}.execute();
 	}
 
+	public static void synchronizeTokenInfo(final String accessCode) throws Relayr_Exception {
+		new AsyncTask<Void, Void, Void>() {
+			@Override
+			protected Void doInBackground(Void... params) {
+				try {
+					Object[] parameters = {accessCode};
+					Relayr_ApiConnector.doCall(Relayr_ApiCall.UserToken, parameters);
+					LoginEventListener listener = Relayr_SDK.getLoginEventListener();
+					if (listener != null) {
+						listener.onUserLoggedInSuccessfully();
+					}
+					Relayr_SDKStatus.synchronizeUserInfo();
+				} catch (Relayr_Exception e) {
+					Log.d("Relayr_SDKStatus", "Error: " + e.getMessage());
+				}
+				return null;
+			}
+		}.execute();
+	}
+
 }
