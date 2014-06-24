@@ -94,6 +94,15 @@ public class Relayr_SDK {
 		}
 	}
 
+	public static Relayr_User getUserInfo() throws Relayr_Exception {
+		if (Relayr_SDKStatus.isActive()) {
+			Object[] parameters = {};
+			return (Relayr_User)Relayr_ApiConnector.doCall(Relayr_ApiCall.UserInfo, parameters);
+		} else {
+			throw new Relayr_Exception("SDK no active", null);
+		}
+	}
+
 	public static Relayr_User updateUserInfo(HashMap<String,Object> info) throws Relayr_Exception {
 		if (Relayr_SDKStatus.isActive()) {
 			Object[] parameters = {info};

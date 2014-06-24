@@ -44,6 +44,9 @@ public class Relayr_ApiConnector {
 		case RegisterDevice: {
 			return "RegisterDevice";
 		}
+		case UserToken: {
+			return "UserToken";
+		}
 		default: return "UNKNOWN";
 		}
 	}
@@ -57,7 +60,8 @@ public class Relayr_ApiConnector {
 		case ConnectDeviceToApp:
 		case DisconnectDeviceFromApp:
 		case DeviceModelInfo:
-		case UpdateUserInfo: {
+		case UpdateUserInfo:
+		case UserToken: {
 			return (params.length == 1);
 		}
 		case UpdateDeviceInfo: {

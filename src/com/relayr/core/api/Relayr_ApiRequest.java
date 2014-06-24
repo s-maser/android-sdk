@@ -1,9 +1,12 @@
 package com.relayr.core.api;
 
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -44,14 +47,19 @@ public class Relayr_ApiRequest {
 		case POST: {
 			try {
 				HttpPost postRequest = new HttpPost(Relayr_ApiURLGenerator.generate(call, params));
-				String jsonBody = Relayr_RequestBodyGenerator.generateBody(call, params);
-				if (jsonBody != null) {
-					StringEntity se;
-					se = new StringEntity(jsonBody);
-					postRequest.setEntity(se);
+				if (call == Relayr_ApiCall.UserToken) {
+					List<NameValuePair> requestParameters = Relayr_RequestBodyGenerator.generateParameters(call, params);
+					postRequest.setEntity(new UrlEncodedFormEntity(requestParameters));
+				} else {
+					String jsonBody = Relayr_RequestBodyGenerator.generateBody(call, params);
+					if (jsonBody != null) {
+						StringEntity se;
+						se = new StringEntity(jsonBody);
+						postRequest.setEntity(se);
+					}
 				}
 				request = postRequest;
-			} catch (UnsupportedEncodingException e) {
+			} catch (Exception e) {
 				throw new Relayr_Exception(e.getMessage());
 			}
 			break;
@@ -99,7 +107,7 @@ public class Relayr_ApiRequest {
 		}
 		}
 
-		setRequestHeaders(request);
+		setRequestHeaders(call, request);
 
 		HttpResponse response;
 		try {
@@ -117,7 +125,8 @@ public class Relayr_ApiRequest {
 			return Relayr_ApiCallMethod.PATCH;
 		}
 		case ConnectDeviceToApp:
-		case RegisterDevice: {
+		case RegisterDevice:
+		case UserToken: {
 			return Relayr_ApiCallMethod.POST;
 		}
 		case DisconnectDeviceFromApp: {
@@ -169,9 +178,13 @@ public class Relayr_ApiRequest {
 		return params;
 	}
 
-	private static void setRequestHeaders(HttpRequestBase request) {
+	private static void setRequestHeaders(Relayr_ApiCall call, HttpRequestBase request) {
 		request.setHeader("Accept", "application/json");
-		request.setHeader("Content-Type", "application/json; charset=UTF-8");
+		if (call == Relayr_ApiCall.UserToken) {
+			request.setHeader("Content-Type", "application/x-www-form-urlencoded");
+		} else {
+			request.setHeader("Content-Type", "application/json; charset=UTF-8");
+		}
 		request.setHeader("Authorization", "Bearer " + Relayr_SDKStatus.getUserToken());
 	}
 }
