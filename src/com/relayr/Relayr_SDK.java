@@ -11,17 +11,12 @@ import com.relayr.core.ble.Relayr_BleListener;
 import com.relayr.core.device.Relayr_Device;
 import com.relayr.core.device.Relayr_DeviceModelDefinition;
 import com.relayr.core.error.Relayr_Exception;
-import com.relayr.core.event_listeners.Relayr_BLEScanningEventListener;
-import com.relayr.core.event_listeners.Relayr_LoginEventListener;
 import com.relayr.core.settings.Relayr_SDKSettings;
 import com.relayr.core.settings.Relayr_SDKStatus;
 import com.relayr.core.storage.Relayr_DataStorage;
 import com.relayr.core.user.Relayr_User;
 
 public class Relayr_SDK {
-
-	static Relayr_LoginEventListener loginEventListener;
-	static Relayr_BLEScanningEventListener bleScanningEventListener;
 
 	public static void init() throws Exception {
 		if (!Relayr_SDKStatus.isActive()) {
@@ -30,8 +25,6 @@ public class Relayr_SDK {
 				Relayr_SDKStatus.synchronizeUserInfo();
 				Relayr_SDKStatus.synchronizeAppInfo();
 				Relayr_SDKStatus.setActive(true);
-				setLoginEventListener(null);
-				setBleScanningEventListener(null);
 				Relayr_BleListener.init();
 			}
 		}
@@ -146,14 +139,6 @@ public class Relayr_SDK {
 		}
 	}
 
-	public static void setLoginEventListener(Relayr_LoginEventListener listener) {
-		loginEventListener = listener;
-	}
-
-	public static Relayr_LoginEventListener getLoginEventListener() {
-		return loginEventListener;
-	}
-
 	public static void login() {
 		Relayr_SDKStatus.login();
 	}
@@ -190,15 +175,6 @@ public class Relayr_SDK {
 		} else {
 			return false;
 		}
-	}
-
-	public static void setBleScanningEventListener(
-			Relayr_BLEScanningEventListener bleScanningEventListener) {
-		Relayr_SDK.bleScanningEventListener = bleScanningEventListener;
-	}
-
-	public static Relayr_BLEScanningEventListener getBleScanningEventListener() {
-		return bleScanningEventListener;
 	}
 
 }

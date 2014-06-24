@@ -6,13 +6,12 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.relayr.Relayr_Application;
-import com.relayr.Relayr_SDK;
+import com.relayr.Relayr_Event;
 import com.relayr.core.activity.Relayr_LoginActivity;
 import com.relayr.core.api.Relayr_ApiCall;
 import com.relayr.core.api.Relayr_ApiConnector;
 import com.relayr.core.app.Relayr_App;
 import com.relayr.core.error.Relayr_Exception;
-import com.relayr.core.event_listeners.Relayr_LoginEventListener;
 import com.relayr.core.user.Relayr_User;
 
 public class Relayr_SDKStatus {
@@ -80,10 +79,9 @@ public class Relayr_SDKStatus {
 
 	public static boolean logout() {
 		Relayr_SDKStatus.setUserToken(null);
-		Relayr_LoginEventListener listener = Relayr_SDK.getLoginEventListener();
-		if (listener != null) {
-			listener.onUserLoggedOutSuccessfully();
-		}
+		Intent intent = new Intent();
+		intent.setAction(Relayr_Event.USER_LOGOUT);
+		Relayr_Application.currentActivity().sendBroadcast(intent);
 		return (Relayr_SDKStatus.getUserToken() == null);
 	}
 

@@ -1,4 +1,4 @@
-package com.relayr.core.ble;
+ package com.relayr.core.ble;
 
 import java.util.HashMap;
 
@@ -29,12 +29,14 @@ public class Relayr_BleListener {
 	}
 
 	public static boolean init() {
+		Log.d(Relayr_BleListener.class.toString(), "BleListener init called");
 		if (Relayr_Commons.isSDK18()) {
+			Log.d(Relayr_BleListener.class.toString(), "BleListener init starting");
 			final int bleStatus = Relayr_BleUtils.getBleStatus(Relayr_Application.currentActivity());
 			switch (bleStatus) {
 			case Relayr_BleUtils.STATUS_BLE_NOT_AVAILABLE:
 			case Relayr_BleUtils.STATUS_BLUETOOTH_NOT_AVAILABLE:
-				Log.d("Relayr_SDK", "Bluethooth not available");
+				Log.d(Relayr_BleListener.class.toString(), "Bluethooth not available");
 				return false;
 			default:
 				Activity currentActivity = Relayr_Application.currentActivity();
@@ -46,15 +48,17 @@ public class Relayr_BleListener {
 				scanner = new Relayr_BleDevicesScanner(bluetoothAdapter, new BluetoothAdapter.LeScanCallback() {
 					@Override
 					public void onLeScan(final BluetoothDevice device, final int rssi, byte[] scanRecord) {
-						if (discoveredDevices.containsKey(device.getAddress())) {
+						if (!discoveredDevices.containsKey(device.getAddress())) {
+							Log.d(Relayr_BleListener.class.toString(), "New device: "+ device.getName() + " [" + device.getAddress() + "]");
 							discoveredDevices.put(device.getAddress(), new Relayr_BLEDevice(device, rssi, scanRecord));
-							if (Relayr_SDK.getBleScanningEventListener() != null) {
+							/*if (Relayr_SDK.getBleScanningEventListener() != null) {
 								Relayr_SDK.getBleScanningEventListener().onDeviceListModified(discoveredDevices.values());
-							}
+							}*/
 						}
 					}
 				});
-				scanner.setScanPeriod(500);
+				scanner.setScanPeriod(1000);
+				Log.d(Relayr_BleListener.class.toString(), "Scanner initialized: " + scanner.toString());
 				return true;
 			}
 		}
@@ -67,10 +71,12 @@ public class Relayr_BleListener {
 				if (!scanner.isScanning()) {
 					discoveredDevices.clear();
 					scanner.start();
+					Log.d(Relayr_BleListener.class.toString(), "Scanner start: " + scanner.toString());
 				}
 			} else {
 				if (init()) {
 					scanner.start();
+					Log.d(Relayr_BleListener.class.toString(), "Scanner start: " + scanner.toString());
 				}
 
 			}

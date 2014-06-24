@@ -1,5 +1,6 @@
 package com.relayr.core.activity;
 
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -10,6 +11,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import com.relayr.Relayr_Event;
 import com.relayr.Relayr_SDK;
 import com.relayr.core.api.Relayr_ApiCall;
 import com.relayr.core.api.Relayr_ApiConnector;
@@ -49,10 +51,9 @@ public class Relayr_LoginActivity extends Relayr_Activity {
 				if (token != null) {
 					Log.d("Relayr_LoginActivity", "onPageStarted token: " + token);
 					Relayr_SDKStatus.setUserToken(token);
-					Relayr_LoginEventListener listener = Relayr_SDK.getLoginEventListener();
-					if (listener != null) {
-						listener.onUserLoggedInSuccessfully();
-					}
+					Intent intent = new Intent();
+					intent.setAction(Relayr_Event.USER_LOGIN);
+					sendBroadcast(intent);
 					try {
 						Relayr_SDKStatus.synchronizeUserInfo();
 					} catch (Exception e) {
