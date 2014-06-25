@@ -10,11 +10,9 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import com.relayr.Relayr_SDK;
 import com.relayr.core.api.Relayr_ApiCall;
 import com.relayr.core.api.Relayr_ApiConnector;
 import com.relayr.core.error.Relayr_Exception;
-import com.relayr.core.event_listeners.LoginEventListener;
 import com.relayr.core.settings.Relayr_SDKStatus;
 
 public class Relayr_LoginActivity extends Relayr_Activity {
