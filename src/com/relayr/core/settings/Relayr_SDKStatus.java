@@ -123,10 +123,9 @@ public class Relayr_SDKStatus {
 				try {
 					Object[] parameters = {accessCode};
 					Relayr_ApiConnector.doCall(Relayr_ApiCall.UserToken, parameters);
-					LoginEventListener listener = Relayr_SDK.getLoginEventListener();
-					if (listener != null) {
-						listener.onUserLoggedInSuccessfully();
-					}
+					Intent intent = new Intent();
+					intent.setAction(Relayr_Event.USER_LOGIN);
+					Relayr_Application.currentActivity().sendBroadcast(intent);
 					Relayr_SDKStatus.synchronizeUserInfo();
 				} catch (Relayr_Exception e) {
 					Log.d("Relayr_SDKStatus", "Error: " + e.getMessage());

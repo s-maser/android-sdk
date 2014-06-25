@@ -2,8 +2,6 @@ package com.relayr.core.ble;
 
 import java.util.List;
 
-import com.relayr.core.sensor.TiSensor;
-
 import android.app.Service;
 import android.bluetooth.BluetoothGattService;
 import android.content.Intent;
@@ -11,6 +9,8 @@ import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
+
+import com.relayr.core.ble.sensor.TiSensor;
 
 /**
  * Service for managing connection and data communication with a GATT server hosted on a

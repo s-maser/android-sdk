@@ -1,5 +1,6 @@
  package com.relayr.core.ble;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import android.annotation.TargetApi;
@@ -12,20 +13,20 @@ import android.util.Log;
 
 import com.relayr.Relayr_Application;
 import com.relayr.Relayr_Commons;
-import com.relayr.Relayr_SDK;
+import com.relayr.Relayr_Event;
 
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class Relayr_BleListener {
 
 	private static BluetoothAdapter bluetoothAdapter;
 	private static Relayr_BleDevicesScanner scanner;
-	private static HashMap<String,Relayr_BLEDevice> discoveredDevices;
+	public static HashMap<String,BluetoothDevice> discoveredDevices;
 
 	private final static int REQUEST_ENABLE_BT = 1;
 
 	static {
 		scanner = null;
-		discoveredDevices = new HashMap<String, Relayr_BLEDevice>();
+		discoveredDevices = new HashMap<String, BluetoothDevice>();
 	}
 
 	public static boolean init() {
@@ -50,15 +51,17 @@ public class Relayr_BleListener {
 					public void onLeScan(final BluetoothDevice device, final int rssi, byte[] scanRecord) {
 						if (!discoveredDevices.containsKey(device.getAddress())) {
 							Log.d(Relayr_BleListener.class.toString(), "New device: "+ device.getName() + " [" + device.getAddress() + "]");
-							discoveredDevices.put(device.getAddress(), new Relayr_BLEDevice(device, rssi, scanRecord));
-							/*if (Relayr_SDK.getBleScanningEventListener() != null) {
-								Relayr_SDK.getBleScanningEventListener().onDeviceListModified(discoveredDevices.values());
-							}*/
+							Relayr_BLEDevice relayrDevice = new Relayr_BLEDevice(device.getName(), device.getAddress());
+							discoveredDevices.put(device.getAddress(), device);
+							Intent intent = new Intent();
+							intent.setAction(Relayr_Event.DEVICE_DETECTED);
+							intent.putExtra("device", relayrDevice);
+							intent.putExtra("device_list", publishDetectedDevicesList());
+							Relayr_Application.currentActivity().sendBroadcast(intent);
 						}
 					}
 				});
 				scanner.setScanPeriod(1000);
-				Log.d(Relayr_BleListener.class.toString(), "Scanner initialized: " + scanner.toString());
 				return true;
 			}
 		}
@@ -95,5 +98,13 @@ public class Relayr_BleListener {
 		} else {
 			return false;
 		}
+	}
+
+	private static ArrayList<Relayr_BLEDevice> publishDetectedDevicesList() {
+		ArrayList<Relayr_BLEDevice> devices = new ArrayList<Relayr_BLEDevice>();
+		for(BluetoothDevice device:discoveredDevices.values()) {
+			devices.add(new Relayr_BLEDevice(device.getName(), device.getAddress()));
+		}
+		return devices;
 	}
 }

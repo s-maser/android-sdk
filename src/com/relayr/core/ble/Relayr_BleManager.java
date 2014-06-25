@@ -4,7 +4,6 @@ import java.util.List;
 
 import android.annotation.TargetApi;
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
@@ -13,8 +12,8 @@ import android.content.Context;
 import android.os.Build;
 import android.util.Log;
 
-import com.relayr.core.sensor.TiSensor;
-import com.relayr.core.sensor.TiSensors;
+import com.relayr.core.ble.sensor.TiSensor;
+import com.relayr.core.ble.sensor.TiSensors;
 
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class Relayr_BleManager implements Relayr_BleExecutorListener {
@@ -24,7 +23,7 @@ public class Relayr_BleManager implements Relayr_BleExecutorListener {
     public static final int STATE_CONNECTING = 1;
     public static final int STATE_CONNECTED = 2;
 
-    private final Relayr_BleGattExecutor executor = Relayr_BleUtils.createExecutor(this);
+    //private final Relayr_BleGattExecutor executor = Relayr_BleUtils.createExecutor(this);
     private BluetoothAdapter adapter;
     private BluetoothGatt gatt;
 
@@ -73,7 +72,7 @@ public class Relayr_BleManager implements Relayr_BleExecutorListener {
      *         callback.
      */
     public boolean connect(Context context, String address) {
-        if (adapter == null || address == null) {
+        /*if (adapter == null || address == null) {
             Log.w(TAG, "BluetoothAdapter not initialized or unspecified address.");
             return false;
         }
@@ -99,7 +98,7 @@ public class Relayr_BleManager implements Relayr_BleExecutorListener {
         gatt = device.connectGatt(context, false, executor);
         Log.d(TAG, "Trying to create a new connection.");
         deviceAddress = address;
-        connectionState = STATE_CONNECTING;
+        connectionState = STATE_CONNECTING;*/
         return true;
     }
 
@@ -138,8 +137,8 @@ public class Relayr_BleManager implements Relayr_BleExecutorListener {
             return;
         }
 
-        executor.update(sensor);
-        executor.execute(gatt);
+        //executor.update(sensor);
+        //executor.execute(gatt);
     }
 
     /**
@@ -157,8 +156,8 @@ public class Relayr_BleManager implements Relayr_BleExecutorListener {
             return;
         }
 
-        executor.enable(sensor, enabled);
-        executor.execute(gatt);
+        //executor.enable(sensor, enabled);
+        //executor.execute(gatt);
     }
 
     /**

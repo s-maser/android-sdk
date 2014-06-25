@@ -1,16 +1,14 @@
 package com.relayr.core.ble;
 
-import java.util.LinkedList;
+import com.relayr.Relayr_Event;
 
 import android.annotation.TargetApi;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
-import android.bluetooth.BluetoothGattCharacteristic;
-import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothProfile;
+import android.content.Intent;
 import android.os.Build;
-
-import com.relayr.core.sensor.TiSensor;
+import android.util.Log;
 
 /**
  * Created by steven on 9/3/13.
@@ -18,6 +16,14 @@ import com.relayr.core.sensor.TiSensor;
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class Relayr_BleGattExecutor extends BluetoothGattCallback {
 
+	Relayr_BLEDevice device;
+
+	public Relayr_BleGattExecutor(Relayr_BLEDevice device) {
+		super();
+		this.device = device;
+	}
+
+/*
     public interface ServiceAction {
         public static final ServiceAction NULL = new ServiceAction() {
             @Override
@@ -27,12 +33,6 @@ public class Relayr_BleGattExecutor extends BluetoothGattCallback {
             }
         };
 
-        /***
-         * Executes action.
-         * @param bluetoothGatt
-         * @return true - if action was executed instantly. false if action is waiting for
-         *         feedback.
-         */
         public boolean execute(BluetoothGatt bluetoothGatt);
     }
 
@@ -80,20 +80,30 @@ public class Relayr_BleGattExecutor extends BluetoothGattCallback {
 
         currentAction = null;
         execute(gatt);
-    }
+    }*/
 
     @Override
     public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
-        if (newState == BluetoothProfile.STATE_DISCONNECTED) {
-            queue.clear();
-        }
+    	if (status == BluetoothGatt.GATT_SUCCESS && newState == BluetoothProfile.STATE_CONNECTED) {
+    		Log.d(Relayr_BleGattExecutor.class.toString(), "Device connected");
+    		Intent intent = new Intent();
+    		intent.setAction(Relayr_Event.DEVICE_CONNECTED);
+    		intent.putExtra("device", device);
+    	} else {
+    		if (status == BluetoothGatt.GATT_SUCCESS && newState == BluetoothProfile.STATE_DISCONNECTED) {
+    			Log.d(Relayr_BleGattExecutor.class.toString(), "Device disconnected");
+    			Intent intent = new Intent();
+        		intent.setAction(Relayr_Event.DEVICE_DISCONNECTED);
+        		intent.putExtra("device", device);
+    		}
+    	}
     }
-
+/*
     @Override
     public void onCharacteristicRead(BluetoothGatt gatt,
                                      BluetoothGattCharacteristic characteristic,
                                      int status) {
         currentAction = null;
         execute(gatt);
-    }
+    }*/
 }

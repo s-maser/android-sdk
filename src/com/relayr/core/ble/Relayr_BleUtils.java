@@ -46,7 +46,7 @@ public class Relayr_BleUtils {
         return STATUS_BLE_ENABLED;
     }
 
-    public static Relayr_BleGattExecutor createExecutor(final Relayr_BleExecutorListener listener) {
+    /*public static Relayr_BleGattExecutor createExecutor(final Relayr_BleExecutorListener listener) {
         return new Relayr_BleGattExecutor() {
             @Override
             public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
@@ -75,6 +75,6 @@ public class Relayr_BleUtils {
                 listener.onCharacteristicChanged(gatt, characteristic);
             }
         };
-    }
+    }*/
 
 }

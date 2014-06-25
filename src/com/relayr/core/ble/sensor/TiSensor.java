@@ -1,4 +1,4 @@
-package com.relayr.core.sensor;
+package com.relayr.core.ble.sensor;
 
 import java.util.UUID;
 
@@ -62,7 +62,7 @@ public abstract class TiSensor<T> {
     }
 
     protected abstract T parse(BluetoothGattCharacteristic c);
-
+/*
     public Relayr_BleGattExecutor.ServiceAction[] enable(final boolean enable) {
         return new Relayr_BleGattExecutor.ServiceAction[] {
                 write(getConfigUUID(), getConfigValues(enable)),
@@ -117,7 +117,7 @@ public abstract class TiSensor<T> {
             }
         };
     }
-
+*/
     private BluetoothGattCharacteristic getCharacteristic(BluetoothGatt bluetoothGatt, String uuid) {
         final UUID serviceUuid = UUID.fromString(getServiceUUID());
         final UUID characteristicUuid = UUID.fromString(uuid);

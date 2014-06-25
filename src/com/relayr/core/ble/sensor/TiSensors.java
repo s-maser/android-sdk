@@ -1,4 +1,4 @@
-package com.relayr.core.sensor;
+package com.relayr.core.ble.sensor;
 
 import java.util.HashMap;
 
