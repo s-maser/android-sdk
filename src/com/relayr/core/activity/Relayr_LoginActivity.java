@@ -10,11 +10,9 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import com.relayr.Relayr_SDK;
 import com.relayr.core.api.Relayr_ApiCall;
 import com.relayr.core.api.Relayr_ApiConnector;
 import com.relayr.core.error.Relayr_Exception;
-import com.relayr.core.event_listeners.LoginEventListener;
 import com.relayr.core.settings.Relayr_SDKStatus;
 
 public class Relayr_LoginActivity extends Relayr_Activity {
@@ -48,14 +46,8 @@ public class Relayr_LoginActivity extends Relayr_Activity {
 				String accessCode = getAccessCode(url);
 				if (accessCode != null) {
 					Log.d("Relayr_LoginActivity", "onPageStarted access code: " + accessCode);
-					Object[] params = {accessCode};
 					try {
-						Relayr_ApiConnector.doCall(Relayr_ApiCall.UserToken, params);
-						LoginEventListener listener = Relayr_SDK.getLoginEventListener();
-						if (listener != null) {
-							listener.onUserLoggedInSuccessfully();
-						}
-						Relayr_SDKStatus.synchronizeUserInfo();
+						Relayr_SDKStatus.synchronizeTokenInfo(accessCode);
 					} catch (Exception e) {
 						Log.d("Relayr_LoginActivity", "Error: " + e.getMessage());
 					}

@@ -14,7 +14,8 @@ import com.relayr.core.user.Relayr_User;
 
 public class Relayr_ApiURLGenerator {
 
-	private final static String RELAYR_URLBASE = "http://api.relayr.io/";
+	private final static String RELAYR_HTTPURLBASE = "http://api.relayr.io/";
+	private final static String RELAYR_HTTPSURLBASE = "https://api.relayr.io/";
 	private final static String RELAYR_USERSTAG = "/users";
 	private final static String RELAYR_DEVICESTAG = "/devices";
 	private final static String RELAYR_OAUTH2TAG = "/oauth2";
@@ -115,15 +116,24 @@ public class Relayr_ApiURLGenerator {
 		}
 		}
 
-		String uriString = Relayr_ApiURLGenerator.addParametersToUri(urlString.toString(), parametersCollection);
+		String uriString = Relayr_ApiURLGenerator.addParametersToUri(urlString.toString(), parametersCollection, call);
 		Log.d("Relayr_ApiURLGenerator", "Generated url: " + uriString);
 		return uriString;
 	}
 
+	private static String getUrlBase(Relayr_ApiCall call) {
+		switch(call) {
+		case UserToken:
+		case UserAuthorization:{
+			return RELAYR_HTTPSURLBASE;
+		}
+		default: return RELAYR_HTTPURLBASE;
+		}
+	}
 
-	private static String addParametersToUri(final String url, final HashMap<String, Object> params) {
+	private static String addParametersToUri(final String url, final HashMap<String, Object> params, Relayr_ApiCall call) {
 		Builder uriBuilder;
-		uriBuilder = Uri.parse(RELAYR_URLBASE).buildUpon();
+		uriBuilder = Uri.parse(getUrlBase(call)).buildUpon();
 		uriBuilder.path(url);
 		for (String value:params.keySet()) {
 			uriBuilder.appendQueryParameter(value, (String) params.get(value));
