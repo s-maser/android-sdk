@@ -2,17 +2,18 @@ package com.relayr.core.ble.device;
 
 import java.util.Observable;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.annotation.TargetApi;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
+import android.bluetooth.BluetoothGattCharacteristic;
 import android.os.Build;
+import android.util.Log;
 
 import com.relayr.Relayr_Application;
-import com.relayr.core.ble.Relayr_BleGattExecutor;
+import com.relayr.core.ble.Relayr_BleGattCallback;
 
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class Relayr_BLEDevice extends Observable {
@@ -22,12 +23,14 @@ public class Relayr_BLEDevice extends Observable {
 	private BluetoothDevice bluetoothDevice;
 	private byte[] value;
 	private Relayr_BLEDeviceType type;
+	private BluetoothGattCharacteristic relayrConfigurationCharacteristic;
 
 	public Relayr_BLEDevice(BluetoothDevice bluetoothDevice) {
 		this.bluetoothDevice = bluetoothDevice;
 		this.gatt = null;
 		this.status = Relayr_BLEDeviceStatus.DISCONNECTED;
 		this.type = Relayr_BLEDeviceType.getDeviceType(bluetoothDevice.getName());
+		relayrConfigurationCharacteristic = null;
 	}
 
 	public String getName() {
@@ -51,6 +54,59 @@ public class Relayr_BLEDevice extends Observable {
 	}
 
 	public JSONObject getFormattedValue() {
+		switch (type) {
+			case EverykeyColor:
+			case WunderbarLIGHT: {
+				return getColorSensorData();
+			}
+			default: return new JSONObject();
+		}
+	}
+
+	public void setValue(byte[] value) {
+		this.value = value;
+		triggerObservers();
+	}
+
+	public Relayr_BLEDeviceType getType() {
+		return type;
+	}
+
+	public void setRelayrConfigurationCharacteristic(
+			BluetoothGattCharacteristic relayrConfigurationCharacteristic) {
+		this.relayrConfigurationCharacteristic = relayrConfigurationCharacteristic;
+	}
+
+	public void connect() {
+		gatt = bluetoothDevice.connectGatt(Relayr_Application.currentActivity(), true, new Relayr_BleGattCallback(this));
+	}
+
+	public void disconnect() {
+		if (gatt != null) {
+			gatt.disconnect();
+			gatt = null;
+		}
+	}
+
+	public boolean isConnected() {
+		return gatt != null;
+	}
+
+	@Override
+	public String toString() {
+		return getName() + " - [" + getAddress() + "]";
+	}
+
+	public void triggerObservers() {
+		setChanged();
+		notifyObservers();
+	}
+
+	private int byteToUnsignedInt(byte b) {
+	    return (int) b & 0xff;
+	  }
+
+	private JSONObject getColorSensorData() {
 		JSONObject returnValue = new JSONObject();
 		try {
 			if (value != null) {
@@ -86,43 +142,14 @@ public class Relayr_BLEDevice extends Observable {
 		return returnValue;
 	}
 
-	public void setValue(byte[] value) {
-		this.value = value;
-		triggerObservers();
-	}
-
-	public Relayr_BLEDeviceType getType() {
-		return type;
-	}
-
-	public void connect() {
-		gatt = bluetoothDevice.connectGatt(Relayr_Application.currentActivity(), true, new Relayr_BleGattExecutor(this));
-	}
-
-	public void disconnect() {
-		if (gatt != null) {
-			gatt.disconnect();
-			gatt = null;
-		}
-	}
-
-	public boolean isConnected() {
-		return gatt != null;
-	}
-
-	@Override
-	public String toString() {
-		return getName() + " - [" + getAddress() + "]";
-	}
-
-	public void triggerObservers() {
-		setChanged();
-		notifyObservers();
-	}
-
-	private int byteToUnsignedInt(byte b) {
-	    return (int) b & 0xff;
-	  }
-
-
+	public boolean updateConfiguration(byte[] newConfiguration) {
+		Log.d(Relayr_BLEDevice.class.toString(), "Updating device configuration --> " + (isConnected()? "Device connected" : "Device disconnected"));
+		Log.d(Relayr_BLEDevice.class.toString(), "Updating device configuration --> " + (relayrConfigurationCharacteristic == null? "Configuration characteristic is null" : "onfiguration characteristic is" + relayrConfigurationCharacteristic.getUuid()));
+    	if ((isConnected()) && (relayrConfigurationCharacteristic != null)) {
+    		relayrConfigurationCharacteristic.setValue(newConfiguration);
+    		boolean status = gatt.writeCharacteristic(relayrConfigurationCharacteristic);
+    		return status;
+    	}
+    	return false;
+    }
 }
