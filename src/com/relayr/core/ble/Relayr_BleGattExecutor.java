@@ -1,22 +1,26 @@
 package com.relayr.core.ble;
 
-import com.relayr.Relayr_Event;
+import java.util.ArrayList;
+import java.util.UUID;
+
+import com.relayr.core.ble.device.Relayr_BLEDevice;
+import com.relayr.core.ble.device.Relayr_BLEDeviceStatus;
 
 import android.annotation.TargetApi;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
+import android.bluetooth.BluetoothGattCharacteristic;
+import android.bluetooth.BluetoothGattDescriptor;
+import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothProfile;
-import android.content.Intent;
 import android.os.Build;
 import android.util.Log;
 
-/**
- * Created by steven on 9/3/13.
- */
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class Relayr_BleGattExecutor extends BluetoothGattCallback {
 
 	Relayr_BLEDevice device;
+	private UUID RELAYR_NOTIFICATION_CHARACTERISTIC = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
 
 	public Relayr_BleGattExecutor(Relayr_BLEDevice device) {
 		super();
@@ -86,24 +90,46 @@ public class Relayr_BleGattExecutor extends BluetoothGattCallback {
     public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
     	if (status == BluetoothGatt.GATT_SUCCESS && newState == BluetoothProfile.STATE_CONNECTED) {
     		Log.d(Relayr_BleGattExecutor.class.toString(), "Device connected");
-    		Intent intent = new Intent();
-    		intent.setAction(Relayr_Event.DEVICE_CONNECTED);
-    		intent.putExtra("device", device);
+    		this.device.setStatus(Relayr_BLEDeviceStatus.CONNECTED);
+    		this.device.triggerObservers();
+    		gatt.discoverServices();
     	} else {
     		if (status == BluetoothGatt.GATT_SUCCESS && newState == BluetoothProfile.STATE_DISCONNECTED) {
     			Log.d(Relayr_BleGattExecutor.class.toString(), "Device disconnected");
-    			Intent intent = new Intent();
-        		intent.setAction(Relayr_Event.DEVICE_DISCONNECTED);
-        		intent.putExtra("device", device);
+    			this.device.setStatus(Relayr_BLEDeviceStatus.DISCONNECTED);
+    			this.device.triggerObservers();
     		}
     	}
     }
-/*
+
     @Override
-    public void onCharacteristicRead(BluetoothGatt gatt,
-                                     BluetoothGattCharacteristic characteristic,
-                                     int status) {
-        currentAction = null;
-        execute(gatt);
-    }*/
+    public void onServicesDiscovered(BluetoothGatt gatt, int status) {
+    	ArrayList<BluetoothGattService> services = (ArrayList<BluetoothGattService>) gatt.getServices();
+    	for (BluetoothGattService service:services) {
+    		String serviceUUID = service.getUuid().toString();
+    		Log.d(Relayr_BleGattExecutor.class.toString(), "Discovered service: " + serviceUUID);
+    		if (serviceUUID.equals(this.device.getType().serviceUUID)) {
+    			ArrayList<BluetoothGattCharacteristic> characteristics = (ArrayList<BluetoothGattCharacteristic>) service.getCharacteristics();
+    			for (BluetoothGattCharacteristic characteristic:characteristics) {
+    				String characteristicUUID = characteristic.getUuid().toString();
+    				Log.d(Relayr_BleGattExecutor.class.toString(), "Discovered characteristic: " + characteristicUUID);
+    				if (characteristicUUID.equals(this.device.getType().readCharacteristicUUID)) {
+    					gatt.setCharacteristicNotification(characteristic, true);
+    					BluetoothGattDescriptor descriptor = characteristic.getDescriptor(RELAYR_NOTIFICATION_CHARACTERISTIC);
+    				    descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+    				    gatt.writeDescriptor(descriptor);
+    				    break;
+    				}
+    			}
+    			break;
+    		}
+    	}
+    }
+
+    @Override
+    public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
+    	Log.d(Relayr_BleGattExecutor.class.toString(), "Characteristic readed: " + characteristic.getUuid());
+    	Log.d(Relayr_BleGattExecutor.class.toString(), "Characteristic readed value: " + characteristic.getValue());
+        this.device.setValue(characteristic.getValue());
+    }
 }

@@ -8,15 +8,19 @@ import android.util.Log;
 import com.relayr.core.api.Relayr_ApiCall;
 import com.relayr.core.api.Relayr_ApiConnector;
 import com.relayr.core.ble.Relayr_BleListener;
+import com.relayr.core.ble.device.Relayr_DeviceManager;
 import com.relayr.core.device.Relayr_Device;
 import com.relayr.core.device.Relayr_DeviceModelDefinition;
 import com.relayr.core.error.Relayr_Exception;
+import com.relayr.core.event_listeners.LoginEventListener;
 import com.relayr.core.settings.Relayr_SDKSettings;
 import com.relayr.core.settings.Relayr_SDKStatus;
 import com.relayr.core.storage.Relayr_DataStorage;
 import com.relayr.core.user.Relayr_User;
 
 public class Relayr_SDK {
+
+	static LoginEventListener loginEventListener;
 
 	public static void init() throws Exception {
 		if (!Relayr_SDKStatus.isActive()) {
@@ -26,6 +30,7 @@ public class Relayr_SDK {
 				Relayr_SDKStatus.synchronizeAppInfo();
 				Relayr_SDKStatus.setActive(true);
 				Relayr_BleListener.init();
+				setLoginEventListener(null);
 			}
 		}
 	}
@@ -186,4 +191,15 @@ public class Relayr_SDK {
 		}
 	}
 
+	public static Relayr_DeviceManager getBLEDevicesManager() {
+		return Relayr_BleListener.getDeviceManager();
+	}
+
+	public static void setLoginEventListener(LoginEventListener listener) {
+		loginEventListener = listener;
+	}
+
+	public static LoginEventListener getLoginEventListener() {
+		return loginEventListener;
+	}
 }

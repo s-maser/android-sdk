@@ -1,8 +1,5 @@
  package com.relayr.core.ble;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
@@ -13,20 +10,21 @@ import android.util.Log;
 
 import com.relayr.Relayr_Application;
 import com.relayr.Relayr_Commons;
-import com.relayr.Relayr_Event;
+import com.relayr.core.ble.device.Relayr_BLEDevice;
+import com.relayr.core.ble.device.Relayr_DeviceManager;
 
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class Relayr_BleListener {
 
 	private static BluetoothAdapter bluetoothAdapter;
 	private static Relayr_BleDevicesScanner scanner;
-	public static HashMap<String,BluetoothDevice> discoveredDevices;
+	public static Relayr_DeviceManager discoveredDevices;
 
 	private final static int REQUEST_ENABLE_BT = 1;
 
 	static {
 		scanner = null;
-		discoveredDevices = new HashMap<String, BluetoothDevice>();
+		discoveredDevices = new Relayr_DeviceManager();
 	}
 
 	public static boolean init() {
@@ -49,15 +47,10 @@ public class Relayr_BleListener {
 				scanner = new Relayr_BleDevicesScanner(bluetoothAdapter, new BluetoothAdapter.LeScanCallback() {
 					@Override
 					public void onLeScan(final BluetoothDevice device, final int rssi, byte[] scanRecord) {
-						if (!discoveredDevices.containsKey(device.getAddress())) {
+						if (!discoveredDevices.isDeviceDiscovered(device.getAddress())) {
 							Log.d(Relayr_BleListener.class.toString(), "New device: "+ device.getName() + " [" + device.getAddress() + "]");
-							Relayr_BLEDevice relayrDevice = new Relayr_BLEDevice(device.getName(), device.getAddress());
-							discoveredDevices.put(device.getAddress(), device);
-							Intent intent = new Intent();
-							intent.setAction(Relayr_Event.DEVICE_DETECTED);
-							intent.putExtra("device", relayrDevice);
-							intent.putExtra("device_list", publishDetectedDevicesList());
-							Relayr_Application.currentActivity().sendBroadcast(intent);
+							Relayr_BLEDevice relayrDevice = new Relayr_BLEDevice(device);
+							discoveredDevices.addDiscoveredDevice(device.getAddress(), relayrDevice);
 						}
 					}
 				});
@@ -72,7 +65,7 @@ public class Relayr_BleListener {
 		if (Relayr_Commons.isSDK18()) {
 			if (scanner != null) {
 				if (!scanner.isScanning()) {
-					discoveredDevices.clear();
+					discoveredDevices.clearDiscoveredDevices();
 					scanner.start();
 					Log.d(Relayr_BleListener.class.toString(), "Scanner start: " + scanner.toString());
 				}
@@ -100,11 +93,7 @@ public class Relayr_BleListener {
 		}
 	}
 
-	private static ArrayList<Relayr_BLEDevice> publishDetectedDevicesList() {
-		ArrayList<Relayr_BLEDevice> devices = new ArrayList<Relayr_BLEDevice>();
-		for(BluetoothDevice device:discoveredDevices.values()) {
-			devices.add(new Relayr_BLEDevice(device.getName(), device.getAddress()));
-		}
-		return devices;
+	public static Relayr_DeviceManager getDeviceManager() {
+		return discoveredDevices;
 	}
 }

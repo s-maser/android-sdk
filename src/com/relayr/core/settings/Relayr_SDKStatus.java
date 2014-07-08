@@ -6,12 +6,13 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.relayr.Relayr_Application;
-import com.relayr.Relayr_Event;
+import com.relayr.Relayr_SDK;
 import com.relayr.core.activity.Relayr_LoginActivity;
 import com.relayr.core.api.Relayr_ApiCall;
 import com.relayr.core.api.Relayr_ApiConnector;
 import com.relayr.core.app.Relayr_App;
 import com.relayr.core.error.Relayr_Exception;
+import com.relayr.core.event_listeners.LoginEventListener;
 import com.relayr.core.user.Relayr_User;
 
 public class Relayr_SDKStatus {
@@ -79,9 +80,10 @@ public class Relayr_SDKStatus {
 
 	public static boolean logout() {
 		Relayr_SDKStatus.setUserToken(null);
-		Intent intent = new Intent();
-		intent.setAction(Relayr_Event.USER_LOGOUT);
-		Relayr_Application.currentActivity().sendBroadcast(intent);
+		LoginEventListener listener = Relayr_SDK.getLoginEventListener();
+		if (listener != null) {
+			listener.onUserLoggedOutSuccessfully();
+		}
 		return (Relayr_SDKStatus.getUserToken() == null);
 	}
 
@@ -123,9 +125,14 @@ public class Relayr_SDKStatus {
 				try {
 					Object[] parameters = {accessCode};
 					Relayr_ApiConnector.doCall(Relayr_ApiCall.UserToken, parameters);
-					Intent intent = new Intent();
-					intent.setAction(Relayr_Event.USER_LOGIN);
-					Relayr_Application.currentActivity().sendBroadcast(intent);
+					final LoginEventListener listener = Relayr_SDK.getLoginEventListener();
+					if (listener != null) {
+						Relayr_Application.currentActivity().runOnUiThread(new Runnable(){
+							public void run() {
+								listener.onUserLoggedInSuccessfully();
+							}
+						});
+					}
 					Relayr_SDKStatus.synchronizeUserInfo();
 				} catch (Relayr_Exception e) {
 					Log.d("Relayr_SDKStatus", "Error: " + e.getMessage());
