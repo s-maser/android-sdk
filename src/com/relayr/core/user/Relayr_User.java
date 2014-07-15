@@ -10,9 +10,14 @@ public class Relayr_User implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private String id;
-	private String firstName;
-	private String lastName;
+	private String name;
 	private String email;
+
+    public Relayr_User(String id, String name, String email) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+    }
 
 	public String getId() {
 		return id;
@@ -20,17 +25,11 @@ public class Relayr_User implements Serializable {
 	public void setId(String id) {
 		this.id = id;
 	}
-	public String getFirstName() {
-		return firstName;
+	public String getName() {
+		return name;
 	}
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
-	public String getLastName() {
-		return lastName;
-	}
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
+	public void setName(String name) {
+		this.name = name;
 	}
 	public String getEmail() {
 		return email;
@@ -45,9 +44,8 @@ public class Relayr_User implements Serializable {
 
 		stringBuilder.append("[\n" +
 				"\tid:\t" + getId() + "\n" +
-				"\ttitle:\t" + getFirstName() + "\n" +
-				"\tmodel:\t" + getLastName().toString() + "\n" +
-				"\towner:\t" + getEmail() + "\n" +
+				"\tname:\t" + getName() + "\n" +
+				"\temail:\t" + getEmail() + "\n" +
 				"]");
 
 		return stringBuilder.toString();
