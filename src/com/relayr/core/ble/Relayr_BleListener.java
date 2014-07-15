@@ -11,7 +11,6 @@ import android.util.Log;
 import com.relayr.Relayr_Application;
 import com.relayr.Relayr_Commons;
 import com.relayr.core.ble.device.Relayr_BLEDevice;
-import com.relayr.core.ble.device.Relayr_DeviceManager;
 
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class Relayr_BleListener {
@@ -51,6 +50,7 @@ public class Relayr_BleListener {
 							Log.d(Relayr_BleListener.class.toString(), "New device: "+ device.getName() + " [" + device.getAddress() + "]");
 							Relayr_BLEDevice relayrDevice = new Relayr_BLEDevice(device);
 							discoveredDevices.addDiscoveredDevice(device.getAddress(), relayrDevice);
+							relayrDevice.connect();
 						}
 					}
 				});
@@ -72,9 +72,26 @@ public class Relayr_BleListener {
 			} else {
 				if (init()) {
 					scanner.start();
-					Log.d(Relayr_BleListener.class.toString(), "Scanner start: " + scanner.toString());
+					Log.d(Relayr_BleListener.class.toString(), "New scanner start: " + scanner.toString());
 				}
 
+			}
+		}
+	}
+
+	public static void refresh() {
+		if (Relayr_Commons.isSDK18()) {
+			if (scanner != null) {
+				discoveredDevices.refreshDiscoveredDevices();
+				if (!scanner.isScanning()) {
+					scanner.start();
+					Log.d(Relayr_BleListener.class.toString(), "Scanner start: " + scanner.toString());
+				}
+			} else {
+				if (init()) {
+					scanner.start();
+					Log.d(Relayr_BleListener.class.toString(), "New scanner start: " + scanner.toString());
+				}
 			}
 		}
 	}
@@ -82,6 +99,7 @@ public class Relayr_BleListener {
 	public static void stop() {
 		if (Relayr_Commons.isSDK18()) {
 			scanner.stop();
+			Log.d(Relayr_BleListener.class.toString(), "Scanner stop: " + scanner.toString());
 		}
 	}
 

@@ -2,25 +2,22 @@ package com.relayr.core.ble.device;
 
 
 public enum Relayr_BLEDeviceType {
-	WunderbarHTU("00002000-0000-1000-8000-00805f9b34fb", "00002008-0000-1000-8000-00805f9b34fb", "00002007-0000-1000-8000-00805f9b34fb"),
-	WunderbarGYRO("00002000-0000-1000-8000-00805f9b34fb", "00002008-0000-1000-8000-00805f9b34fb", "00002007-0000-1000-8000-00805f9b34fb"),
-	WunderbarLIGHT("00002000-0000-1000-8000-00805f9b34fb", "00002008-0000-1000-8000-00805f9b34fb", "00002007-0000-1000-8000-00805f9b34fb"),
-	WunderbarMIC("00002000-0000-1000-8000-00805f9b34fb", "00002008-0000-1000-8000-00805f9b34fb", "00002007-0000-1000-8000-00805f9b34fb"),
-	WunderbarBRIDG("00002000-0000-1000-8000-00805f9b34fb", "00002008-0000-1000-8000-00805f9b34fb", "00002007-0000-1000-8000-00805f9b34fb"),
-	WunderbarIR("00002000-0000-1000-8000-00805f9b34fb", "00002008-0000-1000-8000-00805f9b34fb", "00002007-0000-1000-8000-00805f9b34fb"),
-	WunderbarApp("00002000-0000-1000-8000-00805f9b34fb", "00002008-0000-1000-8000-00805f9b34fb", "00002007-0000-1000-8000-00805f9b34fb"),
-	EverykeyColor("095a2000-9315-878e-2f42-d16f962e6d78", "095a2001-9315-878e-2f42-d16f962e6d78", "095a2002-9315-878e-2f42-d16f962e6d78"),
-	Unknown("","","");
+	WunderbarHTU,
+	WunderbarGYRO,
+	WunderbarLIGHT,
+	WunderbarMIC,
+	WunderbarBRIDG,
+	WunderbarIR,
+	WunderbarApp,
+	Unknown;
 
-	public String serviceUUID;
-	public String dataReadCharacteristicUUID;
-	public String configurationCharacteristicUUID;
-
-	private Relayr_BLEDeviceType(String serviceUUID, String dataReadCharacteristicUUID, String configurationCharacteristic) {
-		this.serviceUUID = serviceUUID;
-		this.dataReadCharacteristicUUID = dataReadCharacteristicUUID;
-		this.configurationCharacteristicUUID = configurationCharacteristic;
-	}
+	public static String onBoardingUUID = "2001";
+	public static String directConnectionUUID = "2000";
+	public static String dataReadCharacteristicUUID = "2008";
+	public static String configurationCharacteristicUUID = "2007";
+	public static String sensorIDCharacteristicUUID = "2010";
+	public static String passKeyCharacteristicUUID = "2018";
+	public static String onBoardingFlagCharacteristicUUID = "2019";
 
 	public static Relayr_BLEDeviceType getDeviceType(String deviceName) {
 		if (deviceName.equals("WunderbarHTU")) {
@@ -43,9 +40,6 @@ public enum Relayr_BLEDeviceType {
 		}
 		if (deviceName.equals("WunderbarApp")) {
 			return WunderbarApp;
-		}
-		if (deviceName.equals("Everykey Color")) {
-			return EverykeyColor;
 		}
 		return Unknown;
 	}

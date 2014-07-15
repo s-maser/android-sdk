@@ -8,7 +8,7 @@ import android.util.Log;
 import com.relayr.core.api.Relayr_ApiCall;
 import com.relayr.core.api.Relayr_ApiConnector;
 import com.relayr.core.ble.Relayr_BleListener;
-import com.relayr.core.ble.device.Relayr_DeviceManager;
+import com.relayr.core.ble.Relayr_DeviceManager;
 import com.relayr.core.device.Relayr_Device;
 import com.relayr.core.device.Relayr_DeviceModelDefinition;
 import com.relayr.core.error.Relayr_Exception;
@@ -186,6 +186,15 @@ public class Relayr_SDK {
 	public static boolean isScanningForBLE() {
 		if (Relayr_Commons.isSDK18()) {
 			return Relayr_BleListener.isScanning();
+		} else {
+			return false;
+		}
+	}
+
+	public static boolean refreshBLEScanning() {
+		if (Relayr_Commons.isSDK18()) {
+			Relayr_BleListener.refresh();
+			return !Relayr_BleListener.isScanning();
 		} else {
 			return false;
 		}
