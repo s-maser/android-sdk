@@ -90,7 +90,7 @@ public class Relayr_BLEDevice {
 	private JSONObject getFormattedValue() {
 		switch (type) {
 			case WunderbarLIGHT: {
-				return getColorSensorData();
+				return Relayr_BLEDeviceDataAdapter.getColorSensorData(value);
 			}
 			default: return new JSONObject();
 		}
@@ -162,46 +162,6 @@ public class Relayr_BLEDevice {
 			return "UNKNOWN";
 		}
 		}
-	}
-
-	private int byteToUnsignedInt(byte b) {
-	    return (int) b & 0xff;
-	  }
-
-	private JSONObject getColorSensorData() {
-		JSONObject returnValue = new JSONObject();
-		try {
-			if (value != null) {
-				int c = (byteToUnsignedInt(value[1]) << 8) | byteToUnsignedInt(value[0]);
-				int r = (byteToUnsignedInt(value[3]) << 8) | byteToUnsignedInt(value[2]);
-				int g = (byteToUnsignedInt(value[5]) << 8) | byteToUnsignedInt(value[4]);
-				int b = (byteToUnsignedInt(value[7]) << 8) | byteToUnsignedInt(value[6]);
-				int p = (byteToUnsignedInt(value[9]) << 8) | byteToUnsignedInt(value[8]);
-
-				float rr = (float)r;
-				float gg = (float)g;
-				float bb = (float)b;
-
-				//relative correction
-				rr *= 2.0/3.0;
-
-				//normalize
-				float max = Math.max(rr,Math.max(gg,bb));
-				rr /= max;
-				gg /= max;
-				bb /= max;
-
-				JSONObject colorsArray = new JSONObject();
-
-				colorsArray.put("r", rr);
-				colorsArray.put("g", gg);
-				colorsArray.put("b", bb);
-				returnValue.put("clr", colorsArray);
-			}
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-		return returnValue;
 	}
 
 	public boolean updateConfiguration(byte[] newConfiguration) {
