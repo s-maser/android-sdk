@@ -11,6 +11,7 @@ import android.util.Log;
 import com.relayr.Relayr_Application;
 import com.relayr.Relayr_Commons;
 import com.relayr.core.ble.device.Relayr_BLEDevice;
+import com.relayr.core.ble.device.Relayr_BLEDeviceType;
 
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class Relayr_BleListener {
@@ -46,7 +47,7 @@ public class Relayr_BleListener {
 				scanner = new Relayr_BleDevicesScanner(bluetoothAdapter, new BluetoothAdapter.LeScanCallback() {
 					@Override
 					public void onLeScan(final BluetoothDevice device, final int rssi, byte[] scanRecord) {
-						if (!discoveredDevices.isDeviceDiscovered(device.getAddress())) {
+						if (!discoveredDevices.isDeviceDiscovered(device.getAddress()) && (Relayr_BLEDeviceType.getDeviceType(device.getName()) != Relayr_BLEDeviceType.Unknown)) {
 							Log.d(Relayr_BleListener.class.toString(), "New device: "+ device.getName() + " [" + device.getAddress() + "]");
 							Relayr_BLEDevice relayrDevice = new Relayr_BLEDevice(device);
 							discoveredDevices.addDiscoveredDevice(device.getAddress(), relayrDevice);

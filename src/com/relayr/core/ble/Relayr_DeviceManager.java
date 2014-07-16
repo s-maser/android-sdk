@@ -55,9 +55,6 @@ public class Relayr_DeviceManager {
 		}
 		if (!discoveredDevices.isEmpty()) {
 			discoveredDevices.clear();
-			allDevicesObservable.notifyObservers(new ArrayList<Relayr_BLEDevice>(discoveredDevices.values()));
-			onBoardingDevicesObservable.notifyObservers(getOnBoardingDevices());
-			directConnectedDevicesObservable.notifyObservers(getDirectConnectedDevices());
 		}
 	}
 
