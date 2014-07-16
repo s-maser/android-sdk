@@ -97,6 +97,9 @@ public class Relayr_BLEDevice {
 			case WunderbarHTU: {
 				return Relayr_BLEDeviceDataAdapter.getHTUSensorData(value);
 			}
+			case WunderbarMIC: {
+				return Relayr_BLEDeviceDataAdapter.getMICSensorData(value);
+			}
 			default: return new JSONObject();
 		}
 	}

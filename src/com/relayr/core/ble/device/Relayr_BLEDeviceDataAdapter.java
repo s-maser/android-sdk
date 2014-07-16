@@ -131,24 +131,19 @@ public class Relayr_BLEDeviceDataAdapter {
 		return returnValue;
 	}
 
-	/*protected static JSONObject getMICSensorData(byte[] value) {
+	protected static JSONObject getMICSensorData(byte[] value) {
 		JSONObject returnValue = new JSONObject();
 		try {
 			if (value != null) {
-				int t = (byteToUnsignedInt(value[1]) << 8) | byteToUnsignedInt(value[0]);
-				int h = (byteToUnsignedInt(value[3]) << 8) | byteToUnsignedInt(value[2]);
+				int level = (byteToUnsignedInt(value[1]) << 8) | byteToUnsignedInt(value[0]);
 
-				float hh = (float)h / 100.0f;
-				float tt = (float)t / 100.0f;
-
-				returnValue.put(HUMIDITY_DATA_INDEX, hh);
-				returnValue.put(TEMPERATURE_DATA_INDEX, tt);
+				returnValue.put(SOUND_LEVEL_DATA_INDEX, level);
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
 		return returnValue;
-	}*/
+	}
 
 	private static JSONObject initResponseData() {
 		JSONObject returnedValue = new JSONObject();
