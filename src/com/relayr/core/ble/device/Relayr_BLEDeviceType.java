@@ -20,26 +20,28 @@ public enum Relayr_BLEDeviceType {
 	public static String onBoardingFlagCharacteristicUUID = "2019";
 
 	public static Relayr_BLEDeviceType getDeviceType(String deviceName) {
-		if (deviceName.equals("WunderbarHTU")) {
-			return WunderbarHTU;
-		}
-		if (deviceName.equals("WunderbarGYRO")) {
-			return WunderbarGYRO;
-		}
-		if (deviceName.equals("WunderbarLIGHT")) {
-			return WunderbarLIGHT;
-		}
-		if (deviceName.equals("WunderbarMIC")) {
-			return WunderbarMIC;
-		}
-		if (deviceName.equals("WunderbarBRIDG")) {
-			return WunderbarBRIDG;
-		}
-		if (deviceName.equals("WunderbarIR")) {
-			return WunderbarIR;
-		}
-		if (deviceName.equals("WunderbarApp")) {
-			return WunderbarApp;
+		if (deviceName != null) {
+			if (deviceName.equals("WunderbarHTU")) {
+				return WunderbarHTU;
+			}
+			if (deviceName.equals("WunderbarGYRO")) {
+				return WunderbarGYRO;
+			}
+			if (deviceName.equals("WunderbarLIGHT")) {
+				return WunderbarLIGHT;
+			}
+			if (deviceName.equals("WunderbarMIC")) {
+				return WunderbarMIC;
+			}
+			if (deviceName.equals("WunderbarBRIDG")) {
+				return WunderbarBRIDG;
+			}
+			if (deviceName.equals("WunderbarIR")) {
+				return WunderbarIR;
+			}
+			if (deviceName.equals("WunderbarApp")) {
+				return WunderbarApp;
+			}
 		}
 		return Unknown;
 	}
