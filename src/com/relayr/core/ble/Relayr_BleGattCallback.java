@@ -3,10 +3,6 @@ package com.relayr.core.ble;
 import java.util.ArrayList;
 import java.util.UUID;
 
-import com.relayr.core.ble.device.Relayr_BLEDevice;
-import com.relayr.core.ble.device.Relayr_BLEDeviceMode;
-import com.relayr.core.ble.device.Relayr_BLEDeviceStatus;
-
 import android.annotation.TargetApi;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
@@ -16,6 +12,10 @@ import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothProfile;
 import android.os.Build;
 import android.util.Log;
+
+import com.relayr.core.ble.device.Relayr_BLEDevice;
+import com.relayr.core.ble.device.Relayr_BLEDeviceMode;
+import com.relayr.core.ble.device.Relayr_BLEDeviceStatus;
 
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class Relayr_BleGattCallback extends BluetoothGattCallback {
@@ -126,25 +126,16 @@ public class Relayr_BleGattCallback extends BluetoothGattCallback {
     	this.device.setMode(Relayr_BLEDeviceMode.DIRECTCONNECTION);
     	this.device.currentService = service;
     	Log.d(Relayr_BleGattCallback.class.toString(), "Device new mode: Direct connection");
-    	/*ArrayList<BluetoothGattCharacteristic> characteristics = (ArrayList<BluetoothGattCharacteristic>) service.getCharacteristics();
-		for (BluetoothGattCharacteristic characteristic:characteristics) {
-			String characteristicUUID = getShortUUID(characteristic.getUuid().toString());
-			Log.d(Relayr_BleGattCallback.class.toString(), "Discovered characteristic: " + characteristicUUID);
-			Log.d(Relayr_BleGattCallback.class.toString(), "Check if is data read characteristic: " + this.device.getType().dataReadCharacteristicUUID);
-			if (characteristicUUID.equals(this.device.getType().dataReadCharacteristicUUID)) {
-				Log.d(Relayr_BleGattCallback.class.toString(), "Discovered data read characteristic: " + characteristicUUID);
-				gatt.setCharacteristicNotification(characteristic, true);
-				BluetoothGattDescriptor descriptor = characteristic.getDescriptor(RELAYR_NOTIFICATION_CHARACTERISTIC);
-			    descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-			    gatt.writeDescriptor(descriptor);
-			} else {
-				Log.d(Relayr_BleGattCallback.class.toString(), "Check if is configuration characteristic: " + this.device.getType().configurationCharacteristicUUID);
-				if (characteristicUUID.equals(this.device.getType().configurationCharacteristicUUID)) {
-					Log.d(Relayr_BleGattCallback.class.toString(), "Discovered configuration characteristic: " + characteristicUUID);
-					this.device.setRelayrConfigurationCharacteristic(characteristic);
-				}
-			}
-		}*/
+    	ArrayList<BluetoothGattCharacteristic> characteristics = (ArrayList<BluetoothGattCharacteristic>) service.getCharacteristics();
+    	for (BluetoothGattCharacteristic characteristic:characteristics) {
+    		String characteristicUUID = getShortUUID(characteristic.getUuid().toString());
+    		if (characteristicUUID.equals(this.device.getType().dataReadCharacteristicUUID)) {
+    			gatt.setCharacteristicNotification(characteristic, true);
+    			BluetoothGattDescriptor descriptor = characteristic.getDescriptor(RELAYR_NOTIFICATION_CHARACTERISTIC);
+    			descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+    			gatt.writeDescriptor(descriptor);
+    		}
+    	}
     }
 
     private void setupDeviceForOnBoardingConnectionMode(BluetoothGattService service, BluetoothGatt gatt) {
