@@ -3,7 +3,6 @@ package com.relayr.core.ble.device;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.annotation.TargetApi;
@@ -90,7 +89,13 @@ public class Relayr_BLEDevice {
 	private JSONObject getFormattedValue() {
 		switch (type) {
 			case WunderbarLIGHT: {
-				return Relayr_BLEDeviceDataAdapter.getColorSensorData(value);
+				return Relayr_BLEDeviceDataAdapter.getLIGHTSensorData(value);
+			}
+			case WunderbarGYRO: {
+				return Relayr_BLEDeviceDataAdapter.getGYROSensorData(value);
+			}
+			case WunderbarHTU: {
+				return Relayr_BLEDeviceDataAdapter.getHTUSensorData(value);
 			}
 			default: return new JSONObject();
 		}
