@@ -11,6 +11,9 @@
 # generated files
 bin/
 gen/
+/build
+.DS_Store
+.gradle
 
 # Local configuration file (sdk path, etc)
 local.properties
@@ -24,6 +27,6 @@ proguard/
 
 # Intellij project files
 *.iml
-*.ipr
-*.iws
-.idea/
+/.idea/*
+/local.properties
+.metadata

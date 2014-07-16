@@ -1,5 +1,7 @@
 package com.relayr.core.device;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.io.Serializable;
 
 public class Relayr_Device implements Serializable {
@@ -8,33 +10,39 @@ public class Relayr_Device implements Serializable {
 	 *
 	 */
 	private static final long serialVersionUID = 1L;
-	private String id;
-	private String title;
-	private Relayr_DeviceModel model;
+	private final String id;
+	private String name;
+	private final Relayr_DeviceModel model;
 	private String owner;
+    private String firmwareVersion;
+    private final String secret;
+    @SerializedName("public") private boolean isPublic;
 
-	public String getId() {
+    public Relayr_Device(String id, String name, Relayr_DeviceModel model, String owner,
+                         String firmwareVersion, String secret, boolean isPublic) {
+        this.id = id;
+        this.name = name;
+        this.model = model;
+        this.owner = owner;
+        this.firmwareVersion = firmwareVersion;
+        this.secret = secret;
+        this.isPublic = isPublic;
+    }
+
+    public String getId() {
 		return id;
 	}
 
-	public void setId(String id) {
-		this.id = id;
+	public String getName() {
+		return name;
 	}
 
-	public String getTitle() {
-		return title;
-	}
-
-	public void setTitle(String title) {
-		this.title = title;
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public Relayr_DeviceModel getModel() {
 		return model;
-	}
-
-	public void setModel(Relayr_DeviceModel model) {
-		this.model = model;
 	}
 
 	public String getOwner() {
@@ -45,17 +53,36 @@ public class Relayr_Device implements Serializable {
 		this.owner = owner;
 	}
 
-	@Override
-	public String toString() {
-		StringBuilder stringBuilder = new StringBuilder();
+    public String getSecret() {
+        return secret;
+    }
 
-		stringBuilder.append("[\n" +
-				"\tid:\t" + getId() + "\n" +
-				"\ttitle:\t" + getTitle() + "\n" +
-				"\tmodel:\t" + getModel().toString() + "\n" +
-				"\towner:\t" + getOwner() + "\n" +
-				"]");
+    public boolean isPublic() {
+        return isPublic;
+    }
 
-		return stringBuilder.toString();
-	}
+    public void setPublic(boolean isPublic) {
+        this.isPublic = isPublic;
+    }
+
+    public String getFirmwareVersion() {
+        return firmwareVersion;
+    }
+
+    public void setFirmwareVersion(String firmwareVersion) {
+        this.firmwareVersion = firmwareVersion;
+    }
+
+    @Override
+    public String toString() {
+        return "Relayr_Device{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", model=" + model +
+                ", owner='" + owner + '\'' +
+                ", firmwareVersion='" + firmwareVersion + '\'' +
+                ", secret='" + secret + '\'' +
+                ", isPublic=" + isPublic +
+                '}';
+    }
 }

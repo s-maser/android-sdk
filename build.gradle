@@ -1,5 +1,18 @@
 apply plugin: 'android-library'
 
+task wrapper(type: Wrapper) {
+    gradleVersion = '1.12'
+}
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:0.12.+'
+    }
+}
+
 android {
     compileSdkVersion 19
     buildToolsVersion "19.1.0"
@@ -9,6 +22,10 @@ android {
         targetSdkVersion 19
         versionCode 1
         versionName "1.0"
+    }
+
+    lintOptions {
+        abortOnError false
     }
 
     compileOptions {
@@ -31,3 +48,15 @@ dependencies {
     compile files('libs/gson-2.2.4.jar')
 }
 
+task clearJar(type: Delete) {
+    delete 'build/libs/android-sdk-code.jar'
+}
+
+task makeJar(type: Copy) {
+    from('build/intermediates/bundles/release/')
+    into('build/libs/')
+    include('classes.jar')
+    rename ('classes.jar', 'android-sdk-code.jar')
+}
+
+makeJar.dependsOn(clearJar, build)
