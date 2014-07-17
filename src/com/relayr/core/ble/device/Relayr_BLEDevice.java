@@ -192,34 +192,36 @@ public class Relayr_BLEDevice {
     }
 
 	public boolean writeOnBoardingData(byte[] sensorId, byte[] passKey, byte[] onBoardingFlag) {
+		boolean status = false;
 		if (currentService != null && mode == Relayr_BLEDeviceMode.ONBOARDING) {
 			ArrayList<BluetoothGattCharacteristic> characteristics = (ArrayList<BluetoothGattCharacteristic>) currentService.getCharacteristics();
+			boolean sensorIdStatus = (sensorId == null);
+			boolean passKeyStatus = (passKey == null);
+			boolean onBoardingFlagStatus = (onBoardingFlag == null);
 			for (BluetoothGattCharacteristic characteristic:characteristics) {
 				String characteristicUUID = getShortUUID(characteristic.getUuid().toString());
 				if ((characteristicUUID.equals(Relayr_BLEDeviceType.sensorIDCharacteristicUUID)) && (sensorId != null)) {
 					Log.d(Relayr_BleGattCallback.class.toString(), "Discovered sensorId characteristic: " + characteristicUUID);
 					characteristic.setValue(sensorId);
-		    		boolean status = gatt.writeCharacteristic(characteristic);
+					sensorIdStatus = gatt.writeCharacteristic(characteristic);
 		    		Log.d(Relayr_BleGattCallback.class.toString(), "Write action on sensorId characteristic: " + (status?"done":"undone"));
-		    		return status;
 				}
 				if ((characteristicUUID.equals(Relayr_BLEDeviceType.passKeyCharacteristicUUID)) && (passKey != null)) {
 					Log.d(Relayr_BleGattCallback.class.toString(), "Discovered passkey characteristic: " + characteristicUUID);
 					characteristic.setValue(passKey);
-		    		boolean status = gatt.writeCharacteristic(characteristic);
+					passKeyStatus = gatt.writeCharacteristic(characteristic);
 		    		Log.d(Relayr_BleGattCallback.class.toString(), "Write action on passkey characteristic: " + (status?"done":"undone"));
-		    		return status;
 				}
 				if ((characteristicUUID.equals(Relayr_BLEDeviceType.onBoardingFlagCharacteristicUUID)) && (onBoardingFlag != null)) {
 					Log.d(Relayr_BleGattCallback.class.toString(), "Discovered onBoardingFlag characteristic: " + characteristicUUID);
 					characteristic.setValue(onBoardingFlag);
-		    		boolean status = gatt.writeCharacteristic(characteristic);
+					onBoardingFlagStatus = gatt.writeCharacteristic(characteristic);
 		    		Log.d(Relayr_BleGattCallback.class.toString(), "Write action on onBoardingFlag characteristic: " + (status?"done":"undone"));
-		    		return status;
 				}
+				status = sensorIdStatus & passKeyStatus & onBoardingFlagStatus;
 			}
 		}
-		return false;
+		return status;
 	}
 
 	private boolean refreshDeviceCache(BluetoothGatt gatt){
