@@ -74,6 +74,7 @@ public class Relayr_BleGattCallback extends BluetoothGattCallback {
     			Log.d(Relayr_BleGattCallback.class.toString(), "Device " + device.getName() + ": unhandled state change: " + gattStatusToString(status));
     			Relayr_BleListener.discoveredDevices.removeDevice(this.device);
     			Log.d(Relayr_BleGattCallback.class.toString(), "Device " + device.getName() + ": removed because error in configuration process");
+    			gatt.close();
     			if (this.device.connectionCallback != null) {
         			this.device.connectionCallback.onError(this.device, gattStatusToString(status));
         		}
