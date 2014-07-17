@@ -12,7 +12,7 @@ public enum Relayr_BLEDeviceType {
 	Unknown;
 
 	public static String onBoardingUUID = "2001";
-	public static String directConnectionUUID = "2002";
+	public static String directConnectionUUID = "2002"; //"2000";
 	public static String dataReadCharacteristicUUID = "2008";
 	public static String configurationCharacteristicUUID = "2007";
 	public static String sensorIDCharacteristicUUID = "2010";

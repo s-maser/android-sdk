@@ -43,6 +43,7 @@ public class Relayr_BleListener {
 				if (bluetoothAdapter == null || !bluetoothAdapter.isEnabled()) {
 				    Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
 				    currentActivity.startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+				    return false;
 				}
 				scanner = new Relayr_BleDevicesScanner(bluetoothAdapter, new BluetoothAdapter.LeScanCallback() {
 					@Override
@@ -106,7 +107,7 @@ public class Relayr_BleListener {
 
 	public static boolean isScanning() {
 		if (Relayr_Commons.isSDK18()) {
-			return scanner.isScanning();
+			return scanner == null? false : scanner.isScanning();
 		} else {
 			return false;
 		}

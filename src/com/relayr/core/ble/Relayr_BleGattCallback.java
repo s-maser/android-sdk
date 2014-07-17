@@ -52,12 +52,12 @@ public class Relayr_BleGattCallback extends BluetoothGattCallback {
         		} else {
         			Log.d(Relayr_BleGattCallback.class.toString(), "Callback not detected: not sending onDisconnect event");
         		}
-    			if (this.device.getStatus() != Relayr_BLEDeviceStatus.DISCONNECTING) {
+    			/*if (this.device.getStatus() != Relayr_BLEDeviceStatus.DISCONNECTING) {
     				Log.d(Relayr_BleGattCallback.class.toString(), "Not disconnected by the user --> Automatic reconnecting");
     				this.device.connect();
     			} else {
     				Log.d(Relayr_BleGattCallback.class.toString(), "Disconnected by the user --> No automatic reconnecting");
-    			}
+    			}*/
     		} else {
     			Log.d(Relayr_BleGattCallback.class.toString(), "Device unhandled state change: " + gattStatusToString(status));
     			if (this.device.connectionCallback != null) {
