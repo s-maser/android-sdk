@@ -204,19 +204,19 @@ public class Relayr_BLEDevice {
 					Log.d(Relayr_BleGattCallback.class.toString(), "Discovered sensorId characteristic: " + characteristicUUID);
 					characteristic.setValue(sensorId);
 					sensorIdStatus = gatt.writeCharacteristic(characteristic);
-		    		Log.d(Relayr_BleGattCallback.class.toString(), "Write action on sensorId characteristic: " + (status?"done":"undone"));
+		    		Log.d(Relayr_BleGattCallback.class.toString(), "Write action on sensorId characteristic: " + (sensorIdStatus?"done":"undone"));
 				}
 				if ((characteristicUUID.equals(Relayr_BLEDeviceType.passKeyCharacteristicUUID)) && (passKey != null)) {
 					Log.d(Relayr_BleGattCallback.class.toString(), "Discovered passkey characteristic: " + characteristicUUID);
 					characteristic.setValue(passKey);
 					passKeyStatus = gatt.writeCharacteristic(characteristic);
-		    		Log.d(Relayr_BleGattCallback.class.toString(), "Write action on passkey characteristic: " + (status?"done":"undone"));
+		    		Log.d(Relayr_BleGattCallback.class.toString(), "Write action on passkey characteristic: " + (passKeyStatus?"done":"undone"));
 				}
 				if ((characteristicUUID.equals(Relayr_BLEDeviceType.onBoardingFlagCharacteristicUUID)) && (onBoardingFlag != null)) {
 					Log.d(Relayr_BleGattCallback.class.toString(), "Discovered onBoardingFlag characteristic: " + characteristicUUID);
 					characteristic.setValue(onBoardingFlag);
 					onBoardingFlagStatus = gatt.writeCharacteristic(characteristic);
-		    		Log.d(Relayr_BleGattCallback.class.toString(), "Write action on onBoardingFlag characteristic: " + (status?"done":"undone"));
+		    		Log.d(Relayr_BleGattCallback.class.toString(), "Write action on onBoardingFlag characteristic: " + (onBoardingFlagStatus?"done":"undone"));
 				}
 				status = sensorIdStatus & passKeyStatus & onBoardingFlagStatus;
 			}
