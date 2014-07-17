@@ -144,4 +144,10 @@ public class Relayr_DeviceManager {
 		return new Subscription<ArrayList<Relayr_BLEDevice>>(observer, directConnectedDevicesObservable);
 	}
 
+
+	public void removeDevice(Relayr_BLEDevice device) {
+		Relayr_DevicesGattManager.removeDevice(device);
+		discoveredDevices.remove(device.getAddress());
+	}
+
 }
