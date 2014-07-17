@@ -9,6 +9,7 @@ import android.os.Build;
 
 import com.relayr.core.ble.device.Relayr_BLEDevice;
 import com.relayr.core.ble.device.Relayr_BLEDeviceMode;
+import com.relayr.core.ble.device.Relayr_BLEDeviceStatus;
 import com.relayr.core.observers.Observable;
 import com.relayr.core.observers.Observer;
 import com.relayr.core.observers.Subscription;
@@ -84,6 +85,8 @@ public class Relayr_DeviceManager {
 
 	protected void refreshDiscoveredDevices() {
 		for (Relayr_BLEDevice device:discoveredDevices.values()) {
+			device.disconnect();
+			device.setStatus(Relayr_BLEDeviceStatus.CONFIGURING);
 			device.connect();
 		}
 	}

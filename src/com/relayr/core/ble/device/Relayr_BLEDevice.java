@@ -131,7 +131,9 @@ public class Relayr_BLEDevice {
 				Relayr_DevicesGattManager.devicesGatt.put(bluetoothDevice.getAddress(), this.gatt);
 			}
 			refreshDeviceCache(this.gatt);
-			setStatus(Relayr_BLEDeviceStatus.CONNECTING);
+			if (status != Relayr_BLEDeviceStatus.CONFIGURING) {
+				setStatus(Relayr_BLEDeviceStatus.CONNECTING);
+			}
 		} else {
 			if (connectionCallback != null) {
 				connectionCallback.onConnect(this);
@@ -141,7 +143,9 @@ public class Relayr_BLEDevice {
 
 	public void disconnect() {
 		if (gatt != null) {
-			status = Relayr_BLEDeviceStatus.DISCONNECTING;
+			if (status != Relayr_BLEDeviceStatus.CONFIGURING) {
+				status = Relayr_BLEDeviceStatus.DISCONNECTING;
+			}
 			gatt.disconnect();
 			gatt = null;
 		} else {

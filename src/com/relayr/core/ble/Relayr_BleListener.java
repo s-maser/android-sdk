@@ -11,6 +11,7 @@ import android.util.Log;
 import com.relayr.Relayr_Application;
 import com.relayr.Relayr_Commons;
 import com.relayr.core.ble.device.Relayr_BLEDevice;
+import com.relayr.core.ble.device.Relayr_BLEDeviceStatus;
 import com.relayr.core.ble.device.Relayr_BLEDeviceType;
 
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
@@ -51,8 +52,8 @@ public class Relayr_BleListener {
 						if (!discoveredDevices.isDeviceDiscovered(device.getAddress()) && (Relayr_BLEDeviceType.getDeviceType(device.getName()) != Relayr_BLEDeviceType.Unknown)) {
 							Log.d(Relayr_BleListener.class.toString(), "New device: "+ device.getName() + " [" + device.getAddress() + "]");
 							Relayr_BLEDevice relayrDevice = new Relayr_BLEDevice(device);
-							discoveredDevices.addDiscoveredDevice(device.getAddress(), relayrDevice);
-							relayrDevice.connect();
+							relayrDevice.setStatus(Relayr_BLEDeviceStatus.CONFIGURING);
+							relayrDevice.connect();							
 						}
 					}
 				});
