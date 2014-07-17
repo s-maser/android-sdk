@@ -53,7 +53,9 @@ public class Relayr_BleListener {
 							Log.d(Relayr_BleListener.class.toString(), "New device: "+ device.getName() + " [" + device.getAddress() + "]");
 							Relayr_BLEDevice relayrDevice = new Relayr_BLEDevice(device);
 							relayrDevice.setStatus(Relayr_BLEDeviceStatus.CONFIGURING);
-							relayrDevice.connect();							
+							Log.d(Relayr_BleListener.class.toString(), "Device cofiguration start: "+ device.toString());
+							relayrDevice.connect();
+							Log.d(Relayr_BleListener.class.toString(), "Device cofiguration finish: "+ device.toString());
 						}
 					}
 				});
