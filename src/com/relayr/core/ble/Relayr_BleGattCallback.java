@@ -36,7 +36,10 @@ public class Relayr_BleGattCallback extends BluetoothGattCallback {
     		this.device.setStatus(Relayr_BLEDeviceStatus.CONNECTED);
     		gatt.discoverServices();
     		if (this.device.connectionCallback != null) {
+    			Log.d(Relayr_BleGattCallback.class.toString(), "Callback detected: sending onConnect event");
     			this.device.connectionCallback.onConnect(this.device);
+    		} else {
+    			Log.d(Relayr_BleGattCallback.class.toString(), "Callback not detected: not sending onConnect event");
     		}
     	} else {
     		if (status == BluetoothGatt.GATT_SUCCESS && newState == BluetoothProfile.STATE_DISCONNECTED) {
@@ -44,10 +47,16 @@ public class Relayr_BleGattCallback extends BluetoothGattCallback {
     			this.device.setStatus(Relayr_BLEDeviceStatus.DISCONNECTED);
     			this.device.setMode(Relayr_BLEDeviceMode.UNKNOWN);
     			if (this.device.connectionCallback != null) {
+    				Log.d(Relayr_BleGattCallback.class.toString(), "Callback detected: sending onDisconnect event");
         			this.device.connectionCallback.onDisconnect(this.device);
+        		} else {
+        			Log.d(Relayr_BleGattCallback.class.toString(), "Callback not detected: not sending onDisconnect event");
         		}
     			if (this.device.getStatus() != Relayr_BLEDeviceStatus.DISCONNECTING) {
+    				Log.d(Relayr_BleGattCallback.class.toString(), "Not disconnected by the user --> Automatic reconnecting");
     				this.device.connect();
+    			} else {
+    				Log.d(Relayr_BleGattCallback.class.toString(), "Disconnected by the user --> No automatic reconnecting");
     			}
     		} else {
     			Log.d(Relayr_BleGattCallback.class.toString(), "Device unhandled state change: " + gattStatusToString(status));
