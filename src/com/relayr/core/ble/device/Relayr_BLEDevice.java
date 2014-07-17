@@ -119,7 +119,9 @@ public class Relayr_BLEDevice {
 	}
 
 	public void connect(Relayr_BLEDeviceConnectionCalback callback) {
-		this.connectionCallback = callback;
+		if (callback != null) {
+			this.connectionCallback = callback;
+		}
 		if (status != Relayr_BLEDeviceStatus.CONNECTED) {
 			if (Relayr_DevicesGattManager.devicesGatt.containsKey(bluetoothDevice.getAddress())) {
 				this.gatt = Relayr_DevicesGattManager.devicesGatt.get(bluetoothDevice.getAddress());
