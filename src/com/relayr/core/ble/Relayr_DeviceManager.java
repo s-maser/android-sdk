@@ -85,9 +85,13 @@ public class Relayr_DeviceManager {
 
 	protected void refreshDiscoveredDevices() {
 		for (Relayr_BLEDevice device:discoveredDevices.values()) {
-			device.disconnect();
-			device.setStatus(Relayr_BLEDeviceStatus.CONFIGURING);
-			device.connect();
+			if (Relayr_DevicesGattManager.devicesGatt.containsKey(device.getAddress()) && device.isConnected()) {
+				BluetoothGatt gatt = Relayr_DevicesGattManager.devicesGatt.get(device.getAddress());
+				gatt.discoverServices();
+			} else {
+				device.setStatus(Relayr_BLEDeviceStatus.CONFIGURING);
+				device.connect();
+			}
 		}
 	}
 

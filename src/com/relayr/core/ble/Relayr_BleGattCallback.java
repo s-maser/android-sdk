@@ -86,7 +86,9 @@ public class Relayr_BleGattCallback extends BluetoothGattCallback {
 			if (serviceUUID.equals(Relayr_BLEDeviceType.directConnectionUUID)) {
     			setupDeviceForDirectConnectionMode(service, gatt);
     			this.device.setMode(Relayr_BLEDeviceMode.DIRECTCONNECTION);
-    			this.device.disconnect();
+    			if (this.device.getStatus() == Relayr_BLEDeviceStatus.CONFIGURING) {
+    				this.device.disconnect();
+    			}
     			break;
     		}
     		if (serviceUUID.equals(Relayr_BLEDeviceType.onBoardingUUID)) {
