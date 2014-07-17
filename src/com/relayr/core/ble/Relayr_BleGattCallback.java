@@ -50,6 +50,7 @@ public class Relayr_BleGattCallback extends BluetoothGattCallback {
     				this.device.connect();
     			}
     		} else {
+    			Log.d(Relayr_BleGattCallback.class.toString(), "Device unhandled state change: " + gattStatusToString(status));
     			if (this.device.connectionCallback != null) {
         			this.device.connectionCallback.onError(this.device, gattStatusToString(status));
         		}
