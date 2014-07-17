@@ -73,16 +73,18 @@ public class Relayr_BLEDevice {
 	}
 
 	private void notifyModeSwitch(Relayr_BLEDeviceMode mode) {
-		switch (mode) {
-		case ONBOARDING: {
-			Relayr_BleListener.discoveredDevices.onBoardingDeviceListUpdate();
-			break;
-		}
-		case DIRECTCONNECTION: {
-			Relayr_BleListener.discoveredDevices.directConnectedDeviceListUpdate();
-			break;
-		}
-		default:break;
+		if (Relayr_BleListener.discoveredDevices.isDeviceDiscovered(getAddress())) {
+			switch (mode) {
+			case ONBOARDING: {
+				Relayr_BleListener.discoveredDevices.onBoardingDeviceListUpdate();
+				break;
+			}
+			case DIRECTCONNECTION: {
+				Relayr_BleListener.discoveredDevices.directConnectedDeviceListUpdate();
+				break;
+			}
+			default:break;
+			}
 		}
 	}
 

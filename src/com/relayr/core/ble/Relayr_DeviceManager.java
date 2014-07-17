@@ -32,9 +32,20 @@ public class Relayr_DeviceManager {
 	protected void addDiscoveredDevice(String address, Relayr_BLEDevice device) {
 		discoveredDevices.put(address, device);
 		allDevicesObservable.notifyObservers(new ArrayList<Relayr_BLEDevice>(discoveredDevices.values()));
+		switch (device.getMode()) {
+		case ONBOARDING: {
+			onBoardingDeviceListUpdate();
+			break;
+		}
+		case DIRECTCONNECTION: {
+			directConnectedDeviceListUpdate();
+			break;
+		}
+		default:break;
+		}
 	}
 
-	protected boolean isDeviceDiscovered(String address) {
+	public boolean isDeviceDiscovered(String address) {
 		return this.discoveredDevices.containsKey(address);
 	}
 
