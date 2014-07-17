@@ -29,9 +29,8 @@ public class Relayr_DeviceManager {
 		this.directConnectedDevicesObservable = new Observable<ArrayList<Relayr_BLEDevice>>();
 	}
 
-	protected void addDiscoveredDevice(String address, Relayr_BLEDevice device) {
-		discoveredDevices.put(address, device);
-		allDevicesObservable.notifyObservers(new ArrayList<Relayr_BLEDevice>(discoveredDevices.values()));
+	protected void notifyDiscoveredDevice(Relayr_BLEDevice device) {
+		allDevicesObservable.notifyObservers(getAllConfiguredDevices());
 		switch (device.getMode()) {
 		case ONBOARDING: {
 			onBoardingDeviceListUpdate();
@@ -43,6 +42,10 @@ public class Relayr_DeviceManager {
 		}
 		default:break;
 		}
+	}
+
+	protected void addNewDevice(String address, Relayr_BLEDevice device) {
+		discoveredDevices.put(address, device);
 	}
 
 	public boolean isDeviceDiscovered(String address) {
@@ -87,6 +90,18 @@ public class Relayr_DeviceManager {
 
 		for (Relayr_BLEDevice device:discoveredDevices.values()) {
 			if (device.getMode() == Relayr_BLEDeviceMode.DIRECTCONNECTION) {
+				list.add(device);
+			}
+		}
+
+		return list;
+	}
+
+	private ArrayList<Relayr_BLEDevice> getAllConfiguredDevices() {
+		ArrayList<Relayr_BLEDevice> list = new ArrayList<Relayr_BLEDevice>();
+
+		for (Relayr_BLEDevice device:discoveredDevices.values()) {
+			if (device.getMode() != Relayr_BLEDeviceMode.UNKNOWN) {
 				list.add(device);
 			}
 		}

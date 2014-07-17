@@ -52,10 +52,11 @@ public class Relayr_BleListener {
 						if (!discoveredDevices.isDeviceDiscovered(device.getAddress()) && (Relayr_BLEDeviceType.getDeviceType(device.getName()) != Relayr_BLEDeviceType.Unknown)) {
 							Log.d(Relayr_BleListener.class.toString(), "New device: "+ device.getName() + " [" + device.getAddress() + "]");
 							Relayr_BLEDevice relayrDevice = new Relayr_BLEDevice(device);
+							discoveredDevices.addNewDevice(relayrDevice.getAddress(), relayrDevice);
 							relayrDevice.setStatus(Relayr_BLEDeviceStatus.CONFIGURING);
-							Log.d(Relayr_BleListener.class.toString(), "Device cofiguration start: "+ device.toString());
+							Log.d(Relayr_BleListener.class.toString(), "Device cofiguration start: "+ relayrDevice.toString());
 							relayrDevice.connect();
-							Log.d(Relayr_BleListener.class.toString(), "Device cofiguration finish: "+ device.toString());
+							Log.d(Relayr_BleListener.class.toString(), "Device cofiguration finish: "+ relayrDevice.toString());
 						}
 					}
 				});
