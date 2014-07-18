@@ -73,7 +73,7 @@ public class Relayr_BLEDevice {
 	}
 
 	private void notifyModeSwitch(Relayr_BLEDeviceMode mode) {
-		if (Relayr_BleListener.discoveredDevices.isDeviceDiscovered(getAddress())) {
+		if (Relayr_BleListener.discoveredDevices.isFullyConfigured(getAddress())) {
 			switch (mode) {
 			case ONBOARDING: {
 				Relayr_BleListener.discoveredDevices.onBoardingDeviceListUpdate();

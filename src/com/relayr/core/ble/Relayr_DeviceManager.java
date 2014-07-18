@@ -52,6 +52,10 @@ public class Relayr_DeviceManager {
 		return this.discoveredDevices.containsKey(address);
 	}
 
+	public boolean isFullyConfigured(String address) {
+		return this.discoveredDevices.get(address) != null;
+	}
+
 	protected Relayr_BLEDevice getDevice(String address) {
 		if (isDeviceDiscovered(address)) {
 			return discoveredDevices.get(address);

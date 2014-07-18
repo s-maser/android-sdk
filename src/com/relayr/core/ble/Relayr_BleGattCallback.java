@@ -58,8 +58,9 @@ public class Relayr_BleGattCallback extends BluetoothGattCallback {
     			} else {
     				this.device.setStatus(Relayr_BLEDeviceStatus.DISCONNECTED);
     				Log.d(Relayr_BleGattCallback.class.toString(), "Device " + device.getName() + " configured");
-    				if (!Relayr_BleListener.discoveredDevices.isDeviceDiscovered(this.device.getAddress())) {
-    					Log.d(Relayr_BleGattCallback.class.toString(), "Device " + device.getName() + " added to discovered devices");
+    				if (!Relayr_BleListener.discoveredDevices.isFullyConfigured(this.device.getAddress())) {
+        				Relayr_BleListener.discoveredDevices.addNewDevice(this.device.getAddress(), this.device);
+        				Log.d(Relayr_BleGattCallback.class.toString(), "Device " + device.getName() + " added to discovered devices");
     					Relayr_BleListener.discoveredDevices.notifyDiscoveredDevice(this.device);
     				}
     			}
@@ -100,7 +101,8 @@ public class Relayr_BleGattCallback extends BluetoothGattCallback {
     			setupDeviceForOnBoardingConnectionMode(service, gatt);
     			this.device.setMode(Relayr_BLEDeviceMode.ONBOARDING);
     			this.device.setStatus(Relayr_BLEDeviceStatus.CONNECTED);
-    			if (!Relayr_BleListener.discoveredDevices.isDeviceDiscovered(this.device.getAddress())) {
+    			if (!Relayr_BleListener.discoveredDevices.isFullyConfigured(this.device.getAddress())) {
+    				Relayr_BleListener.discoveredDevices.addNewDevice(this.device.getAddress(), this.device);
 					Relayr_BleListener.discoveredDevices.notifyDiscoveredDevice(this.device);
 				}
     			break;
