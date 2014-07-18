@@ -93,7 +93,7 @@ public class Relayr_DeviceManager {
 		ArrayList<Relayr_BLEDevice> list = new ArrayList<Relayr_BLEDevice>();
 
 		for (Relayr_BLEDevice device:discoveredDevices.values()) {
-			if (device.getMode() == Relayr_BLEDeviceMode.DIRECTCONNECTION) {
+			if ((device != null) &&(device.getMode() == Relayr_BLEDeviceMode.DIRECTCONNECTION)) {
 				list.add(device);
 			}
 		}
