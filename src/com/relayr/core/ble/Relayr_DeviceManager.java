@@ -81,7 +81,7 @@ public class Relayr_DeviceManager {
 		ArrayList<Relayr_BLEDevice> list = new ArrayList<Relayr_BLEDevice>();
 
 		for (Relayr_BLEDevice device:discoveredDevices.values()) {
-			if (device.getMode() == Relayr_BLEDeviceMode.ONBOARDING) {
+			if ((device != null) && (device.getMode() == Relayr_BLEDeviceMode.ONBOARDING)) {
 				list.add(device);
 			}
 		}
@@ -105,7 +105,7 @@ public class Relayr_DeviceManager {
 		ArrayList<Relayr_BLEDevice> list = new ArrayList<Relayr_BLEDevice>();
 
 		for (Relayr_BLEDevice device:discoveredDevices.values()) {
-			if (device.getMode() != Relayr_BLEDeviceMode.UNKNOWN) {
+			if ((device != null) && (device.getMode() != Relayr_BLEDeviceMode.UNKNOWN)) {
 				list.add(device);
 			}
 		}
@@ -115,12 +115,14 @@ public class Relayr_DeviceManager {
 
 	protected void refreshDiscoveredDevices() {
 		for (Relayr_BLEDevice device:discoveredDevices.values()) {
-			if (Relayr_DevicesGattManager.devicesGatt.containsKey(device.getAddress()) && device.isConnected()) {
-				BluetoothGatt gatt = Relayr_DevicesGattManager.devicesGatt.get(device.getAddress());
-				gatt.discoverServices();
-			} else {
-				device.setStatus(Relayr_BLEDeviceStatus.CONFIGURING);
-				device.connect();
+			if (device != null) {
+				if (Relayr_DevicesGattManager.devicesGatt.containsKey(device.getAddress()) && device.isConnected()) {
+					BluetoothGatt gatt = Relayr_DevicesGattManager.devicesGatt.get(device.getAddress());
+					gatt.discoverServices();
+				} else {
+					device.setStatus(Relayr_BLEDeviceStatus.CONFIGURING);
+					device.connect();
+				}
 			}
 		}
 	}
