@@ -209,14 +209,13 @@ public class Relayr_BLEDevice {
 		});
     }
 
-	public void writeOnBoardingData(final byte[] sensorId, final byte[] passKey, final byte[] onBoardingFlag) {
+	public void writeSensorId(final byte[] sensorId) {
+		final Relayr_BLEDevice device = this;
 		Relayr_Application.currentActivity().runOnUiThread(new Runnable() {
 			public void run() {
 				if (currentService != null && mode == Relayr_BLEDeviceMode.ONBOARDING) {
 					ArrayList<BluetoothGattCharacteristic> characteristics = (ArrayList<BluetoothGattCharacteristic>) currentService.getCharacteristics();
 					boolean sensorIdStatus = (sensorId == null);
-					boolean passKeyStatus = (passKey == null);
-					boolean onBoardingFlagStatus = (onBoardingFlag == null);
 					for (BluetoothGattCharacteristic characteristic:characteristics) {
 						String characteristicUUID = getShortUUID(characteristic.getUuid().toString());
 						if ((characteristicUUID.equals(Relayr_BLEDeviceType.sensorIDCharacteristicUUID)) && (sensorId != null)) {
@@ -225,12 +224,52 @@ public class Relayr_BLEDevice {
 							sensorIdStatus = gatt.writeCharacteristic(characteristic);
 							Log.d(Relayr_BleGattCallback.class.toString(), "Write action on sensorId characteristic: " + (sensorIdStatus?"done":"undone"));
 						}
+						break;
+					}
+				} else {
+					if (connectionCallback != null) {
+		    			connectionCallback.onWriteError(device, Relayr_BLEDeviceCharacteristic.SENSOR_ID, "The device is not on ONBOARDING mode.");
+		    		}
+				}
+			}
+		});
+	}
+
+	public void writePassKey(final byte[] passKey) {
+		final Relayr_BLEDevice device = this;
+		Relayr_Application.currentActivity().runOnUiThread(new Runnable() {
+			public void run() {
+				if (currentService != null && mode == Relayr_BLEDeviceMode.ONBOARDING) {
+					ArrayList<BluetoothGattCharacteristic> characteristics = (ArrayList<BluetoothGattCharacteristic>) currentService.getCharacteristics();
+					boolean passKeyStatus = (passKey == null);
+					for (BluetoothGattCharacteristic characteristic:characteristics) {
+						String characteristicUUID = getShortUUID(characteristic.getUuid().toString());
 						if ((characteristicUUID.equals(Relayr_BLEDeviceType.passKeyCharacteristicUUID)) && (passKey != null)) {
 							Log.d(Relayr_BleGattCallback.class.toString(), "Discovered passkey characteristic: " + characteristicUUID);
 							characteristic.setValue(passKey);
 							passKeyStatus = gatt.writeCharacteristic(characteristic);
 							Log.d(Relayr_BleGattCallback.class.toString(), "Write action on passkey characteristic: " + (passKeyStatus?"done":"undone"));
 						}
+						break;
+					}
+				} else {
+					if (connectionCallback != null) {
+		    			connectionCallback.onWriteError(device, Relayr_BLEDeviceCharacteristic.SENSOR_ID, "The device is not on ONBOARDING mode.");
+		    		}
+				}
+			}
+		});
+	}
+
+	public void writeOnBoardingFlag(final byte[] onBoardingFlag) {
+		final Relayr_BLEDevice device = this;
+		Relayr_Application.currentActivity().runOnUiThread(new Runnable() {
+			public void run() {
+				if (currentService != null && mode == Relayr_BLEDeviceMode.ONBOARDING) {
+					ArrayList<BluetoothGattCharacteristic> characteristics = (ArrayList<BluetoothGattCharacteristic>) currentService.getCharacteristics();
+					boolean onBoardingFlagStatus = (onBoardingFlag == null);
+					for (BluetoothGattCharacteristic characteristic:characteristics) {
+						String characteristicUUID = getShortUUID(characteristic.getUuid().toString());
 						if ((characteristicUUID.equals(Relayr_BLEDeviceType.onBoardingFlagCharacteristicUUID)) && (onBoardingFlag != null)) {
 							Log.d(Relayr_BleGattCallback.class.toString(), "Discovered onBoardingFlag characteristic: " + characteristicUUID);
 							characteristic.setValue(onBoardingFlag);
@@ -238,12 +277,16 @@ public class Relayr_BLEDevice {
 							Log.d(Relayr_BleGattCallback.class.toString(), "Write action on onBoardingFlag characteristic: " + (onBoardingFlagStatus?"done":"undone"));
 						}
 					}
+				} else {
+					if (connectionCallback != null) {
+		    			connectionCallback.onWriteError(device, Relayr_BLEDeviceCharacteristic.SENSOR_ID, "The device is not on ONBOARDING mode.");
+		    		}
 				}
 			}
 		});
 	}
 
-	private boolean refreshDeviceCache(BluetoothGatt gatt){
+ 	private boolean refreshDeviceCache(BluetoothGatt gatt){
 	    try {
 	        BluetoothGatt localBluetoothGatt = gatt;
 	        Method localMethod = localBluetoothGatt.getClass().getMethod("refresh", new Class[0]);
