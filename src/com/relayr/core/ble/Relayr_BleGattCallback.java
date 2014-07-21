@@ -119,6 +119,20 @@ public class Relayr_BleGattCallback extends BluetoothGattCallback {
     public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
     	Log.d(Relayr_BleGattCallback.class.toString(), "Characteristic wrote on device " + device.getName() + ": " + characteristic.getUuid());
     	Log.d(Relayr_BleGattCallback.class.toString(), "Characteristic wrote status on device " + device.getName() + ": " + gattStatusToString(status));
+    	switch (status) {
+    	case BluetoothGatt.GATT_SUCCESS: {
+    		if (device.connectionCallback != null) {
+    			device.connectionCallback.onWriteSucess(device, Relayr_BLEDeviceType.getDeviceCharacteristic(getShortUUID(characteristic.getUuid().toString())));
+    		}
+    		break;
+    	}
+    	default: {
+    		if (device.connectionCallback != null) {
+    			device.connectionCallback.onWriteError(device, Relayr_BLEDeviceType.getDeviceCharacteristic(getShortUUID(characteristic.getUuid().toString())), gattStatusToString(status));
+    		}
+    		break;
+    	}
+    	}
     }
 
     private String getShortUUID(String longUUID) {

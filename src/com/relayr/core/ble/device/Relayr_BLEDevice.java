@@ -191,7 +191,6 @@ public class Relayr_BLEDevice {
 	}
 
 	public void updateConfiguration(final byte[] newConfiguration) {
-		final Relayr_BLEDevice device = this;
 		Relayr_Application.currentActivity().runOnUiThread(new Runnable() {
 			public void run() {
 				if (currentService != null && mode == Relayr_BLEDeviceMode.DIRECTCONNECTION) {
@@ -203,15 +202,6 @@ public class Relayr_BLEDevice {
 							characteristic.setValue(newConfiguration);
 							boolean status = gatt.writeCharacteristic(characteristic);
 							Log.d(Relayr_BleGattCallback.class.toString(), "Write action on configuration characteristic: " + (status?"done":"undone"));
-							if (status) {
-								if (device.connectionCallback != null) {
-									device.connectionCallback.onOnBoardingWriteSucess(device);
-								}
-							} else {
-								if (device.connectionCallback != null) {
-									device.connectionCallback.onOnBoardingWriteError(device);
-								}
-							}
 						}
 					}
 				}
@@ -220,10 +210,8 @@ public class Relayr_BLEDevice {
     }
 
 	public void writeOnBoardingData(final byte[] sensorId, final byte[] passKey, final byte[] onBoardingFlag) {
-		final Relayr_BLEDevice device = this;
 		Relayr_Application.currentActivity().runOnUiThread(new Runnable() {
 			public void run() {
-				boolean status = false;
 				if (currentService != null && mode == Relayr_BLEDeviceMode.ONBOARDING) {
 					ArrayList<BluetoothGattCharacteristic> characteristics = (ArrayList<BluetoothGattCharacteristic>) currentService.getCharacteristics();
 					boolean sensorIdStatus = (sensorId == null);
@@ -249,16 +237,6 @@ public class Relayr_BLEDevice {
 							onBoardingFlagStatus = gatt.writeCharacteristic(characteristic);
 							Log.d(Relayr_BleGattCallback.class.toString(), "Write action on onBoardingFlag characteristic: " + (onBoardingFlagStatus?"done":"undone"));
 						}
-						status = sensorIdStatus & passKeyStatus & onBoardingFlagStatus;
-					}
-				}
-				if (status) {
-					if (device.connectionCallback != null) {
-						device.connectionCallback.onOnBoardingWriteSucess(device);
-					}
-				} else {
-					if (device.connectionCallback != null) {
-						device.connectionCallback.onOnBoardingWriteError(device);
 					}
 				}
 			}

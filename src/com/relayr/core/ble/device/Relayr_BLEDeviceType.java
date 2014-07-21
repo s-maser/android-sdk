@@ -45,4 +45,20 @@ public enum Relayr_BLEDeviceType {
 		}
 		return Unknown;
 	}
+
+	public static Relayr_BLEDeviceCharacteristic getDeviceCharacteristic(String uuid) {
+		if (uuid.equals(configurationCharacteristicUUID)) {
+			return Relayr_BLEDeviceCharacteristic.CONFIGURATION;
+		}
+		if (uuid.equals(sensorIDCharacteristicUUID)) {
+			return Relayr_BLEDeviceCharacteristic.SENSOR_ID;
+		}
+		if (uuid.equals(passKeyCharacteristicUUID)) {
+			return Relayr_BLEDeviceCharacteristic.PASS_KEY;
+		}
+		if (uuid.equals(onBoardingFlagCharacteristicUUID)) {
+			return Relayr_BLEDeviceCharacteristic.ON_BOARDING_FLAG;
+		}
+		return Relayr_BLEDeviceCharacteristic.UNKNOWN;
+	}
 }
