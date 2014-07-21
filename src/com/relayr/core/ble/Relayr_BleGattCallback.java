@@ -66,16 +66,20 @@ public class Relayr_BleGattCallback extends BluetoothGattCallback {
     			}
     			Log.d(Relayr_BleGattCallback.class.toString(), "Device disconnected");
     		} else {
-    			if (status != BluetoothGatt.GATT_SUCCESS) {
+    			if (isFailureStatus(status)) {
     				if (this.device.getMode() == Relayr_BLEDeviceMode.UNKNOWN) {
-    					Log.d(Relayr_BleGattCallback.class.toString(), "Device " + device.getName() + ": unhandled state change: " + gattStatusToString(status));
+    					Log.d(Relayr_BleGattCallback.class.toString(), "Device " + device.getName() + ": unhandled state change without configuration: " + gattStatusToString(status));
     					Relayr_BleListener.discoveredDevices.removeDevice(this.device);
     					Log.d(Relayr_BleGattCallback.class.toString(), "Device " + device.getName() + ": removed because error in configuration process");
     					gatt.close();
     					if (this.device.connectionCallback != null) {
     						this.device.connectionCallback.onError(this.device, gattStatusToString(status));
     					}
+    				} else {
+    					Log.d(Relayr_BleGattCallback.class.toString(), "Device " + device.getName() + ": unhandled state change configured: " + gattStatusToString(status));
     				}
+    			} else {
+    				Log.d(Relayr_BleGattCallback.class.toString(), "Device " + device.getName() + ": unhandled state change: " + gattStatusToString(status));
     			}
     		}
     	}
@@ -140,7 +144,7 @@ public class Relayr_BleGattCallback extends BluetoothGattCallback {
     private String gattStatusToString(int status) {
     	switch (status) {
     	case BluetoothGatt.GATT_FAILURE: {
-    		return "Not identified error";
+    		return "Failure";
     	}
     	case BluetoothGatt.GATT_INSUFFICIENT_AUTHENTICATION: {
     		return "Insufficient authentication for a given operation";
@@ -167,6 +171,22 @@ public class Relayr_BleGattCallback extends BluetoothGattCallback {
     		return "GATT write operation is not permitted";
     	}
     	default: return "Not identified error";
+    	}
+    }
+
+    private boolean isFailureStatus(int status) {
+    	switch (status) {
+    	case BluetoothGatt.GATT_FAILURE:
+    	case BluetoothGatt.GATT_INSUFFICIENT_AUTHENTICATION:
+    	case BluetoothGatt.GATT_INSUFFICIENT_ENCRYPTION:
+    	case BluetoothGatt.GATT_INVALID_ATTRIBUTE_LENGTH:
+    	case BluetoothGatt.GATT_INVALID_OFFSET:
+    	case BluetoothGatt.GATT_READ_NOT_PERMITTED:
+    	case BluetoothGatt.GATT_REQUEST_NOT_SUPPORTED:
+    	case BluetoothGatt.GATT_WRITE_NOT_PERMITTED:
+    		return true;
+    	case BluetoothGatt.GATT_SUCCESS:
+    	default: return false;
     	}
     }
 
