@@ -65,20 +65,18 @@ public class Relayr_BleGattCallback extends BluetoothGattCallback {
     				}
     			}
     			Log.d(Relayr_BleGattCallback.class.toString(), "Device disconnected");
-    			/*if (this.device.getStatus() != Relayr_BLEDeviceStatus.DISCONNECTING) {
-    				Log.d(Relayr_BleGattCallback.class.toString(), "Not disconnected by the user --> Automatic reconnecting");
-    				this.device.connect();
-    			} else {
-    				Log.d(Relayr_BleGattCallback.class.toString(), "Disconnected by the user --> No automatic reconnecting");
-    			}*/
     		} else {
-    			Log.d(Relayr_BleGattCallback.class.toString(), "Device " + device.getName() + ": unhandled state change: " + gattStatusToString(status));
-    			Relayr_BleListener.discoveredDevices.removeDevice(this.device);
-    			Log.d(Relayr_BleGattCallback.class.toString(), "Device " + device.getName() + ": removed because error in configuration process");
-    			gatt.close();
-    			if (this.device.connectionCallback != null) {
-        			this.device.connectionCallback.onError(this.device, gattStatusToString(status));
-        		}
+    			if (status != BluetoothGatt.GATT_SUCCESS) {
+    				if (this.device.getMode() == Relayr_BLEDeviceMode.UNKNOWN) {
+    					Log.d(Relayr_BleGattCallback.class.toString(), "Device " + device.getName() + ": unhandled state change: " + gattStatusToString(status));
+    					Relayr_BleListener.discoveredDevices.removeDevice(this.device);
+    					Log.d(Relayr_BleGattCallback.class.toString(), "Device " + device.getName() + ": removed because error in configuration process");
+    					gatt.close();
+    					if (this.device.connectionCallback != null) {
+    						this.device.connectionCallback.onError(this.device, gattStatusToString(status));
+    					}
+    				}
+    			}
     		}
     	}
     }
