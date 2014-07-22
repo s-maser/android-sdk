@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import android.annotation.TargetApi;
-import android.bluetooth.BluetoothGatt;
 import android.os.Build;
 
 import com.relayr.core.ble.device.Relayr_BLEDevice;
@@ -66,11 +65,7 @@ public class Relayr_DeviceManager {
 
 	protected void clearDiscoveredDevices() {
 		for (Relayr_BLEDevice device:discoveredDevices.values()) {
-			BluetoothGatt gatt = Relayr_DevicesGattManager.devicesGatt.get(device.getAddress());
-			if (gatt != null) {
-				gatt.close();
-			}
-			Relayr_DevicesGattManager.devicesGatt.remove(device.getAddress());
+			device.disconnect();
 		}
 		if (!discoveredDevices.isEmpty()) {
 			discoveredDevices.clear();
@@ -116,9 +111,8 @@ public class Relayr_DeviceManager {
 	protected void refreshDiscoveredDevices() {
 		for (Relayr_BLEDevice device:discoveredDevices.values()) {
 			if (device != null) {
-				if (Relayr_DevicesGattManager.devicesGatt.containsKey(device.getAddress()) && device.isConnected()) {
-					BluetoothGatt gatt = Relayr_DevicesGattManager.devicesGatt.get(device.getAddress());
-					gatt.discoverServices();
+				if (device.isConnected()) {
+					device.gatt.discoverServices();
 				} else {
 					device.setStatus(Relayr_BLEDeviceStatus.CONFIGURING);
 					device.connect();
@@ -152,7 +146,6 @@ public class Relayr_DeviceManager {
 
 
 	public void removeDevice(Relayr_BLEDevice device) {
-		Relayr_DevicesGattManager.removeDevice(device);
 		discoveredDevices.remove(device.getAddress());
 	}
 

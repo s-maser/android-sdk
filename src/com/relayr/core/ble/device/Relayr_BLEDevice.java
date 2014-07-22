@@ -16,7 +16,6 @@ import android.util.Log;
 import com.relayr.Relayr_Application;
 import com.relayr.core.ble.Relayr_BleGattCallback;
 import com.relayr.core.ble.Relayr_BleListener;
-import com.relayr.core.ble.Relayr_DevicesGattManager;
 import com.relayr.core.observers.Observable;
 import com.relayr.core.observers.Observer;
 import com.relayr.core.observers.Subscription;
@@ -24,7 +23,7 @@ import com.relayr.core.observers.Subscription;
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class Relayr_BLEDevice {
 
-	private BluetoothGatt gatt;
+	public BluetoothGatt gatt;
 	private Relayr_BLEDeviceStatus status;
 	private Relayr_BLEDeviceMode mode;
 	private BluetoothDevice bluetoothDevice;
@@ -128,13 +127,7 @@ public class Relayr_BLEDevice {
 					connectionCallback = callback;
 				}
 				if (status != Relayr_BLEDeviceStatus.CONNECTED) {
-					if (Relayr_DevicesGattManager.devicesGatt.containsKey(bluetoothDevice.getAddress())) {
-						gatt = Relayr_DevicesGattManager.devicesGatt.get(bluetoothDevice.getAddress());
-						gatt.connect();
-					} else {
-						gatt = bluetoothDevice.connectGatt(Relayr_Application.currentActivity(), true, new Relayr_BleGattCallback(device));
-						Relayr_DevicesGattManager.devicesGatt.put(bluetoothDevice.getAddress(), gatt);
-					}
+					gatt = bluetoothDevice.connectGatt(Relayr_Application.currentActivity(), true, new Relayr_BleGattCallback(device));
 					refreshDeviceCache(gatt);
 					if (status != Relayr_BLEDeviceStatus.CONFIGURING) {
 						setStatus(Relayr_BLEDeviceStatus.CONNECTING);
