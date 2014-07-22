@@ -150,6 +150,7 @@ public class Relayr_BLEDevice {
 						status = Relayr_BLEDeviceStatus.DISCONNECTING;
 					}
 					gatt.disconnect();
+					gatt.close();
 					gatt = null;
 				} else {
 					if (connectionCallback != null) {
