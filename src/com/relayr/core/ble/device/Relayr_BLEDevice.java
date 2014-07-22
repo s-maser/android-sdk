@@ -228,7 +228,7 @@ public class Relayr_BLEDevice {
 					}
 				} else {
 					if (connectionCallback != null) {
-		    			connectionCallback.onWriteError(device, Relayr_BLEDeviceCharacteristic.SENSOR_ID, "The device is not on ONBOARDING mode.");
+		    			connectionCallback.onWriteError(device, Relayr_BLEDeviceCharacteristic.SENSOR_ID, BluetoothGatt.GATT_FAILURE);
 		    		}
 				}
 			}
@@ -254,7 +254,7 @@ public class Relayr_BLEDevice {
 					}
 				} else {
 					if (connectionCallback != null) {
-		    			connectionCallback.onWriteError(device, Relayr_BLEDeviceCharacteristic.SENSOR_ID, "The device is not on ONBOARDING mode.");
+		    			connectionCallback.onWriteError(device, Relayr_BLEDeviceCharacteristic.SENSOR_ID, BluetoothGatt.GATT_FAILURE);
 		    		}
 				}
 			}
@@ -279,7 +279,7 @@ public class Relayr_BLEDevice {
 					}
 				} else {
 					if (connectionCallback != null) {
-		    			connectionCallback.onWriteError(device, Relayr_BLEDeviceCharacteristic.SENSOR_ID, "The device is not on ONBOARDING mode.");
+		    			connectionCallback.onWriteError(device, Relayr_BLEDeviceCharacteristic.SENSOR_ID, BluetoothGatt.GATT_FAILURE);
 		    		}
 				}
 			}

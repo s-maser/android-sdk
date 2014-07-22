@@ -130,7 +130,7 @@ public class Relayr_BleGattCallback extends BluetoothGattCallback {
     	}
     	default: {
     		if (device.connectionCallback != null) {
-    			device.connectionCallback.onWriteError(device, Relayr_BLEDeviceType.getDeviceCharacteristic(getShortUUID(characteristic.getUuid().toString())), gattStatusToString(status));
+    			device.connectionCallback.onWriteError(device, Relayr_BLEDeviceType.getDeviceCharacteristic(getShortUUID(characteristic.getUuid().toString())), status);
     		}
     		break;
     	}
