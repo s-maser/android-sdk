@@ -59,7 +59,7 @@ public class Relayr_BleListener {
 						}
 					}
 				});
-				scanner.setScanPeriod(7000);
+				scanner.setScanPeriod(-1);
 				return true;
 			}
 		}
