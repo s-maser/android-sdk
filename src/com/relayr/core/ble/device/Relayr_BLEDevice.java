@@ -39,7 +39,7 @@ public class Relayr_BLEDevice {
 		this.mode = Relayr_BLEDeviceMode.UNKNOWN;
 		this.type = Relayr_BLEDeviceType.getDeviceType(bluetoothDevice.getName());
 		currentService = null;
-		this.deviceValueObservable = new Observable<Relayr_BLEDeviceValue>();
+		this.deviceValueObservable = new Observable<>();
 	}
 
 	public String getName() {
@@ -163,10 +163,10 @@ public class Relayr_BLEDevice {
 	private String getModeString() {
 		switch(this.mode) {
 		case ONBOARDING: {
-			return "ON_BOARDING";
+			return "MODE_ON_BOARDING";
 		}
 		case DIRECTCONNECTION: {
-			return "DIRECT_CONNECTION";
+			return "MODE_DIRECT_CONNECTION";
 		}
 		default: {
 			return "UNKNOWN";
@@ -179,7 +179,7 @@ public class Relayr_BLEDevice {
             List<BluetoothGattCharacteristic> characteristics = currentService.getCharacteristics();
             for (BluetoothGattCharacteristic characteristic:characteristics) {
                 String characteristicUUID = getShortUUID(characteristic.getUuid().toString());
-                if (characteristicUUID.equals(Relayr_BLEDeviceType.configurationCharacteristicUUID)) {
+                if (characteristicUUID.equals(ShortUUID.CHARACTERISTIC_CONFIGURATION)) {
                     Log.d(Relayr_BleGattCallback.class.toString(), "Discovered configuration characteristic: " + characteristicUUID);
                     characteristic.setValue(newConfiguration);
                     boolean status = gatt.writeCharacteristic(characteristic);
@@ -190,15 +190,15 @@ public class Relayr_BLEDevice {
     }
 
 	public void writeSensorId(final byte[] sensorId) {
-        write(sensorId, Relayr_BLEDeviceType.sensorIDCharacteristicUUID, "sensorId");
+        write(sensorId, ShortUUID.CHARACTERISTIC_SENSOR_ID, "sensorId");
 	}
 
 	public void writePassKey(final byte[] passKey) {
-        write(passKey, Relayr_BLEDeviceType.passKeyCharacteristicUUID, "passKey");
+        write(passKey, ShortUUID.CHARACTERISTIC_PASS_KEY, "passKey");
 	}
 
 	public void writeOnBoardingFlag(final byte[] onBoardingFlag) {
-        write(onBoardingFlag, Relayr_BLEDeviceType.onBoardingFlagCharacteristicUUID, "onBoardingFlag");
+        write(onBoardingFlag, ShortUUID.CHARACTERISTIC_ON_BOARDING_FLAG, "onBoardingFlag");
 	}
 
     private void write(byte[] bytes, String characteristicUUID, String logName) {
@@ -239,7 +239,7 @@ public class Relayr_BLEDevice {
 
 	public Subscription<Relayr_BLEDeviceValue> subscribeToDeviceValueChanges(Observer<Relayr_BLEDeviceValue> observer) {
 		deviceValueObservable.addObserver(observer);
-		return new Subscription<Relayr_BLEDeviceValue>(observer, deviceValueObservable);
+		return new Subscription<>(observer, deviceValueObservable);
 	}
 
 	private String getShortUUID(String longUUID) {

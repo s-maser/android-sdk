@@ -1,8 +1,5 @@
 package com.relayr.core.ble;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
 import android.annotation.TargetApi;
 import android.os.Build;
 
@@ -13,19 +10,23 @@ import com.relayr.core.observers.Observable;
 import com.relayr.core.observers.Observer;
 import com.relayr.core.observers.Subscription;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class Relayr_DeviceManager {
 
 	private HashMap<String,Relayr_BLEDevice> discoveredDevices;
-	private Observable<ArrayList<Relayr_BLEDevice>> allDevicesObservable;
-	private Observable<ArrayList<Relayr_BLEDevice>> onBoardingDevicesObservable;
-	private Observable<ArrayList<Relayr_BLEDevice>> directConnectedDevicesObservable;
+	private Observable<List<Relayr_BLEDevice>> allDevicesObservable;
+	private Observable<List<Relayr_BLEDevice>> onBoardingDevicesObservable;
+	private Observable<List<Relayr_BLEDevice>> directConnectedDevicesObservable;
 
 	protected Relayr_DeviceManager() {
-		this.discoveredDevices = new HashMap<String,Relayr_BLEDevice>();
-		this.allDevicesObservable = new Observable<ArrayList<Relayr_BLEDevice>>();
-		this.onBoardingDevicesObservable = new Observable<ArrayList<Relayr_BLEDevice>>();
-		this.directConnectedDevicesObservable = new Observable<ArrayList<Relayr_BLEDevice>>();
+		this.discoveredDevices = new HashMap<>();
+		this.allDevicesObservable = new Observable<>();
+		this.onBoardingDevicesObservable = new Observable<>();
+		this.directConnectedDevicesObservable = new Observable<>();
 	}
 
 	protected void notifyDiscoveredDevice(Relayr_BLEDevice device) {
@@ -72,8 +73,8 @@ public class Relayr_DeviceManager {
 		}
 	}
 
-	private ArrayList<Relayr_BLEDevice> getOnBoardingDevices() {
-		ArrayList<Relayr_BLEDevice> list = new ArrayList<Relayr_BLEDevice>();
+	private List<Relayr_BLEDevice> getOnBoardingDevices() {
+		List<Relayr_BLEDevice> list = new ArrayList<>();
 
 		for (Relayr_BLEDevice device:discoveredDevices.values()) {
 			if ((device != null) && (device.getMode() == Relayr_BLEDeviceMode.ONBOARDING)) {
@@ -84,8 +85,8 @@ public class Relayr_DeviceManager {
 		return list;
 	}
 
-	private ArrayList<Relayr_BLEDevice> getDirectConnectedDevices() {
-		ArrayList<Relayr_BLEDevice> list = new ArrayList<Relayr_BLEDevice>();
+	private List<Relayr_BLEDevice> getDirectConnectedDevices() {
+		List<Relayr_BLEDevice> list = new ArrayList<>();
 
 		for (Relayr_BLEDevice device:discoveredDevices.values()) {
 			if ((device != null) &&(device.getMode() == Relayr_BLEDeviceMode.DIRECTCONNECTION)) {
@@ -96,8 +97,8 @@ public class Relayr_DeviceManager {
 		return list;
 	}
 
-	private ArrayList<Relayr_BLEDevice> getAllConfiguredDevices() {
-		ArrayList<Relayr_BLEDevice> list = new ArrayList<Relayr_BLEDevice>();
+	private List<Relayr_BLEDevice> getAllConfiguredDevices() {
+		List<Relayr_BLEDevice> list = new ArrayList<>();
 
 		for (Relayr_BLEDevice device:discoveredDevices.values()) {
 			if ((device != null) && (device.getMode() != Relayr_BLEDeviceMode.UNKNOWN)) {
@@ -130,19 +131,19 @@ public class Relayr_DeviceManager {
 		directConnectedDevicesObservable.notifyObservers(getDirectConnectedDevices());
 	}
 
-	public Subscription<ArrayList<Relayr_BLEDevice>> subscribeToAllDevicesList(Observer<ArrayList<Relayr_BLEDevice>> observer) {
+	public Subscription<List<Relayr_BLEDevice>> subscribeToAllDevicesList(Observer<List<Relayr_BLEDevice>> observer) {
 		allDevicesObservable.addObserver(observer);
-		return new Subscription<ArrayList<Relayr_BLEDevice>>(observer, allDevicesObservable);
+		return new Subscription<>(observer, allDevicesObservable);
 	}
 
-	public Subscription<ArrayList<Relayr_BLEDevice>> subscribeToOnBoardingDevicesList(Observer<ArrayList<Relayr_BLEDevice>> observer) {
+	public Subscription<List<Relayr_BLEDevice>> subscribeToOnBoardingDevicesList(Observer<List<Relayr_BLEDevice>> observer) {
 		onBoardingDevicesObservable.addObserver(observer);
-		return new Subscription<ArrayList<Relayr_BLEDevice>>(observer, onBoardingDevicesObservable);
+		return new Subscription<>(observer, onBoardingDevicesObservable);
 	}
 
-	public Subscription<ArrayList<Relayr_BLEDevice>> subscribeToDirectConnectedDevicesList(Observer<ArrayList<Relayr_BLEDevice>> observer) {
+	public Subscription<List<Relayr_BLEDevice>> subscribeToDirectConnectedDevicesList(Observer<List<Relayr_BLEDevice>> observer) {
 		directConnectedDevicesObservable.addObserver(observer);
-		return new Subscription<ArrayList<Relayr_BLEDevice>>(observer, directConnectedDevicesObservable);
+		return new Subscription<>(observer, directConnectedDevicesObservable);
 	}
 
 

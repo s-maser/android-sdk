@@ -1,8 +1,5 @@
 package com.relayr.core.ble;
 
-import java.util.ArrayList;
-import java.util.UUID;
-
 import android.annotation.TargetApi;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
@@ -14,12 +11,18 @@ import android.os.Build;
 import android.util.Log;
 
 import com.relayr.core.ble.device.Relayr_BLEDevice;
+import com.relayr.core.ble.device.Relayr_BLEDeviceCharacteristic;
 import com.relayr.core.ble.device.Relayr_BLEDeviceMode;
 import com.relayr.core.ble.device.Relayr_BLEDeviceStatus;
-import com.relayr.core.ble.device.Relayr_BLEDeviceType;
+import com.relayr.core.ble.device.ShortUUID;
+
+import java.util.List;
+import java.util.UUID;
 
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class Relayr_BleGattCallback extends BluetoothGattCallback {
+
+    private static final String TAG = Relayr_BleGattCallback.class.toString();
 
 	Relayr_BLEDevice device;
 	private UUID RELAYR_NOTIFICATION_CHARACTERISTIC = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
@@ -31,16 +34,16 @@ public class Relayr_BleGattCallback extends BluetoothGattCallback {
 
     @Override
     public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
-    	Log.d(Relayr_BleGattCallback.class.toString(), "onConnectionStateChange");
+    	Log.d(TAG, "onConnectionStateChange");
     	if (status == BluetoothGatt.GATT_SUCCESS && newState == BluetoothProfile.STATE_CONNECTED) {
-    		Log.d(Relayr_BleGattCallback.class.toString(), "Device " + this.device.getName() + " connected");
+    		Log.d(TAG, "Device " + this.device.getName() + " connected");
     		if (this.device.getStatus() != Relayr_BLEDeviceStatus.CONFIGURING) {
     			this.device.setStatus(Relayr_BLEDeviceStatus.CONNECTED);
     			if (this.device.connectionCallback != null) {
-        			Log.d(Relayr_BleGattCallback.class.toString(), "Callback detected: sending onConnect event to " + device.getName());
+        			Log.d(TAG, "Callback detected: sending onConnect event to " + device.getName());
         			this.device.connectionCallback.onConnect(this.device);
         		} else {
-        			Log.d(Relayr_BleGattCallback.class.toString(), "Callback not detected: not sending onConnect event to " + device.getName());
+        			Log.d(TAG, "Callback not detected: not sending onConnect event to " + device.getName());
         		}
     		} else {
     			gatt.discoverServices();
@@ -50,36 +53,36 @@ public class Relayr_BleGattCallback extends BluetoothGattCallback {
     			if (this.device.getStatus() != Relayr_BLEDeviceStatus.CONFIGURING) {
     				this.device.setStatus(Relayr_BLEDeviceStatus.DISCONNECTED);
         			if (this.device.connectionCallback != null) {
-        				Log.d(Relayr_BleGattCallback.class.toString(), "Callback detected: sending onDisconnect event to " + device.getName());
+        				Log.d(TAG, "Callback detected: sending onDisconnect event to " + device.getName());
             			this.device.connectionCallback.onDisconnect(this.device);
             		} else {
-            			Log.d(Relayr_BleGattCallback.class.toString(), "Callback not detected: not sending onDisconnect event to " + device.getName());
+            			Log.d(TAG, "Callback not detected: not sending onDisconnect event to " + device.getName());
             		}
     			} else {
     				this.device.setStatus(Relayr_BLEDeviceStatus.DISCONNECTED);
-    				Log.d(Relayr_BleGattCallback.class.toString(), "Device " + device.getName() + " configured");
+    				Log.d(TAG, "Device " + device.getName() + " configured");
     				if (!Relayr_BleListener.discoveredDevices.isFullyConfigured(this.device.getAddress())) {
         				Relayr_BleListener.discoveredDevices.addNewDevice(this.device.getAddress(), this.device);
-        				Log.d(Relayr_BleGattCallback.class.toString(), "Device " + device.getName() + " added to discovered devices");
+        				Log.d(TAG, "Device " + device.getName() + " added to discovered devices");
     					Relayr_BleListener.discoveredDevices.notifyDiscoveredDevice(this.device);
     				}
     			}
-    			Log.d(Relayr_BleGattCallback.class.toString(), "Device disconnected");
+    			Log.d(TAG, "Device disconnected");
     		} else {
     			if (isFailureStatus(status)) {
     				if (this.device.getMode() == Relayr_BLEDeviceMode.UNKNOWN) {
-    					Log.d(Relayr_BleGattCallback.class.toString(), "Device " + device.getName() + ": unhandled state change without configuration: " + gattStatusToString(status));
+    					Log.d(TAG, "Device " + device.getName() + ": unhandled state change without configuration: " + gattStatusToString(status));
     					Relayr_BleListener.discoveredDevices.removeDevice(this.device);
-    					Log.d(Relayr_BleGattCallback.class.toString(), "Device " + device.getName() + ": removed because error in configuration process");
+    					Log.d(TAG, "Device " + device.getName() + ": removed because error in configuration process");
     					gatt.close();
     					if (this.device.connectionCallback != null) {
     						this.device.connectionCallback.onError(this.device, gattStatusToString(status));
     					}
     				} else {
-    					Log.d(Relayr_BleGattCallback.class.toString(), "Device " + device.getName() + ": unhandled state change configured: " + gattStatusToString(status));
+    					Log.d(TAG, "Device " + device.getName() + ": unhandled state change configured: " + gattStatusToString(status));
     				}
     			} else {
-    				Log.d(Relayr_BleGattCallback.class.toString(), "Device " + device.getName() + ": unhandled state change: " + gattStatusToString(status));
+    				Log.d(TAG, "Device " + device.getName() + ": unhandled state change: " + gattStatusToString(status));
     			}
     		}
     	}
@@ -87,11 +90,11 @@ public class Relayr_BleGattCallback extends BluetoothGattCallback {
 
     @Override
     public void onServicesDiscovered(BluetoothGatt gatt, int status) {
-    	ArrayList<BluetoothGattService> services = (ArrayList<BluetoothGattService>) gatt.getServices();
+    	List<BluetoothGattService> services = gatt.getServices();
     	for (BluetoothGattService service:services) {
     		String serviceUUID = getShortUUID(service.getUuid().toString());
-    		Log.d(Relayr_BleGattCallback.class.toString(), "Discovered service on device " + device.getName() + ": " + serviceUUID);
-			if (serviceUUID.equals(Relayr_BLEDeviceType.directConnectionUUID)) {
+    		Log.d(TAG, "Discovered service on device " + device.getName() + ": " + serviceUUID);
+			if (serviceUUID.equals(ShortUUID.MODE_DIRECT_CONNECTION)) {
     			setupDeviceForDirectConnectionMode(service, gatt);
     			this.device.setMode(Relayr_BLEDeviceMode.DIRECTCONNECTION);
     			if (this.device.getStatus() == Relayr_BLEDeviceStatus.CONFIGURING) {
@@ -99,7 +102,7 @@ public class Relayr_BleGattCallback extends BluetoothGattCallback {
     			}
     			break;
     		}
-    		if (serviceUUID.equals(Relayr_BLEDeviceType.onBoardingUUID)) {
+    		if (serviceUUID.equals(ShortUUID.MODE_ON_BOARDING)) {
     			setupDeviceForOnBoardingConnectionMode(service, gatt);
     			this.device.setMode(Relayr_BLEDeviceMode.ONBOARDING);
     			this.device.setStatus(Relayr_BLEDeviceStatus.CONNECTED);
@@ -119,18 +122,18 @@ public class Relayr_BleGattCallback extends BluetoothGattCallback {
 
     @Override
     public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
-    	Log.d(Relayr_BleGattCallback.class.toString(), "Characteristic wrote on device " + device.getName() + ": " + characteristic.getUuid());
-    	Log.d(Relayr_BleGattCallback.class.toString(), "Characteristic wrote status on device " + device.getName() + ": " + gattStatusToString(status));
+    	Log.d(TAG, "Characteristic wrote on device " + device.getName() + ": " + characteristic.getUuid());
+    	Log.d(TAG, "Characteristic wrote status on device " + device.getName() + ": " + gattStatusToString(status));
     	switch (status) {
     	case BluetoothGatt.GATT_SUCCESS: {
     		if (device.connectionCallback != null) {
-    			device.connectionCallback.onWriteSucess(device, Relayr_BLEDeviceType.getDeviceCharacteristic(getShortUUID(characteristic.getUuid().toString())));
+    			device.connectionCallback.onWriteSucess(device, Relayr_BLEDeviceCharacteristic.from(getShortUUID(characteristic.getUuid().toString())));
     		}
     		break;
     	}
     	default: {
     		if (device.connectionCallback != null) {
-    			device.connectionCallback.onWriteError(device, Relayr_BLEDeviceType.getDeviceCharacteristic(getShortUUID(characteristic.getUuid().toString())), status);
+    			device.connectionCallback.onWriteError(device, Relayr_BLEDeviceCharacteristic.from(getShortUUID(characteristic.getUuid().toString())), status);
     		}
     		break;
     	}
@@ -192,11 +195,11 @@ public class Relayr_BleGattCallback extends BluetoothGattCallback {
 
     private void setupDeviceForDirectConnectionMode(BluetoothGattService service, BluetoothGatt gatt) {
     	this.device.currentService = service;
-    	Log.d(Relayr_BleGattCallback.class.toString(), "New mode on device " + device.getName() + ": Direct connection");
-    	ArrayList<BluetoothGattCharacteristic> characteristics = (ArrayList<BluetoothGattCharacteristic>) service.getCharacteristics();
+    	Log.d(TAG, "New mode on device " + device.getName() + ": Direct connection");
+    	List<BluetoothGattCharacteristic> characteristics = service.getCharacteristics();
     	for (BluetoothGattCharacteristic characteristic:characteristics) {
     		String characteristicUUID = getShortUUID(characteristic.getUuid().toString());
-    		if (characteristicUUID.equals(Relayr_BLEDeviceType.dataReadCharacteristicUUID)) {
+    		if (characteristicUUID.equals(ShortUUID.CHARACTERISTIC_DATA_READ)) {
     			gatt.setCharacteristicNotification(characteristic, true);
     			BluetoothGattDescriptor descriptor = characteristic.getDescriptor(RELAYR_NOTIFICATION_CHARACTERISTIC);
     			descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
@@ -207,6 +210,6 @@ public class Relayr_BleGattCallback extends BluetoothGattCallback {
 
     private void setupDeviceForOnBoardingConnectionMode(BluetoothGattService service, BluetoothGatt gatt) {
     	this.device.currentService = service;
-    	Log.d(Relayr_BleGattCallback.class.toString(), "Device new mode on device " + device.getName() + ": on boarding");
+    	Log.d(TAG, "Device new mode on device " + device.getName() + ": on boarding");
     }
 }

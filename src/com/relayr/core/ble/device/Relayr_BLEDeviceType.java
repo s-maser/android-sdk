@@ -11,14 +11,6 @@ public enum Relayr_BLEDeviceType {
 	WunderbarApp,
 	Unknown;
 
-	public static String onBoardingUUID = "2001";
-	public static String directConnectionUUID = "2002"; //"2000";
-	public static String dataReadCharacteristicUUID = "2008";
-	public static String configurationCharacteristicUUID = "2007";
-	public static String sensorIDCharacteristicUUID = "2010";
-	public static String passKeyCharacteristicUUID = "2018";
-	public static String onBoardingFlagCharacteristicUUID = "2019";
-
 	public static Relayr_BLEDeviceType getDeviceType(String deviceName) {
 		if (deviceName != null) {
 			if (deviceName.equals("WunderbarHTU")) {
@@ -44,21 +36,5 @@ public enum Relayr_BLEDeviceType {
 			}
 		}
 		return Unknown;
-	}
-
-	public static Relayr_BLEDeviceCharacteristic getDeviceCharacteristic(String uuid) {
-		if (uuid.equals(configurationCharacteristicUUID)) {
-			return Relayr_BLEDeviceCharacteristic.CONFIGURATION;
-		}
-		if (uuid.equals(sensorIDCharacteristicUUID)) {
-			return Relayr_BLEDeviceCharacteristic.SENSOR_ID;
-		}
-		if (uuid.equals(passKeyCharacteristicUUID)) {
-			return Relayr_BLEDeviceCharacteristic.PASS_KEY;
-		}
-		if (uuid.equals(onBoardingFlagCharacteristicUUID)) {
-			return Relayr_BLEDeviceCharacteristic.ON_BOARDING_FLAG;
-		}
-		return Relayr_BLEDeviceCharacteristic.UNKNOWN;
 	}
 }
