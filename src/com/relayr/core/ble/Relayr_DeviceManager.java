@@ -65,7 +65,7 @@ public class Relayr_DeviceManager {
 
 	protected void clearDiscoveredDevices() {
 		for (Relayr_BLEDevice device:discoveredDevices.values()) {
-			device.disconnect();
+			if (device != null) device.disconnect();
 		}
 		if (!discoveredDevices.isEmpty()) {
 			discoveredDevices.clear();
