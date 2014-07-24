@@ -112,6 +112,7 @@ public class Relayr_DeviceManager {
 		for (Relayr_BLEDevice device:discoveredDevices.values()) {
 			if (device != null) {
 				if (device.isConnected()) {
+					device.refreshDeviceCache(device.gatt);
 					device.gatt.discoverServices();
 				} else {
 					device.setStatus(Relayr_BLEDeviceStatus.CONFIGURING);

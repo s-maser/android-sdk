@@ -222,7 +222,7 @@ public class Relayr_BLEDevice {
         }
     }
 
- 	private boolean refreshDeviceCache(BluetoothGatt gatt){
+ 	public boolean refreshDeviceCache(BluetoothGatt gatt){
 	    try {
 	        BluetoothGatt localBluetoothGatt = gatt;
 	        Method localMethod = localBluetoothGatt.getClass().getMethod("refresh", new Class[0]);
