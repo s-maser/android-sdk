@@ -114,7 +114,13 @@ public class Relayr_DeviceManager {
 			if (device != null) {
 				if (device.isConnected()) {
 					device.refreshDeviceCache(device.gatt);
-					device.gatt.discoverServices();
+                    try {
+                        device.gatt.discoverServices();
+                    } catch (Exception e) { //DeadObjectException
+                        device.disconnect();
+                        device.setStatus(Relayr_BLEDeviceStatus.CONFIGURING);
+                        device.connect();
+                    }
 				} else {
 					device.setStatus(Relayr_BLEDeviceStatus.CONFIGURING);
 					device.connect();
