@@ -104,7 +104,7 @@ public class Relayr_BleListener {
     }
 
     public static void stop() {
-        if (!Relayr_Commons.isSDK18()) return;
+        if (!Relayr_Commons.isSDK18() || scanner == null) return;
         scanner.stop();
         Log.d(TAG, "Scanner stop: " + scanner.toString());
     }
