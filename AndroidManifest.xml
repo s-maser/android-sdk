@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.relayr"
+    package="io.relayr"
     android:versionCode="1"
     android:versionName="Test">
       <uses-sdk
