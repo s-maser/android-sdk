@@ -88,7 +88,7 @@ class BleDeviceGattManager extends BluetoothGattCallback {
     	for (BluetoothGattService service:services) {
     		String serviceUUID = getShortUUID(service.getUuid().toString());
     		Log.d(TAG, "Discovered service on device " + mDevice.getName() + ": " + serviceUUID);
-			if (serviceUUID.equals(ShortUUID.MODE_DIRECT_CONNECTION)) {
+			if (serviceUUID.equals(BleShortUUID.MODE_DIRECT_CONNECTION)) {
     			setupDeviceForDirectConnectionMode(service, gatt);
     			mDevice.setMode(BleDeviceMode.DIRECTCONNECTION);
     			if (mDevice.getStatus() == BleDeviceStatus.CONFIGURING) {
@@ -96,7 +96,7 @@ class BleDeviceGattManager extends BluetoothGattCallback {
     			}
     			break;
     		}
-    		if (serviceUUID.equals(ShortUUID.MODE_ON_BOARDING)) {
+    		if (serviceUUID.equals(BleShortUUID.MODE_ON_BOARDING)) {
     			setupDeviceForOnBoardingConnectionMode(service, gatt);
     			mDevice.setMode(BleDeviceMode.ONBOARDING);
     			mDevice.setStatus(BleDeviceStatus.CONNECTED);
@@ -118,13 +118,13 @@ class BleDeviceGattManager extends BluetoothGattCallback {
     	switch (status) {
     	case BluetoothGatt.GATT_SUCCESS: {
     		if (mDevice.connectionCallback != null) {
-    			mDevice.connectionCallback.onWriteSuccess(mDevice, DeviceCharacteristic.from(characteristic));
+    			mDevice.connectionCallback.onWriteSuccess(mDevice, BleDeviceCharacteristic.from(characteristic));
     		}
     		break;
     	}
     	default: {
     		if (mDevice.connectionCallback != null) {
-    			mDevice.connectionCallback.onWriteError(mDevice, DeviceCharacteristic.from(characteristic), status);
+    			mDevice.connectionCallback.onWriteError(mDevice, BleDeviceCharacteristic.from(characteristic), status);
     		}
     		break;
     	}
@@ -186,7 +186,7 @@ class BleDeviceGattManager extends BluetoothGattCallback {
     	List<BluetoothGattCharacteristic> characteristics = service.getCharacteristics();
     	for (BluetoothGattCharacteristic characteristic:characteristics) {
     		String characteristicUUID = getShortUUID(characteristic.getUuid().toString());
-    		if (characteristicUUID.equals(ShortUUID.CHARACTERISTIC_DATA_READ)) {
+    		if (characteristicUUID.equals(BleShortUUID.CHARACTERISTIC_DATA_READ)) {
     			gatt.setCharacteristicNotification(characteristic, true);
     			BluetoothGattDescriptor descriptor = characteristic.getDescriptor(RELAYR_NOTIFICATION_CHARACTERISTIC);
     			descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);

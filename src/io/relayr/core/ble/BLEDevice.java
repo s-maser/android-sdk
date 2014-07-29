@@ -26,8 +26,8 @@ public class BleDevice {
 	private byte[] value;
 	private BleDeviceType type;
 	public BluetoothGattService currentService;
-	public DeviceConnectionCallback connectionCallback;
-	private Observable<DeviceValue> deviceValueObservable;
+	public BleDeviceConnectionCallback connectionCallback;
+	private Observable<BleDeviceValue> deviceValueObservable;
     private final BleDeviceEventCallback mModeSwitchCallback;
 
 	public BleDevice(BluetoothDevice bluetoothDevice, BleDeviceEventCallback modeSwitchCallback) {
@@ -65,7 +65,7 @@ public class BleDevice {
 		this.mode = mode;
 		notifyModeSwitch(oldMode);
 		notifyModeSwitch(mode);
-		DeviceValue model = new DeviceValue(value, BleDataParser.getFormattedValue(type, value));
+		BleDeviceValue model = new BleDeviceValue(value, BleDataParser.getFormattedValue(type, value));
 		deviceValueObservable.notifyObservers(model);
 	}
 
@@ -75,7 +75,7 @@ public class BleDevice {
 
 	public void setValue(byte[] value) {
 		this.value = value;
-		DeviceValue model = new DeviceValue(value, BleDataParser.getFormattedValue(type, value));
+		BleDeviceValue model = new BleDeviceValue(value, BleDataParser.getFormattedValue(type, value));
 		deviceValueObservable.notifyObservers(model);
 	}
 
@@ -87,7 +87,7 @@ public class BleDevice {
 		connect(null);
 	}
 
-	public void connect(final DeviceConnectionCallback callback) {
+	public void connect(final BleDeviceConnectionCallback callback) {
         if (callback != null) {
             connectionCallback = callback;
         }
@@ -147,7 +147,7 @@ public class BleDevice {
             List<BluetoothGattCharacteristic> characteristics = currentService.getCharacteristics();
             for (BluetoothGattCharacteristic characteristic:characteristics) {
                 String characteristicUUID = getShortUUID(characteristic.getUuid().toString());
-                if (characteristicUUID.equals(ShortUUID.CHARACTERISTIC_CONFIGURATION)) {
+                if (characteristicUUID.equals(BleShortUUID.CHARACTERISTIC_CONFIGURATION)) {
                     Log.d(BleDeviceGattManager.class.toString(), "Discovered configuration characteristic: " + characteristicUUID);
                     characteristic.setValue(newConfiguration);
                     boolean status = gatt.writeCharacteristic(characteristic);
@@ -158,15 +158,15 @@ public class BleDevice {
     }
 
 	public void writeSensorId(final byte[] sensorId) {
-        write(sensorId, ShortUUID.CHARACTERISTIC_SENSOR_ID, "sensorId");
+        write(sensorId, BleShortUUID.CHARACTERISTIC_SENSOR_ID, "sensorId");
 	}
 
 	public void writePassKey(final byte[] passKey) {
-        write(passKey, ShortUUID.CHARACTERISTIC_PASS_KEY, "passKey");
+        write(passKey, BleShortUUID.CHARACTERISTIC_PASS_KEY, "passKey");
 	}
 
 	public void writeOnBoardingFlag(final byte[] onBoardingFlag) {
-        write(onBoardingFlag, ShortUUID.CHARACTERISTIC_ON_BOARDING_FLAG, "onBoardingFlag");
+        write(onBoardingFlag, BleShortUUID.CHARACTERISTIC_ON_BOARDING_FLAG, "onBoardingFlag");
 	}
 
     private void write(byte[] bytes, String characteristicUUID, String logName) {
@@ -185,7 +185,7 @@ public class BleDevice {
             }
         } else {
             if (connectionCallback != null) {
-                connectionCallback.onWriteError(this, DeviceCharacteristic.SENSOR_ID, BluetoothGatt.GATT_FAILURE);
+                connectionCallback.onWriteError(this, BleDeviceCharacteristic.SENSOR_ID, BluetoothGatt.GATT_FAILURE);
             }
         }
     }
@@ -205,7 +205,7 @@ public class BleDevice {
 	    return false;
 	}
 
-	public Subscription<DeviceValue> subscribeToDeviceValueChanges(Observer<DeviceValue> observer) {
+	public Subscription<BleDeviceValue> subscribeToDeviceValueChanges(Observer<BleDeviceValue> observer) {
 		deviceValueObservable.addObserver(observer);
 		return new Subscription<>(observer, deviceValueObservable);
 	}

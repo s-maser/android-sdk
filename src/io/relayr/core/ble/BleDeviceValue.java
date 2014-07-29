@@ -2,12 +2,12 @@ package io.relayr.core.ble;
 
 import org.json.JSONObject;
 
-class DeviceValue {
+class BleDeviceValue {
 
 	private final byte[] rawValue;
 	private final JSONObject formattedValue;
 
-	public DeviceValue(byte[] rawValue, JSONObject formattedValue) {
+	public BleDeviceValue(byte[] rawValue, JSONObject formattedValue) {
 		this.rawValue = rawValue;
 		this.formattedValue = formattedValue;
 	}
