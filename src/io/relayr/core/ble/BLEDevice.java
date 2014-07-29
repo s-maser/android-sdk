@@ -1,4 +1,4 @@
-package io.relayr.core.ble.device;
+package io.relayr.core.ble;
 
 import android.annotation.TargetApi;
 import android.bluetooth.BluetoothDevice;
@@ -8,36 +8,34 @@ import android.bluetooth.BluetoothGattService;
 import android.os.Build;
 import android.util.Log;
 
+import java.lang.reflect.Method;
+import java.util.List;
+
 import io.relayr.Relayr_Application;
-import io.relayr.core.ble.Relayr_BleGattCallback;
-import io.relayr.core.ble.Relayr_BleListener;
 import io.relayr.core.observers.Observable;
 import io.relayr.core.observers.Observer;
 import io.relayr.core.observers.Subscription;
 
-import org.json.JSONObject;
-
-import java.lang.reflect.Method;
-import java.util.List;
-
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
-public class Relayr_BLEDevice {
+public class BleDevice {
 
 	public BluetoothGatt gatt;
-	private Relayr_BLEDeviceStatus status;
-	private Relayr_BLEDeviceMode mode;
+	private BleDeviceStatus status;
+	private BleDeviceMode mode;
 	private BluetoothDevice bluetoothDevice;
 	private byte[] value;
-	private Relayr_BLEDeviceType type;
+	private BleDeviceType type;
 	public BluetoothGattService currentService;
-	public Relayr_BLEDeviceConnectionCalback connectionCallback;
-	private Observable<Relayr_BLEDeviceValue> deviceValueObservable;
+	public DeviceConnectionCallback connectionCallback;
+	private Observable<DeviceValue> deviceValueObservable;
+    private final BleDeviceEventCallback mModeSwitchCallback;
 
-	public Relayr_BLEDevice(BluetoothDevice bluetoothDevice) {
+	public BleDevice(BluetoothDevice bluetoothDevice, BleDeviceEventCallback modeSwitchCallback) {
+        mModeSwitchCallback = modeSwitchCallback;
 		this.bluetoothDevice = bluetoothDevice;
-		this.status = Relayr_BLEDeviceStatus.DISCONNECTED;
-		this.mode = Relayr_BLEDeviceMode.UNKNOWN;
-		this.type = Relayr_BLEDeviceType.getDeviceType(bluetoothDevice.getName());
+		this.status = BleDeviceStatus.DISCONNECTED;
+		this.mode = BleDeviceMode.UNKNOWN;
+		this.type = BleDeviceType.getDeviceType(bluetoothDevice.getName());
 		currentService = null;
 		this.deviceValueObservable = new Observable<>();
 	}
@@ -50,68 +48,38 @@ public class Relayr_BLEDevice {
 		return bluetoothDevice.getAddress();
 	}
 
-	public Relayr_BLEDeviceStatus getStatus() {
+	public BleDeviceStatus getStatus() {
 		return status;
 	}
 
-	public void setStatus(Relayr_BLEDeviceStatus status) {
+	public void setStatus(BleDeviceStatus status) {
 		this.status = status;
 	}
 
-	public Relayr_BLEDeviceMode getMode() {
+	public BleDeviceMode getMode() {
 		return mode;
 	}
 
-	public void setMode(Relayr_BLEDeviceMode mode) {
-		Relayr_BLEDeviceMode oldMode = this.mode;
+	public void setMode(BleDeviceMode mode) {
+		BleDeviceMode oldMode = this.mode;
 		this.mode = mode;
 		notifyModeSwitch(oldMode);
 		notifyModeSwitch(mode);
-		Relayr_BLEDeviceValue model = new Relayr_BLEDeviceValue(value, getFormattedValue());
+		DeviceValue model = new DeviceValue(value, BleDataParser.getFormattedValue(type, value));
 		deviceValueObservable.notifyObservers(model);
 	}
 
-	private void notifyModeSwitch(Relayr_BLEDeviceMode mode) {
-		if (Relayr_BleListener.discoveredDevices.isFullyConfigured(getAddress())) {
-			switch (mode) {
-			case ONBOARDING: {
-				Relayr_BleListener.discoveredDevices.onBoardingDeviceListUpdate();
-				break;
-			}
-			case DIRECTCONNECTION: {
-				Relayr_BleListener.discoveredDevices.directConnectedDeviceListUpdate();
-				break;
-			}
-			default:break;
-			}
-		}
-	}
-
-	private JSONObject getFormattedValue() {
-		switch (type) {
-			case WunderbarLIGHT: {
-				return Relayr_BLEDeviceDataAdapter.getLIGHTSensorData(value);
-			}
-			case WunderbarGYRO: {
-				return Relayr_BLEDeviceDataAdapter.getGYROSensorData(value);
-			}
-			case WunderbarHTU: {
-				return Relayr_BLEDeviceDataAdapter.getHTUSensorData(value);
-			}
-			case WunderbarMIC: {
-				return Relayr_BLEDeviceDataAdapter.getMICSensorData(value);
-			}
-			default: return new JSONObject();
-		}
+	private void notifyModeSwitch(BleDeviceMode mode) {
+        mModeSwitchCallback.onModeSwitch(mode, this);
 	}
 
 	public void setValue(byte[] value) {
 		this.value = value;
-		Relayr_BLEDeviceValue model = new Relayr_BLEDeviceValue(value, getFormattedValue());
+		DeviceValue model = new DeviceValue(value, BleDataParser.getFormattedValue(type, value));
 		deviceValueObservable.notifyObservers(model);
 	}
 
-	public Relayr_BLEDeviceType getType() {
+	public BleDeviceType getType() {
 		return type;
 	}
 
@@ -119,15 +87,15 @@ public class Relayr_BLEDevice {
 		connect(null);
 	}
 
-	public void connect(final Relayr_BLEDeviceConnectionCalback callback) {
+	public void connect(final DeviceConnectionCallback callback) {
         if (callback != null) {
             connectionCallback = callback;
         }
-        if (status != Relayr_BLEDeviceStatus.CONNECTED) {
-            gatt = bluetoothDevice.connectGatt(Relayr_Application.currentActivity(), true, new Relayr_BleGattCallback(this));
-            refreshDeviceCache(gatt);
-            if (status != Relayr_BLEDeviceStatus.CONFIGURING) {
-                setStatus(Relayr_BLEDeviceStatus.CONNECTING);
+        if (status != BleDeviceStatus.CONNECTED) {
+            gatt = bluetoothDevice.connectGatt(Relayr_Application.currentActivity(), true, new BleDeviceGattManager(this, mModeSwitchCallback));
+            refreshDeviceCache();
+            if (status != BleDeviceStatus.CONFIGURING) {
+                setStatus(BleDeviceStatus.CONNECTING);
             }
         } else {
             if (connectionCallback != null) {
@@ -138,8 +106,8 @@ public class Relayr_BLEDevice {
 
 	public void disconnect() {
         if (gatt != null) {
-            if (status != Relayr_BLEDeviceStatus.CONFIGURING) {
-                status = Relayr_BLEDeviceStatus.DISCONNECTING;
+            if (status != BleDeviceStatus.CONFIGURING) {
+                status = BleDeviceStatus.DISCONNECTING;
             }
             gatt.disconnect();
             gatt.close();
@@ -175,15 +143,15 @@ public class Relayr_BLEDevice {
 	}
 
 	public void updateConfiguration(final byte[] newConfiguration) {
-        if (currentService != null && mode == Relayr_BLEDeviceMode.DIRECTCONNECTION) {
+        if (currentService != null && mode == BleDeviceMode.DIRECTCONNECTION) {
             List<BluetoothGattCharacteristic> characteristics = currentService.getCharacteristics();
             for (BluetoothGattCharacteristic characteristic:characteristics) {
                 String characteristicUUID = getShortUUID(characteristic.getUuid().toString());
                 if (characteristicUUID.equals(ShortUUID.CHARACTERISTIC_CONFIGURATION)) {
-                    Log.d(Relayr_BleGattCallback.class.toString(), "Discovered configuration characteristic: " + characteristicUUID);
+                    Log.d(BleDeviceGattManager.class.toString(), "Discovered configuration characteristic: " + characteristicUUID);
                     characteristic.setValue(newConfiguration);
                     boolean status = gatt.writeCharacteristic(characteristic);
-                    Log.d(Relayr_BleGattCallback.class.toString(), "Write action on configuration characteristic: " + (status?"done":"undone"));
+                    Log.d(BleDeviceGattManager.class.toString(), "Write action on configuration characteristic: " + (status?"done":"undone"));
                 }
             }
         }
@@ -203,15 +171,15 @@ public class Relayr_BLEDevice {
 
     private void write(byte[] bytes, String characteristicUUID, String logName) {
         assert(bytes != null);
-        if (currentService != null && mode == Relayr_BLEDeviceMode.ONBOARDING) {
+        if (currentService != null && mode == BleDeviceMode.ONBOARDING) {
             List<BluetoothGattCharacteristic> characteristics = currentService.getCharacteristics();
             for (BluetoothGattCharacteristic characteristic:characteristics) {
                 String deviceCharacteristicUUID = getShortUUID(characteristic.getUuid().toString());
                 if ((deviceCharacteristicUUID.equals(characteristicUUID))) {
-                    Log.d(Relayr_BleGattCallback.class.toString(), "Discovered " + logName + " characteristic: " + characteristicUUID);
+                    Log.d(BleDeviceGattManager.class.toString(), "Discovered " + logName + " characteristic: " + characteristicUUID);
                     characteristic.setValue(bytes);
                     boolean status = gatt.writeCharacteristic(characteristic);
-                    Log.d(Relayr_BleGattCallback.class.toString(), "Write action " + logName + " characteristic: " + (status?"done":"undone"));
+                    Log.d(BleDeviceGattManager.class.toString(), "Write action " + logName + " characteristic: " + (status?"done":"undone"));
                     break;
                 }
             }
@@ -222,7 +190,7 @@ public class Relayr_BLEDevice {
         }
     }
 
- 	public boolean refreshDeviceCache(BluetoothGatt gatt){
+ 	public boolean refreshDeviceCache() {
 	    try {
 	        BluetoothGatt localBluetoothGatt = gatt;
 	        Method localMethod = localBluetoothGatt.getClass().getMethod("refresh", new Class[0]);
@@ -232,17 +200,28 @@ public class Relayr_BLEDevice {
 	         }
 	    }
 	    catch (Exception localException) {
-	        Log.e(Relayr_BLEDevice.class.toString(), "An exception occurred while refreshing device");
+	        Log.e(BleDevice.class.toString(), "An exception occurred while refreshing device");
 	    }
 	    return false;
 	}
 
-	public Subscription<Relayr_BLEDeviceValue> subscribeToDeviceValueChanges(Observer<Relayr_BLEDeviceValue> observer) {
+	public Subscription<DeviceValue> subscribeToDeviceValueChanges(Observer<DeviceValue> observer) {
 		deviceValueObservable.addObserver(observer);
 		return new Subscription<>(observer, deviceValueObservable);
 	}
 
 	private String getShortUUID(String longUUID) {
     	return longUUID.substring(4, 8);
+    }
+
+    public void forceCacheRefresh() {
+        refreshDeviceCache();
+        try {
+            gatt.discoverServices();
+        } catch (Exception e) { //DeadObjectException
+            disconnect();
+            setStatus(BleDeviceStatus.CONFIGURING);
+            connect();
+        }
     }
 }

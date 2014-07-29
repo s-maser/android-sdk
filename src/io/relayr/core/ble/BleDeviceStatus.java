@@ -1,6 +1,6 @@
-package io.relayr.core.ble.device;
+package io.relayr.core.ble;
 
-public enum Relayr_BLEDeviceStatus {
+enum BleDeviceStatus {
 	CONNECTED,
 	CONNECTING,
 	DISCONNECTED,

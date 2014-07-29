@@ -1,8 +1,8 @@
-package io.relayr.core.ble.device;
+package io.relayr.core.ble;
 
+import android.annotation.TargetApi;
 import android.bluetooth.BluetoothGattCharacteristic;
-
-import io.relayr.core.ble.Relayr_BleUtils;
+import android.os.Build;
 
 public enum DeviceCharacteristic {
 	CONFIGURATION,
@@ -11,9 +11,11 @@ public enum DeviceCharacteristic {
 	ON_BOARDING_FLAG,
 	UNKNOWN;
 
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     public static DeviceCharacteristic from(BluetoothGattCharacteristic characteristic) {
-        return from(Relayr_BleUtils.getShortUUID(characteristic.getUuid().toString()));
+        return from(BleUtils.getShortUUID(characteristic.getUuid().toString()));
     }
+
     public static DeviceCharacteristic from(String uuid) {
         if (uuid.equals(ShortUUID.CHARACTERISTIC_CONFIGURATION)) {
             return DeviceCharacteristic.CONFIGURATION;

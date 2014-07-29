@@ -1,6 +1,6 @@
-package io.relayr.core.ble.device;
+package io.relayr.core.ble;
 
-public class ShortUUID {
+interface ShortUUID {
 
     public static final String MODE_ON_BOARDING = "2001";
     public static final String MODE_DIRECT_CONNECTION = "2002"; //"2000";

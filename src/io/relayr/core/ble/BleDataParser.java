@@ -1,9 +1,9 @@
-package io.relayr.core.ble.device;
+package io.relayr.core.ble;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class Relayr_BLEDeviceDataAdapter {
+abstract class BleDataParser {
 
 	protected static String COLOR_DATA_INDEX = "clr";
 	protected static String R_COLOR_DATA_INDEX = "r";
@@ -23,6 +23,24 @@ public class Relayr_BLEDeviceDataAdapter {
 	protected static String TEMPERATURE_DATA_INDEX = "temp";
 	protected static String SOUND_LEVEL_DATA_INDEX = "snd_level";
 	protected static String TIMESTAMP_DATA_INDEX = "ts";
+
+    public static JSONObject getFormattedValue(BleDeviceType type, byte[] value) {
+        switch (type) {
+            case WunderbarLIGHT: {
+                return BleDataParser.getLIGHTSensorData(value);
+            }
+            case WunderbarGYRO: {
+                return BleDataParser.getGYROSensorData(value);
+            }
+            case WunderbarHTU: {
+                return BleDataParser.getHTUSensorData(value);
+            }
+            case WunderbarMIC: {
+                return BleDataParser.getMICSensorData(value);
+            }
+            default: return new JSONObject();
+        }
+    }
 
 	protected static JSONObject getLIGHTSensorData(byte[] value) {
 		JSONObject returnValue = initResponseData();
