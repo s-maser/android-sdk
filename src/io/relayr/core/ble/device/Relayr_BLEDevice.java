@@ -217,7 +217,7 @@ public class Relayr_BLEDevice {
             }
         } else {
             if (connectionCallback != null) {
-                connectionCallback.onWriteError(this, Relayr_BLEDeviceCharacteristic.SENSOR_ID, BluetoothGatt.GATT_FAILURE);
+                connectionCallback.onWriteError(this, DeviceCharacteristic.SENSOR_ID, BluetoothGatt.GATT_FAILURE);
             }
         }
     }

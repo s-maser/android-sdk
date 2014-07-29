@@ -43,4 +43,8 @@ public class Relayr_BleUtils {
 
         return STATUS_BLE_ENABLED;
     }
+
+    public static String getShortUUID(String longUUID) {
+        return longUUID.substring(4, 8);
+    }
 }
