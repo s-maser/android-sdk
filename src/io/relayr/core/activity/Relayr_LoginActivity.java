@@ -17,17 +17,13 @@ import io.relayr.core.settings.Relayr_SDKStatus;
 
 public class Relayr_LoginActivity extends Relayr_Activity {
 
-	WebView mWebView;
+	private WebView mWebView;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		int layoutID = getResources().getIdentifier("login_view", "layout", getPackageName());
-		System.out.println(layoutID);
-		setContentView(layoutID);
-
-		int webViewID = getResources().getIdentifier("relayr_login_view", "id", getPackageName());
-		mWebView = (WebView)findViewById(webViewID);
+        mWebView = new WebView(this);
+        setContentView(mWebView);
 
 		mWebView.setWebChromeClient(new WebChromeClient());
 		mWebView.setVerticalScrollBarEnabled(false);
@@ -65,10 +61,9 @@ public class Relayr_LoginActivity extends Relayr_Activity {
 	}
 
 	private void loadWebViewContent() {
-		String url = null;
 		try {
 			Object[] parameters = {};
-			url = (String) Relayr_ApiConnector.doCall(Relayr_ApiCall.UserAuthorization, parameters);
+            String url = (String) Relayr_ApiConnector.doCall(Relayr_ApiCall.UserAuthorization, parameters);
 			mWebView.loadUrl(url);
 		} catch (Relayr_Exception e) {
 			e.printStackTrace();
