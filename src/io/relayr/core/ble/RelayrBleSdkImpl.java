@@ -80,6 +80,7 @@ class RelayrBleSdkImpl extends RelayrBleSdk implements BleDeviceEventCallback {
 
     public void stop() {
         scanner.stop();
+        discoveredDevices.clearDiscoveredDevices();
     }
 
     public boolean isScanning() {
