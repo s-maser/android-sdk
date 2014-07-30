@@ -31,7 +31,7 @@ public abstract class BleUtils {
 
     public static boolean isBleAvailable() {
         final int bleStatus = BleUtils.getBleStatus(Relayr_Application.currentActivity());
-        return bleStatus == STATUS_BLE_NOT_AVAILABLE || bleStatus == STATUS_BLUETOOTH_NOT_AVAILABLE;
+        return bleStatus != STATUS_BLE_NOT_AVAILABLE && bleStatus != STATUS_BLUETOOTH_NOT_AVAILABLE;
     }
 
     private final static int REQUEST_ENABLE_BLUETOOTH = 1;
