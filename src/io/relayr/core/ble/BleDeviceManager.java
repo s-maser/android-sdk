@@ -8,7 +8,7 @@ import io.relayr.core.observers.Observable;
 import io.relayr.core.observers.Observer;
 import io.relayr.core.observers.Subscription;
 
-public class BleDeviceManager {
+class BleDeviceManager {
 
     private HashMap<String, BleDevice> discoveredDevices;
     private Observable<List<BleDevice>> allDevicesObservable;
@@ -16,10 +16,10 @@ public class BleDeviceManager {
     private Observable<List<BleDevice>> directConnectedDevicesObservable;
 
     protected BleDeviceManager() {
-        this.discoveredDevices = new HashMap<>();
-        this.allDevicesObservable = new Observable<>();
-        this.onBoardingDevicesObservable = new Observable<>();
-        this.directConnectedDevicesObservable = new Observable<>();
+        discoveredDevices = new HashMap<>();
+        allDevicesObservable = new Observable<>();
+        onBoardingDevicesObservable = new Observable<>();
+        directConnectedDevicesObservable = new Observable<>();
     }
 
     void notifyDiscoveredDevice(BleDevice device) {
@@ -42,19 +42,11 @@ public class BleDeviceManager {
     }
 
     boolean isDeviceDiscovered(String address) {
-        return this.discoveredDevices.containsKey(address);
+        return discoveredDevices.containsKey(address);
     }
 
     boolean isFullyConfigured(String address) {
-        return this.discoveredDevices.get(address) != null;
-    }
-
-    BleDevice getDevice(String address) {
-        if (isDeviceDiscovered(address)) {
-            return discoveredDevices.get(address);
-        } else {
-            return null;
-        }
+        return discoveredDevices.get(address) != null;
     }
 
     void clearDiscoveredDevices() {
@@ -117,17 +109,17 @@ public class BleDeviceManager {
         directConnectedDevicesObservable.notifyObservers(getDirectConnectedDevices());
     }
 
-    public Subscription<List<BleDevice>> subscribeToAllDevicesList(Observer<List<BleDevice>> observer) {
+    Subscription<List<BleDevice>> subscribeToAllDevices(Observer<List<BleDevice>> observer) {
         allDevicesObservable.addObserver(observer);
         return new Subscription<>(observer, allDevicesObservable);
     }
 
-    public Subscription<List<BleDevice>> subscribeToOnBoardingDevicesList(Observer<List<BleDevice>> observer) {
+    Subscription<List<BleDevice>> subscribeToOnBoardingDevices(Observer<List<BleDevice>> observer) {
         onBoardingDevicesObservable.addObserver(observer);
         return new Subscription<>(observer, onBoardingDevicesObservable);
     }
 
-    public Subscription<List<BleDevice>> subscribeToDirectConnectedDevicesList(Observer<List<BleDevice>> observer) {
+    Subscription<List<BleDevice>> subscribeToDirectConnectedDevices(Observer<List<BleDevice>> observer) {
         directConnectedDevicesObservable.addObserver(observer);
         return new Subscription<>(observer, directConnectedDevicesObservable);
     }

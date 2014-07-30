@@ -1,6 +1,10 @@
 package io.relayr.core.ble;
 
+import java.util.List;
+
 import io.relayr.Relayr_SDK;
+import io.relayr.core.observers.Observer;
+import io.relayr.core.observers.Subscription;
 
 public abstract class RelayrBleSdk {
 
@@ -13,14 +17,23 @@ public abstract class RelayrBleSdk {
                 new NullableRelayrBleSdk();
     }
 
-    public abstract void startScanning();
+    /** Starts a scan for Bluetooth LE devices. */
+    public abstract void scan();
 
-    public abstract void stopScanning();
+    /** Stops an ongoing Bluetooth LE device scan. */
+    public abstract void stop();
 
+    /** Whether it's scanning for Bluetooth LE devices. */
     public abstract boolean isScanning();
 
-    public abstract void refreshScanning();
+    /** Refreshes the cache of the discovered Bluetooth LE devices and performs the {@link #scan()}
+     * operation again. */
+    public abstract void refresh();
 
-    public abstract BleDeviceManager getDeviceManager();
+    public abstract Subscription<List<BleDevice>> subscribeToAllDevices(Observer<List<BleDevice>> observer);
+
+    public abstract Subscription<List<BleDevice>> subscribeToOnBoardingDevices(Observer<List<BleDevice>> observer);
+
+    public abstract Subscription<List<BleDevice>> subscribeToDirectConnectedDevices(Observer<List<BleDevice>> observer);
 
 }
