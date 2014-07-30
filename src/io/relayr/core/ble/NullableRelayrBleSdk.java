@@ -2,14 +2,14 @@ package io.relayr.core.ble;
 
 class NullableRelayrBleSdk extends RelayrBleSdk {
 
-    public void startBLEScanning() { }
+    public void startScanning() { }
 
-    public void stopBLEScanning() { }
+    public void stopScanning() { }
 
-    public boolean isScanningForBLE() { return false; }
+    public boolean isScanning() { return false; }
 
-    public void refreshBLEScanning() { }
+    public void refreshScanning() { }
 
-    public BleDeviceManager getBLEDeviceManager() { return null; }
+    public BleDeviceManager getDeviceManager() { return null; }
 
 }

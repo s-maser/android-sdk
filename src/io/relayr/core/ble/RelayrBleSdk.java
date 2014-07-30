@@ -13,14 +13,14 @@ public abstract class RelayrBleSdk {
                 new NullableRelayrBleSdk();
     }
 
-    public abstract void startBLEScanning();
+    public abstract void startScanning();
 
-    public abstract void stopBLEScanning();
+    public abstract void stopScanning();
 
-    public abstract boolean isScanningForBLE();
+    public abstract boolean isScanning();
 
-    public abstract void refreshBLEScanning();
+    public abstract void refreshScanning();
 
-    public abstract BleDeviceManager getBLEDeviceManager();
+    public abstract BleDeviceManager getDeviceManager();
 
 }

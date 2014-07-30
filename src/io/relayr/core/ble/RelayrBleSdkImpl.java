@@ -8,23 +8,23 @@ class RelayrBleSdkImpl extends RelayrBleSdk {
         mBleDevicesScannerManager = new BleDevicesScannerManager();
     }
 
-    public void startBLEScanning() {
+    public void startScanning() {
         mBleDevicesScannerManager.start();
     }
 
-    public void stopBLEScanning() {
+    public void stopScanning() {
         mBleDevicesScannerManager.stop();
     }
 
-    public boolean isScanningForBLE() {
+    public boolean isScanning() {
         return mBleDevicesScannerManager.isScanning();
     }
 
-    public void refreshBLEScanning() {
+    public void refreshScanning() {
         mBleDevicesScannerManager.refresh();
     }
 
-    public BleDeviceManager getBLEDeviceManager() {
+    public BleDeviceManager getDeviceManager() {
         return mBleDevicesScannerManager.getDeviceManager();
     }
 }
