@@ -35,7 +35,11 @@ public abstract class BleUtils {
     }
 
     public static boolean isBleSupported() {
-        PackageManager packageManager = Relayr_Application.currentActivity().getPackageManager();
+        return isBleSupported(Relayr_Application.currentActivity());
+    }
+
+    private static boolean isBleSupported(Context context) {
+        PackageManager packageManager = context.getPackageManager();
         return packageManager.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE);
     }
 
@@ -51,22 +55,12 @@ public abstract class BleUtils {
     }
 
     private static int getBleStatus(Context context) {
-        // Use this check to determine whether BLE is supported on the device.  Then you can
-        // selectively disable BLE-related features.
-        if (!context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
-            return STATUS_BLE_NOT_AVAILABLE;
-        }
+        if (!isBleSupported()) return STATUS_BLE_NOT_AVAILABLE;
 
-        final BluetoothAdapter adapter = getBluetoothAdapter(context);
-        // Checks if Bluetooth is supported on the device.
-        if (adapter == null) {
-            return STATUS_BLUETOOTH_NOT_AVAILABLE;
-        }
-
-        if (adapter.isEnabled())
-            return STATUS_BLUETOOTH_DISABLED;
-
-        return STATUS_BLE_ENABLED;
+        BluetoothAdapter adapter = getBluetoothAdapter(context);
+        return adapter == null ? STATUS_BLUETOOTH_NOT_AVAILABLE:
+                adapter.isEnabled() ? STATUS_BLE_ENABLED:
+                        STATUS_BLUETOOTH_DISABLED;
     }
 
     static String getShortUUID(String longUUID) {
