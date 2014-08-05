@@ -34,6 +34,11 @@ public abstract class BleUtils {
         return bleStatus != STATUS_BLE_NOT_AVAILABLE && bleStatus != STATUS_BLUETOOTH_NOT_AVAILABLE;
     }
 
+    public static boolean isBleSupported() {
+        PackageManager packageManager = Relayr_Application.currentActivity().getPackageManager();
+        return packageManager.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE);
+    }
+
     private final static int REQUEST_ENABLE_BLUETOOTH = 1;
 
     public static void promptUserToActivateBluetooth() {

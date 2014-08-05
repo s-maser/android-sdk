@@ -171,7 +171,7 @@ public class Relayr_SDK {
     /** Checks whether ble is supported or not. It should be called before using
      * {@link #getRelayrBleSdk} */
     public static boolean isBleSupported() {
-        return Relayr_Commons.isSDK18();
+        return Relayr_Commons.isSDK18() && BleUtils.isBleSupported();
     }
 
     /** Checks whether ble is on or off. Bluetooth can be activated by calling
