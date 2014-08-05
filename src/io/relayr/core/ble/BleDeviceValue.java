@@ -1,13 +1,13 @@
-package io.relayr.core.ble.device;
+package io.relayr.core.ble;
 
 import org.json.JSONObject;
 
-public class Relayr_BLEDeviceValue {
+class BleDeviceValue {
 
-	private byte[] rawValue;
-	private JSONObject formattedValue;
+	private final byte[] rawValue;
+	private final JSONObject formattedValue;
 
-	public Relayr_BLEDeviceValue(byte[] rawValue, JSONObject formattedValue) {
+	public BleDeviceValue(byte[] rawValue, JSONObject formattedValue) {
 		this.rawValue = rawValue;
 		this.formattedValue = formattedValue;
 	}

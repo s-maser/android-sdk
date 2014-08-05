@@ -1,7 +1,7 @@
-package io.relayr.core.ble.device;
+package io.relayr.core.ble;
 
 
-public enum Relayr_BLEDeviceType {
+public enum BleDeviceType {
 	WunderbarHTU,
 	WunderbarGYRO,
 	WunderbarLIGHT,
@@ -11,7 +11,7 @@ public enum Relayr_BLEDeviceType {
 	WunderbarApp,
 	Unknown;
 
-	public static Relayr_BLEDeviceType getDeviceType(String deviceName) {
+	public static BleDeviceType getDeviceType(String deviceName) {
 		if (deviceName != null) {
 			if (deviceName.equals("WunderbarHTU")) {
 				return WunderbarHTU;

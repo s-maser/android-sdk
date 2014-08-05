@@ -8,11 +8,11 @@ import android.os.Handler;
 import android.os.Looper;
 
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
-public class Relayr_BleDevicesScanner implements Runnable, BluetoothAdapter.LeScanCallback {
-    private static final String TAG = Relayr_BleDevicesScanner.class.getSimpleName();
+class BleDevicesScanner implements Runnable, BluetoothAdapter.LeScanCallback {
+    private static final String TAG = BleDevicesScanner.class.getSimpleName();
 
     private static final long DEFAULT_SCAN_PERIOD = 500L;
-    public static final long PERIOD_SCAN_ONCE = -1;
+    private static final long PERIOD_SCAN_ONCE = -1;
 
     private final BluetoothAdapter bluetoothAdapter;
     private final Handler mainThreadHandler = new Handler(Looper.getMainLooper());
@@ -22,7 +22,7 @@ public class Relayr_BleDevicesScanner implements Runnable, BluetoothAdapter.LeSc
     private Thread scanThread;
     private volatile boolean isScanning = false;
 
-    public Relayr_BleDevicesScanner(BluetoothAdapter adapter, BluetoothAdapter.LeScanCallback callback) {
+    public BleDevicesScanner(BluetoothAdapter adapter, BluetoothAdapter.LeScanCallback callback) {
         bluetoothAdapter = adapter;
         leScansPoster = new LeScansPoster(callback);
     }

@@ -1,14 +1,14 @@
 package io.relayr;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import android.util.Log;
-
 import io.relayr.core.api.Relayr_ApiCall;
 import io.relayr.core.api.Relayr_ApiConnector;
-import io.relayr.core.ble.Relayr_BleListener;
-import io.relayr.core.ble.Relayr_DeviceManager;
+import io.relayr.core.ble.BleUtils;
+import io.relayr.core.ble.RelayrBleSdk;
 import io.relayr.core.device.Relayr_Device;
 import io.relayr.core.device.Relayr_DeviceModelDefinition;
 import io.relayr.core.error.Relayr_Exception;
@@ -29,7 +29,6 @@ public class Relayr_SDK {
 				Relayr_SDKStatus.synchronizeUserInfo();
 				Relayr_SDKStatus.synchronizeAppInfo();
 				Relayr_SDKStatus.setActive(true);
-				Relayr_BleListener.init();
 				setLoginEventListener(null);
 			}
 		}
@@ -42,7 +41,6 @@ public class Relayr_SDK {
 				Log.d("Relayr_SDK", "No background");
 				Relayr_DataStorage.saveLocalData();
 				Relayr_SDKStatus.setActive(false);
-				Relayr_BleListener.stop();
 			}
 		}
 	}
@@ -165,44 +163,29 @@ public class Relayr_SDK {
 		return Relayr_SDKStatus.logout();
 	}
 
-	public static boolean startBLEScanning() {
-		if (Relayr_Commons.isSDK18()) {
-			Relayr_BleListener.start();
-			return Relayr_BleListener.isScanning();
-		} else {
-			return false;
-		}
-	}
+    /** {@link io.relayr.core.ble.RelayrBleSdk#newInstance()} */
+     public static RelayrBleSdk getRelayrBleSdk() {
+        return RelayrBleSdk.newInstance();
+    }
 
-	public static boolean stopBLEScanning() {
-		if (Relayr_Commons.isSDK18()) {
-			Relayr_BleListener.stop();
-			return !Relayr_BleListener.isScanning();
-		} else {
-			return false;
-		}
-	}
+    /** Checks whether ble is supported or not. It should be called before using
+     * {@link #getRelayrBleSdk} */
+    public static boolean isBleSupported() {
+        return Relayr_Commons.isSDK18() && BleUtils.isBleSupported();
+    }
 
-	public static boolean isScanningForBLE() {
-		if (Relayr_Commons.isSDK18()) {
-			return Relayr_BleListener.isScanning();
-		} else {
-			return false;
-		}
-	}
+    /** Checks whether ble is on or off. Bluetooth can be activated by calling
+     * {@link #promptUserToActivateBluetooth}. It should be called before using
+     * {@link #getRelayrBleSdk} */
+    public static boolean isBleAvailable() {
+        return BleUtils.isBleAvailable();
+    }
 
-	public static boolean refreshBLEScanning() {
-		if (Relayr_Commons.isSDK18()) {
-			Relayr_BleListener.refresh();
-			return !Relayr_BleListener.isScanning();
-		} else {
-			return false;
-		}
-	}
-
-	public static Relayr_DeviceManager getBLEDevicesManager() {
-		return Relayr_BleListener.getDeviceManager();
-	}
+    /** Launches an activity to ask the user to activate the bluetooth. It won't do anything if
+     * bluetooth is not supported {@link #isBleSupported} */
+    public static void promptUserToActivateBluetooth() {
+        if (isBleSupported()) BleUtils.promptUserToActivateBluetooth();
+    }
 
 	public static void setLoginEventListener(LoginEventListener listener) {
 		loginEventListener = listener;
