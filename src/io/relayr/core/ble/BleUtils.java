@@ -19,7 +19,7 @@ public abstract class BleUtils {
     private static final int STATUS_BLE_NOT_AVAILABLE = 2;
     private static final int STATUS_BLUETOOTH_DISABLED = 3;
 
-    static BluetoothAdapter getBluetoothAdapter(Context context) {
+    public static BluetoothAdapter getBluetoothAdapter(Context context) {
         // Initializes a Bluetooth adapter.  For API level 18 and above, get a reference to
         // BluetoothAdapter through BluetoothManager.
         final BluetoothManager bluetoothManager =
@@ -30,8 +30,7 @@ public abstract class BleUtils {
     }
 
     public static boolean isBleAvailable() {
-        final int bleStatus = BleUtils.getBleStatus(Relayr_Application.currentActivity());
-        return bleStatus != STATUS_BLE_NOT_AVAILABLE && bleStatus != STATUS_BLUETOOTH_NOT_AVAILABLE;
+        return BleUtils.getBleStatus(Relayr_Application.currentActivity()) == STATUS_BLE_ENABLED;
     }
 
     public static boolean isBleSupported() {
