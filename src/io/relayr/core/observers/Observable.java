@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import io.relayr.Relayr_Application;
 
-public class Observable<T> implements IObservable<T> {
+public class Observable<T> {
 	private final ArrayList<Observer<T>> observers = new ArrayList<Observer<T>>();
 
 	public void addObserver(Observer<T> observer) {
