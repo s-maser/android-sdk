@@ -20,18 +20,18 @@ public class BleDevice {
 
     private static final String TAG = BleDevice.class.getSimpleName();
 
-	public BluetoothGatt gatt;
+	BluetoothGatt gatt;
+	BleDeviceConnectionCallback connectionCallback;
+	BluetoothGattService currentService;
 	private BleDeviceStatus status;
 	private BleDeviceMode mode;
-	private BluetoothDevice bluetoothDevice;
 	private byte[] value;
-	private BleDeviceType type;
-	public BluetoothGattService currentService;
-	public BleDeviceConnectionCallback connectionCallback;
 	private Observable<BleDeviceValue> deviceValueObservable;
+	private final BluetoothDevice bluetoothDevice;
+	private final BleDeviceType type;
     private final BleDeviceEventCallback mModeSwitchCallback;
 
-	public BleDevice(BluetoothDevice bluetoothDevice, BleDeviceEventCallback modeSwitchCallback) {
+	BleDevice(BluetoothDevice bluetoothDevice, BleDeviceEventCallback modeSwitchCallback) {
         mModeSwitchCallback = modeSwitchCallback;
 		this.bluetoothDevice = bluetoothDevice;
 		this.status = BleDeviceStatus.DISCONNECTED;
