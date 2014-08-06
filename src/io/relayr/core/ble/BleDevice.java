@@ -14,7 +14,6 @@ import java.util.List;
 import io.relayr.Relayr_Application;
 import io.relayr.core.observers.Observable;
 import io.relayr.core.observers.Observer;
-import io.relayr.core.observers.Subscription;
 
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class BleDevice {
@@ -205,9 +204,8 @@ public class BleDevice {
 	    return false;
 	}
 
-	public Subscription<BleDeviceValue> subscribeToDeviceValueChanges(Observer<BleDeviceValue> observer) {
+	public void subscribeToDeviceValueChanges(Observer<BleDeviceValue> observer) {
 		deviceValueObservable.addObserver(observer);
-		return new Subscription<>(observer, deviceValueObservable);
 	}
 
 	private String getShortUUID(String longUUID) {

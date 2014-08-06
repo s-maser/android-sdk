@@ -4,7 +4,6 @@ import java.util.List;
 
 import io.relayr.Relayr_SDK;
 import io.relayr.core.observers.Observer;
-import io.relayr.core.observers.Subscription;
 
 public abstract class RelayrBleSdk {
 
@@ -30,10 +29,10 @@ public abstract class RelayrBleSdk {
      * operation again. */
     public abstract void refresh();
 
-    public abstract Subscription<List<BleDevice>> subscribeToAllDevices(Observer<List<BleDevice>> observer);
+    public abstract void subscribeToAllDevices(Observer<List<BleDevice>> observer);
 
-    public abstract Subscription<List<BleDevice>> subscribeToOnBoardingDevices(Observer<List<BleDevice>> observer);
+    public abstract void subscribeToOnBoardingDevices(Observer<List<BleDevice>> observer);
 
-    public abstract Subscription<List<BleDevice>> subscribeToDirectConnectedDevices(Observer<List<BleDevice>> observer);
+    public abstract void subscribeToDirectConnectedDevices(Observer<List<BleDevice>> observer);
 
 }

@@ -4,7 +4,6 @@ import java.util.List;
 
 import io.relayr.core.observers.Observable;
 import io.relayr.core.observers.Observer;
-import io.relayr.core.observers.Subscription;
 
 class NullableRelayrBleSdk extends RelayrBleSdk {
 
@@ -17,18 +16,12 @@ class NullableRelayrBleSdk extends RelayrBleSdk {
     public void refresh() { }
 
     @Override
-    public Subscription<List<BleDevice>> subscribeToAllDevices(Observer<List<BleDevice>> observer) {
-        return new Subscription<>(observer, new Observable<List<BleDevice>>());
-    }
+    public void subscribeToAllDevices(Observer<List<BleDevice>> observer) { }
 
     @Override
-    public Subscription<List<BleDevice>> subscribeToOnBoardingDevices(Observer<List<BleDevice>> observer) {
-        return new Subscription<>(observer, new Observable<List<BleDevice>>());
-    }
+    public void subscribeToOnBoardingDevices(Observer<List<BleDevice>> observer) { }
 
     @Override
-    public Subscription<List<BleDevice>> subscribeToDirectConnectedDevices(Observer<List<BleDevice>> observer) {
-        return new Subscription<>(observer, new Observable<List<BleDevice>>());
-    }
+    public void subscribeToDirectConnectedDevices(Observer<List<BleDevice>> observer) { }
 
 }

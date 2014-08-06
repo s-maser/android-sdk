@@ -11,7 +11,6 @@ import java.util.List;
 
 import io.relayr.Relayr_Application;
 import io.relayr.core.observers.Observer;
-import io.relayr.core.observers.Subscription;
 
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 class RelayrBleSdkImpl extends RelayrBleSdk implements BleDeviceEventCallback {
@@ -64,18 +63,18 @@ class RelayrBleSdkImpl extends RelayrBleSdk implements BleDeviceEventCallback {
     }
 
     @Override
-    public Subscription<List<BleDevice>> subscribeToAllDevices(Observer<List<BleDevice>> observer) {
-        return discoveredDevices.subscribeToAllDevices(observer);
+    public void subscribeToAllDevices(Observer<List<BleDevice>> observer) {
+        discoveredDevices.subscribeToAllDevices(observer);
     }
 
     @Override
-    public Subscription<List<BleDevice>> subscribeToOnBoardingDevices(Observer<List<BleDevice>> observer) {
-        return discoveredDevices.subscribeToOnBoardingDevices(observer);
+    public void subscribeToOnBoardingDevices(Observer<List<BleDevice>> observer) {
+        discoveredDevices.subscribeToOnBoardingDevices(observer);
     }
 
     @Override
-    public Subscription<List<BleDevice>> subscribeToDirectConnectedDevices(Observer<List<BleDevice>> observer) {
-        return discoveredDevices.subscribeToDirectConnectedDevices(observer);
+    public void subscribeToDirectConnectedDevices(Observer<List<BleDevice>> observer) {
+        discoveredDevices.subscribeToDirectConnectedDevices(observer);
     }
 
     public void stop() {

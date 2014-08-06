@@ -6,7 +6,6 @@ import java.util.List;
 
 import io.relayr.core.observers.Observable;
 import io.relayr.core.observers.Observer;
-import io.relayr.core.observers.Subscription;
 
 class BleDeviceManager {
 
@@ -109,19 +108,16 @@ class BleDeviceManager {
         directConnectedDevicesObservable.notifyObservers(getDirectConnectedDevices());
     }
 
-    Subscription<List<BleDevice>> subscribeToAllDevices(Observer<List<BleDevice>> observer) {
+    void subscribeToAllDevices(Observer<List<BleDevice>> observer) {
         allDevicesObservable.addObserver(observer);
-        return new Subscription<>(observer, allDevicesObservable);
     }
 
-    Subscription<List<BleDevice>> subscribeToOnBoardingDevices(Observer<List<BleDevice>> observer) {
+    void subscribeToOnBoardingDevices(Observer<List<BleDevice>> observer) {
         onBoardingDevicesObservable.addObserver(observer);
-        return new Subscription<>(observer, onBoardingDevicesObservable);
     }
 
-    Subscription<List<BleDevice>> subscribeToDirectConnectedDevices(Observer<List<BleDevice>> observer) {
+    void subscribeToDirectConnectedDevices(Observer<List<BleDevice>> observer) {
         directConnectedDevicesObservable.addObserver(observer);
-        return new Subscription<>(observer, directConnectedDevicesObservable);
     }
 
     void removeDevice(BleDevice device) {
