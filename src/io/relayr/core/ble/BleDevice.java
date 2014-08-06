@@ -18,6 +18,8 @@ import io.relayr.core.observers.Observer;
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class BleDevice {
 
+    private static final String TAG = BleDevice.class.getSimpleName();
+
 	public BluetoothGatt gatt;
 	private BleDeviceStatus status;
 	private BleDeviceMode mode;
@@ -147,10 +149,10 @@ public class BleDevice {
             for (BluetoothGattCharacteristic characteristic:characteristics) {
                 String characteristicUUID = getShortUUID(characteristic.getUuid().toString());
                 if (characteristicUUID.equals(BleShortUUID.CHARACTERISTIC_CONFIGURATION)) {
-                    Log.d(BleDeviceGattManager.class.toString(), "Discovered configuration characteristic: " + characteristicUUID);
+                    Log.d(TAG, "Discovered configuration characteristic: " + characteristicUUID);
                     characteristic.setValue(newConfiguration);
                     boolean status = gatt.writeCharacteristic(characteristic);
-                    Log.d(BleDeviceGattManager.class.toString(), "Write action on configuration characteristic: " + (status?"done":"undone"));
+                    Log.d(TAG, "Write action on configuration characteristic: " + (status?"done":"undone"));
                 }
             }
         }
@@ -175,10 +177,10 @@ public class BleDevice {
             for (BluetoothGattCharacteristic characteristic:characteristics) {
                 String deviceCharacteristicUUID = getShortUUID(characteristic.getUuid().toString());
                 if ((deviceCharacteristicUUID.equals(characteristicUUID))) {
-                    Log.d(BleDeviceGattManager.class.toString(), "Discovered " + logName + " characteristic: " + characteristicUUID);
+                    Log.d(TAG, "Discovered " + logName + " characteristic: " + characteristicUUID);
                     characteristic.setValue(bytes);
                     boolean status = gatt.writeCharacteristic(characteristic);
-                    Log.d(BleDeviceGattManager.class.toString(), "Write action " + logName + " characteristic: " + (status?"done":"undone"));
+                    Log.d(TAG, "Write action " + logName + " characteristic: " + (status?"done":"undone"));
                     break;
                 }
             }
@@ -199,7 +201,7 @@ public class BleDevice {
 	         }
 	    }
 	    catch (Exception localException) {
-	        Log.e(BleDevice.class.toString(), "An exception occurred while refreshing device");
+	        Log.e(TAG, "An exception occurred while refreshing device");
 	    }
 	    return false;
 	}
