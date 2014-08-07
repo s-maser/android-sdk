@@ -205,11 +205,10 @@ public class BleDevice {
             for (BluetoothGattCharacteristic characteristic:characteristics) {
                 String deviceCharacteristicUUID = getShortUUID(characteristic.getUuid().toString());
                 if ((deviceCharacteristicUUID.equals(characteristicUUID))) {
-                    Log.d(TAG, "Discovered " + logName + " characteristic: " + characteristicUUID);
                     characteristic.setValue(bytes);
                     boolean status = gatt.writeCharacteristic(characteristic);
-                    Log.d(TAG, "Write action " + logName + " characteristic: " + (status?"done":"undone"));
-                    break;
+                    Log.d(TAG, "Wrote " + logName + (status ? "successfully": "unsuccessfully"));
+                    return;
                 }
             }
         } else {

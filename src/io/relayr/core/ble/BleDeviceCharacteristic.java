@@ -18,18 +18,18 @@ public enum BleDeviceCharacteristic {
 
     public static BleDeviceCharacteristic from(String uuid) {
         if (uuid.equals(BleShortUUID.CHARACTERISTIC_CONFIGURATION)) {
-            return BleDeviceCharacteristic.CONFIGURATION;
+            return CONFIGURATION;
         }
         if (uuid.equals(BleShortUUID.CHARACTERISTIC_SENSOR_ID)) {
-            return BleDeviceCharacteristic.SENSOR_ID;
+            return SENSOR_ID;
         }
         if (uuid.equals(BleShortUUID.CHARACTERISTIC_PASS_KEY)) {
-            return BleDeviceCharacteristic.PASS_KEY;
+            return PASS_KEY;
         }
         if (uuid.equals(BleShortUUID.CHARACTERISTIC_ON_BOARDING_FLAG)) {
-            return BleDeviceCharacteristic.ON_BOARDING_FLAG;
+            return ON_BOARDING_FLAG;
         }
-        return BleDeviceCharacteristic.UNKNOWN;
+        return UNKNOWN;
     }
 
 }
