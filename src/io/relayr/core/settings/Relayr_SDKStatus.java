@@ -3,8 +3,8 @@ package io.relayr.core.settings;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import io.relayr.Relayr_Application;
 import io.relayr.Relayr_SDK;
+import io.relayr.core.activity.Relayr_LoginActivity;
 import io.relayr.core.api.Relayr_ApiCall;
 import io.relayr.core.api.Relayr_ApiConnector;
 import io.relayr.core.app.Relayr_App;
@@ -109,7 +109,9 @@ public class Relayr_SDKStatus {
 		}.execute();
 	}
 
-	public static void synchronizeTokenInfo(final String accessCode) throws Relayr_Exception {
+	public static void synchronizeTokenInfo(final Relayr_LoginActivity activity,
+                                            final String accessCode)
+            throws Relayr_Exception {
 		new AsyncTask<Void, Void, Void>() {
 			@Override
 			protected Void doInBackground(Void... params) {
@@ -118,7 +120,7 @@ public class Relayr_SDKStatus {
 					Relayr_ApiConnector.doCall(Relayr_ApiCall.UserToken, parameters);
 					final LoginEventListener listener = Relayr_SDK.getLoginEventListener();
 					if (listener != null) {
-						Relayr_Application.currentActivity().runOnUiThread(new Runnable(){
+                        activity.runOnUiThread(new Runnable(){
 							public void run() {
 								listener.onUserLoggedInSuccessfully();
 							}

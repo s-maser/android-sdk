@@ -1,6 +1,7 @@
 package io.relayr;
 
 import android.app.Activity;
+import android.content.Context;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -23,6 +24,11 @@ import io.relayr.core.user.Relayr_User;
 public class Relayr_SDK {
 
 	static LoginEventListener loginEventListener;
+
+    /** Should be called when the {@link android.app.Application} is created */
+    public static void init(Context context) {
+        RelayrApp.init(context);
+    }
 
 	public static void init() throws Exception {
 		if (!Relayr_SDKStatus.isActive()) {
@@ -185,8 +191,8 @@ public class Relayr_SDK {
 
     /** Launches an activity to ask the user to activate the bluetooth. It won't do anything if
      * bluetooth is not supported {@link #isBleSupported} */
-    public static void promptUserToActivateBluetooth() {
-        if (isBleSupported()) BleUtils.promptUserToActivateBluetooth();
+    public static void promptUserToActivateBluetooth(Activity activity) {
+        if (isBleSupported()) BleUtils.promptUserToActivateBluetooth(activity);
     }
 
 	public static void setLoginEventListener(LoginEventListener listener) {

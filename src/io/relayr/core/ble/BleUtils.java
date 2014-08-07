@@ -9,7 +9,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 
-import io.relayr.Relayr_Application;
+import io.relayr.RelayrApp;
 
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 public abstract class BleUtils {
@@ -30,11 +30,11 @@ public abstract class BleUtils {
     }
 
     public static boolean isBleAvailable() {
-        return BleUtils.getBleStatus(Relayr_Application.currentActivity()) == STATUS_BLE_ENABLED;
+        return BleUtils.getBleStatus(RelayrApp.get()) == STATUS_BLE_ENABLED;
     }
 
     public static boolean isBleSupported() {
-        return isBleSupported(Relayr_Application.currentActivity());
+        return isBleSupported(RelayrApp.get());
     }
 
     private static boolean isBleSupported(Context context) {
@@ -44,12 +44,11 @@ public abstract class BleUtils {
 
     private final static int REQUEST_ENABLE_BLUETOOTH = 1;
 
-    public static void promptUserToActivateBluetooth() {
-        Activity currentActivity = Relayr_Application.currentActivity();
-        BluetoothAdapter bluetoothAdapter = BleUtils.getBluetoothAdapter(currentActivity);
+    public static void promptUserToActivateBluetooth(Activity activity) {
+        BluetoothAdapter bluetoothAdapter = BleUtils.getBluetoothAdapter(RelayrApp.get());
         if (bluetoothAdapter == null || !bluetoothAdapter.isEnabled()) {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            currentActivity.startActivityForResult(enableBtIntent, REQUEST_ENABLE_BLUETOOTH);
+            activity.startActivityForResult(enableBtIntent, REQUEST_ENABLE_BLUETOOTH);
         }
     }
 

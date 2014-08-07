@@ -11,7 +11,7 @@ import android.util.Log;
 import java.lang.reflect.Method;
 import java.util.List;
 
-import io.relayr.Relayr_Application;
+import io.relayr.RelayrApp;
 import rx.Observable;
 import rx.Subscriber;
 
@@ -118,7 +118,7 @@ public class BleDevice {
 	public void connect(BleDeviceConnectionCallback callback) {
         mConnectionCallback = callback == null ? mNullableConnectionCallback: callback;
         if (status != BleDeviceStatus.CONNECTED) {
-            gatt = bluetoothDevice.connectGatt(Relayr_Application.currentActivity(), true, new BleDeviceGattManager(this, mModeSwitchCallback));
+            gatt = bluetoothDevice.connectGatt(RelayrApp.get(), true, new BleDeviceGattManager(this, mModeSwitchCallback));
             refreshDeviceCache();
             if (status != BleDeviceStatus.CONFIGURING) {
                 setStatus(BleDeviceStatus.CONNECTING);

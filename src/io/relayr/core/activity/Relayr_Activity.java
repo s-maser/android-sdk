@@ -1,6 +1,6 @@
 package io.relayr.core.activity;
 
-import io.relayr.Relayr_Application;
+import io.relayr.RelayrApp;
 import io.relayr.Relayr_SDK;
 import io.relayr.core.settings.Relayr_ActivityStack;
 import io.relayr.core.settings.Relayr_SDKStatus;
@@ -12,7 +12,7 @@ public class Relayr_Activity extends Activity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		Relayr_Application.setCurrentActivity(Relayr_Activity.this);
+		RelayrApp.setCurrentActivity(Relayr_Activity.this);
 		try {
 			Relayr_SDK.init();
 			Relayr_ActivityStack.addStackCall();

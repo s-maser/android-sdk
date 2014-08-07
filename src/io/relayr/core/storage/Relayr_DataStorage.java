@@ -1,12 +1,12 @@
 package io.relayr.core.storage;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 
 import com.google.gson.Gson;
-import io.relayr.Relayr_Application;
+
+import io.relayr.RelayrApp;
 import io.relayr.core.settings.Relayr_SDKStatus;
 import io.relayr.core.user.Relayr_User;
 
@@ -19,8 +19,7 @@ public class Relayr_DataStorage {
 	static String userIDField = "RELAYR_USER";
 
 	public static void saveLocalData() {
-		Activity currentActivity = Relayr_Application.currentActivity();
-		localStorage = currentActivity.getSharedPreferences(storageIdentifier, Context.MODE_PRIVATE);
+		localStorage = RelayrApp.get().getSharedPreferences(storageIdentifier, Context.MODE_PRIVATE);
 		Editor edit = localStorage.edit();
 		edit.putString(tokenField, Relayr_SDKStatus.getUserToken());
 		Relayr_User user = Relayr_SDKStatus.getCurrentUser();
@@ -33,8 +32,7 @@ public class Relayr_DataStorage {
 	}
 
 	public static void loadLocalData() {
-		Activity currentActivity = Relayr_Application.currentActivity();
-		localStorage = currentActivity.getSharedPreferences(storageIdentifier, Context.MODE_PRIVATE);
+		localStorage = RelayrApp.get().getSharedPreferences(storageIdentifier, Context.MODE_PRIVATE);
 		Relayr_SDKStatus.setUserToken(localStorage.getString(tokenField, null));
 		String userString = localStorage.getString(userIDField, null);
 		if (userString != null) {

@@ -1,11 +1,11 @@
 package io.relayr.core.settings;
 
-import io.relayr.Relayr_Application;
-import io.relayr.core.error.Relayr_Exception;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
+
+import io.relayr.RelayrApp;
+import io.relayr.core.error.Relayr_Exception;
 
 public final class Relayr_SDKSettings {
 
@@ -49,8 +49,7 @@ public final class Relayr_SDKSettings {
 
     public static boolean checkConfigValues() throws Exception {
 		try {
-			InputStream inputStream =
-                    Relayr_Application.currentActivity().getAssets().open(PROPERTIES_FILE_NAME);
+			InputStream inputStream = RelayrApp.get().getAssets().open(PROPERTIES_FILE_NAME);
 			Properties relayrProperties = new Properties();
 			relayrProperties.load(inputStream);
 			inputStream.close();

@@ -1,7 +1,6 @@
 package io.relayr.core.ble;
 
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.os.Build;
@@ -9,7 +8,7 @@ import android.util.Log;
 
 import java.util.List;
 
-import io.relayr.Relayr_Application;
+import io.relayr.RelayrApp;
 import rx.Observable;
 import rx.Subscriber;
 
@@ -24,8 +23,7 @@ class RelayrBleSdkImpl extends RelayrBleSdk implements BleDeviceEventCallback {
     private Subscriber<? super List<BleDevice>> mDevicesSubscriber;
 
     RelayrBleSdkImpl() {
-        Activity currentActivity = Relayr_Application.currentActivity();
-        BluetoothAdapter bluetoothAdapter = BleUtils.getBluetoothAdapter(currentActivity);
+        BluetoothAdapter bluetoothAdapter = BleUtils.getBluetoothAdapter(RelayrApp.get());
         scanner = new BleDevicesScanner(bluetoothAdapter, new BluetoothAdapter.LeScanCallback() {
 
             private boolean hasANewDeviceBeenDiscovered(BluetoothDevice device) {

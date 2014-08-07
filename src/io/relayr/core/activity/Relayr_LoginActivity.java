@@ -45,7 +45,7 @@ public class Relayr_LoginActivity extends Relayr_Activity {
 				if (accessCode != null) {
 					Log.d("Relayr_LoginActivity", "onPageStarted access code: " + accessCode);
 					try {
-						Relayr_SDKStatus.synchronizeTokenInfo(accessCode);
+						Relayr_SDKStatus.synchronizeTokenInfo(Relayr_LoginActivity.this, accessCode);
 					} catch (Exception e) {
 						Log.d("Relayr_LoginActivity", "Error: " + e.getMessage());
 					}
