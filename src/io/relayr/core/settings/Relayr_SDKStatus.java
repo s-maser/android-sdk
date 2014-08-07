@@ -1,13 +1,10 @@
 package io.relayr.core.settings;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.util.Log;
 
 import io.relayr.Relayr_Application;
 import io.relayr.Relayr_SDK;
-import io.relayr.core.activity.Relayr_LoginActivity;
 import io.relayr.core.api.Relayr_ApiCall;
 import io.relayr.core.api.Relayr_ApiConnector;
 import io.relayr.core.app.Relayr_App;
@@ -70,12 +67,6 @@ public class Relayr_SDKStatus {
 
 	public static boolean isUserLogged() {
 		return Relayr_SDKStatus.getUserToken() != null;
-	}
-
-	public static void login() {
-		Activity currentActivity = Relayr_Application.currentActivity();
-		Intent loginActivity = new Intent(currentActivity, Relayr_LoginActivity.class);
-		currentActivity.startActivity(loginActivity);
 	}
 
 	public static boolean logout() {

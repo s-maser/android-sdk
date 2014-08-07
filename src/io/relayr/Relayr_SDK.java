@@ -1,10 +1,12 @@
 package io.relayr;
 
+import android.app.Activity;
 import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import io.relayr.core.activity.Relayr_LoginActivity;
 import io.relayr.core.api.Relayr_ApiCall;
 import io.relayr.core.api.Relayr_ApiConnector;
 import io.relayr.core.ble.BleUtils;
@@ -151,8 +153,8 @@ public class Relayr_SDK {
 		}
 	}
 
-	public static void login() {
-		Relayr_SDKStatus.login();
+	public static void login(Activity currentActivity) {
+        Relayr_LoginActivity.startActivity(currentActivity);
 	}
 
 	public static boolean isUserLogged() {

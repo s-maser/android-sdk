@@ -1,5 +1,7 @@
 package io.relayr.core.activity;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -82,4 +84,9 @@ public class Relayr_LoginActivity extends Relayr_Activity {
 		}
 	}
 
+    public static void startActivity(Activity currentActivity) {
+        Intent loginActivity = new Intent(currentActivity, Relayr_LoginActivity.class);
+        loginActivity.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        currentActivity.startActivity(loginActivity);
+    }
 }
