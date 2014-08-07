@@ -12,8 +12,8 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 import io.relayr.Relayr_Application;
-import io.relayr.core.observers.Observable;
-import io.relayr.core.observers.Observer;
+import rx.Observable;
+import rx.Subscriber;
 
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class BleDevice {
@@ -25,7 +25,7 @@ public class BleDevice {
 	private BleDeviceStatus status;
 	private BleDeviceMode mode;
 	private byte[] value;
-	private Observable<BleDeviceValue> deviceValueObservable;
+	private Subscriber<? super BleDeviceValue> deviceValueSubscriber;
 	private final BluetoothDevice bluetoothDevice;
 	private final BleDeviceType type;
     private final BleDeviceEventCallback mModeSwitchCallback;
@@ -58,7 +58,6 @@ public class BleDevice {
 		this.status = BleDeviceStatus.DISCONNECTED;
 		this.mode = BleDeviceMode.UNKNOWN;
 		this.type = BleDeviceType.getDeviceType(bluetoothDevice.getName());
-		this.deviceValueObservable = new Observable<>();
 	}
 
     public void setBluetoothGattService(BluetoothGattService service) {
@@ -95,7 +94,7 @@ public class BleDevice {
 		notifyModeSwitch(oldMode);
 		notifyModeSwitch(mode);
 		BleDeviceValue model = new BleDeviceValue(value, BleDataParser.getFormattedValue(type, value));
-		deviceValueObservable.notifyObservers(model);
+		deviceValueSubscriber.onNext(model);
 	}
 
 	private void notifyModeSwitch(BleDeviceMode mode) {
@@ -105,7 +104,7 @@ public class BleDevice {
 	public void setValue(byte[] value) {
 		this.value = value;
 		BleDeviceValue model = new BleDeviceValue(value, BleDataParser.getFormattedValue(type, value));
-		deviceValueObservable.notifyObservers(model);
+        deviceValueSubscriber.onNext(model);
 	}
 
 	public BleDeviceType getType() {
@@ -230,8 +229,13 @@ public class BleDevice {
 	    return false;
 	}
 
-	public void subscribeToDeviceValueChanges(Observer<BleDeviceValue> observer) {
-		deviceValueObservable.addObserver(observer);
+	public Observable<BleDeviceValue> subscribeToDeviceValueChanges() {
+        return Observable.create(new Observable.OnSubscribe<BleDeviceValue>() {
+            @Override
+            public void call(Subscriber<? super BleDeviceValue> subscriber) {
+                deviceValueSubscriber = subscriber;
+            }
+        });
 	}
 
 	private String getShortUUID(String longUUID) {
