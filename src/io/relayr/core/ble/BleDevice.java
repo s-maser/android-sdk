@@ -20,9 +20,8 @@ public class BleDevice {
 
     private static final String TAG = BleDevice.class.getSimpleName();
 
-	BluetoothGatt gatt;
-	BleDeviceConnectionCallback connectionCallback;
-	BluetoothGattService currentService;
+	private BluetoothGattService bluetoothGattService = null;
+	private BluetoothGatt gatt;
 	private BleDeviceStatus status;
 	private BleDeviceMode mode;
 	private byte[] value;
@@ -31,17 +30,46 @@ public class BleDevice {
 	private final BleDeviceType type;
     private final BleDeviceEventCallback mModeSwitchCallback;
 
+    private static final BleDeviceConnectionCallback mNullableConnectionCallback =
+            new BleDeviceConnectionCallback() {
+                @Override
+                public void onConnect(BleDevice device) { }
+
+                @Override
+                public void onDisconnect(BleDevice device) { }
+
+                @Override
+                public void onError(BleDevice device, String error) { }
+
+                @Override
+                public void onWriteSuccess(BleDevice device,
+                                           BleDeviceCharacteristic characteristic) { }
+
+                @Override
+                public void onWriteError(BleDevice device, BleDeviceCharacteristic characteristic,
+                                         int errorStatus) { }
+            };
+
+	private BleDeviceConnectionCallback mConnectionCallback = mNullableConnectionCallback;
+
 	BleDevice(BluetoothDevice bluetoothDevice, BleDeviceEventCallback modeSwitchCallback) {
         mModeSwitchCallback = modeSwitchCallback;
 		this.bluetoothDevice = bluetoothDevice;
 		this.status = BleDeviceStatus.DISCONNECTED;
 		this.mode = BleDeviceMode.UNKNOWN;
 		this.type = BleDeviceType.getDeviceType(bluetoothDevice.getName());
-		currentService = null;
 		this.deviceValueObservable = new Observable<>();
 	}
 
-	public String getName() {
+    public void setBluetoothGattService(BluetoothGattService service) {
+        bluetoothGattService = service;
+    }
+
+    public BleDeviceConnectionCallback getConnectionCallback() {
+        return mConnectionCallback;
+    }
+
+    public String getName() {
 		return bluetoothDevice.getName();
 	}
 
@@ -53,7 +81,7 @@ public class BleDevice {
 		return status;
 	}
 
-	public void setStatus(BleDeviceStatus status) {
+	void setStatus(BleDeviceStatus status) {
 		this.status = status;
 	}
 
@@ -85,13 +113,11 @@ public class BleDevice {
 	}
 
 	public void connect() {
-		connect(null);
+		connect(mNullableConnectionCallback);
 	}
 
-	public void connect(final BleDeviceConnectionCallback callback) {
-        if (callback != null) {
-            connectionCallback = callback;
-        }
+	public void connect(BleDeviceConnectionCallback callback) {
+        mConnectionCallback = callback == null ? mNullableConnectionCallback: callback;
         if (status != BleDeviceStatus.CONNECTED) {
             gatt = bluetoothDevice.connectGatt(Relayr_Application.currentActivity(), true, new BleDeviceGattManager(this, mModeSwitchCallback));
             refreshDeviceCache();
@@ -99,14 +125,12 @@ public class BleDevice {
                 setStatus(BleDeviceStatus.CONNECTING);
             }
         } else {
-            if (connectionCallback != null) {
-                connectionCallback.onConnect(this);
-            }
+            mConnectionCallback.onConnect(this);
         }
 	}
 
 	public void disconnect() {
-        if (gatt != null) {
+        if (isConnected()) {
             if (status != BleDeviceStatus.CONFIGURING) {
                 status = BleDeviceStatus.DISCONNECTING;
             }
@@ -114,11 +138,15 @@ public class BleDevice {
             gatt.close();
             gatt = null;
         } else {
-            if (connectionCallback != null) {
-                connectionCallback.onDisconnect(this);
-            }
+            onDisconnect();
         }
 	}
+
+    void onDisconnect() {
+        setStatus(BleDeviceStatus.DISCONNECTED);
+        mConnectionCallback.onDisconnect(this);
+        mConnectionCallback = mNullableConnectionCallback;
+    }
 
 	public boolean isConnected() {
 		return gatt != null;
@@ -144,8 +172,8 @@ public class BleDevice {
 	}
 
 	public void updateConfiguration(final byte[] newConfiguration) {
-        if (currentService != null && mode == BleDeviceMode.DIRECTCONNECTION) {
-            List<BluetoothGattCharacteristic> characteristics = currentService.getCharacteristics();
+        if (bluetoothGattService != null && mode == BleDeviceMode.DIRECTCONNECTION) {
+            List<BluetoothGattCharacteristic> characteristics = bluetoothGattService.getCharacteristics();
             for (BluetoothGattCharacteristic characteristic:characteristics) {
                 String characteristicUUID = getShortUUID(characteristic.getUuid().toString());
                 if (characteristicUUID.equals(BleShortUUID.CHARACTERISTIC_CONFIGURATION)) {
@@ -172,8 +200,8 @@ public class BleDevice {
 
     private void write(byte[] bytes, String characteristicUUID, String logName) {
         assert(bytes != null);
-        if (currentService != null && mode == BleDeviceMode.ONBOARDING) {
-            List<BluetoothGattCharacteristic> characteristics = currentService.getCharacteristics();
+        if (bluetoothGattService != null && mode == BleDeviceMode.ONBOARDING) {
+            List<BluetoothGattCharacteristic> characteristics = bluetoothGattService.getCharacteristics();
             for (BluetoothGattCharacteristic characteristic:characteristics) {
                 String deviceCharacteristicUUID = getShortUUID(characteristic.getUuid().toString());
                 if ((deviceCharacteristicUUID.equals(characteristicUUID))) {
@@ -185,9 +213,7 @@ public class BleDevice {
                 }
             }
         } else {
-            if (connectionCallback != null) {
-                connectionCallback.onWriteError(this, BleDeviceCharacteristic.SENSOR_ID, BluetoothGatt.GATT_FAILURE);
-            }
+            mConnectionCallback.onWriteError(this, BleDeviceCharacteristic.SENSOR_ID, BluetoothGatt.GATT_FAILURE);
         }
     }
 

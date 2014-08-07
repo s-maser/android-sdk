@@ -25,7 +25,7 @@ class BleDeviceGattManager extends BluetoothGattCallback {
             UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
     private final BleDeviceEventCallback mBleDeviceEventCallback;
 
-    public BleDeviceGattManager(BleDevice device, BleDeviceEventCallback eventCallback) {
+    BleDeviceGattManager(BleDevice device, BleDeviceEventCallback eventCallback) {
 		mDevice = device;
         mBleDeviceEventCallback = eventCallback;
 	}
@@ -37,25 +37,15 @@ class BleDeviceGattManager extends BluetoothGattCallback {
     		Log.d(TAG, "Device " + mDevice.getName() + " connected");
     		if (mDevice.getStatus() != BleDeviceStatus.CONFIGURING) {
     			mDevice.setStatus(BleDeviceStatus.CONNECTED);
-    			if (mDevice.connectionCallback != null) {
-        			Log.d(TAG, "Callback detected: sending onConnect event to " + mDevice.getName());
-        			mDevice.connectionCallback.onConnect(mDevice);
-        		} else {
-        			Log.d(TAG, "Callback not detected: not sending onConnect event to " + mDevice.getName());
-        		}
+                Log.d(TAG, "Callback detected: sending onConnect event to " + mDevice.getName());
+                mDevice.getConnectionCallback().onConnect(mDevice);
     		} else {
     			gatt.discoverServices();
     		}
     	} else {
     		if (status == BluetoothGatt.GATT_SUCCESS && newState == BluetoothProfile.STATE_DISCONNECTED) {
     			if (mDevice.getStatus() != BleDeviceStatus.CONFIGURING) {
-    				mDevice.setStatus(BleDeviceStatus.DISCONNECTED);
-        			if (mDevice.connectionCallback != null) {
-        				Log.d(TAG, "Callback detected: sending onDisconnect event to " + mDevice.getName());
-            			mDevice.connectionCallback.onDisconnect(mDevice);
-            		} else {
-            			Log.d(TAG, "Callback not detected: not sending onDisconnect event to " + mDevice.getName());
-            		}
+            		mDevice.onDisconnect();
     			} else {
     				mDevice.setStatus(BleDeviceStatus.DISCONNECTED);
     				Log.d(TAG, "Device " + mDevice.getName() + " configured");
@@ -69,9 +59,7 @@ class BleDeviceGattManager extends BluetoothGattCallback {
                         mBleDeviceEventCallback.onUnknownDeviceDiscovered(mDevice);
     					Log.d(TAG, "Device " + mDevice.getName() + ": removed because error in configuration process");
     					gatt.close();
-    					if (mDevice.connectionCallback != null) {
-    						mDevice.connectionCallback.onError(mDevice, gattStatusToString(status));
-    					}
+    					mDevice.getConnectionCallback().onError(mDevice, gattStatusToString(status));
     				} else {
     					Log.d(TAG, "Device " + mDevice.getName() + ": unhandled state change configured: " + gattStatusToString(status));
     				}
@@ -115,19 +103,10 @@ class BleDeviceGattManager extends BluetoothGattCallback {
     public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
     	Log.d(TAG, "Characteristic wrote on device " + mDevice.getName() + ": " + characteristic.getUuid());
     	Log.d(TAG, "Characteristic wrote status on device " + mDevice.getName() + ": " + gattStatusToString(status));
-    	switch (status) {
-    	case BluetoothGatt.GATT_SUCCESS: {
-    		if (mDevice.connectionCallback != null) {
-    			mDevice.connectionCallback.onWriteSuccess(mDevice, BleDeviceCharacteristic.from(characteristic));
-    		}
-    		break;
-    	}
-    	default: {
-    		if (mDevice.connectionCallback != null) {
-    			mDevice.connectionCallback.onWriteError(mDevice, BleDeviceCharacteristic.from(characteristic), status);
-    		}
-    		break;
-    	}
+    	if (status == BluetoothGatt.GATT_SUCCESS) {
+            mDevice.getConnectionCallback().onWriteSuccess(mDevice, BleDeviceCharacteristic.from(characteristic));
+        } else {
+    	    mDevice.getConnectionCallback().onWriteError(mDevice, BleDeviceCharacteristic.from(characteristic), status);
     	}
     }
 
@@ -181,7 +160,7 @@ class BleDeviceGattManager extends BluetoothGattCallback {
     }
 
     private void setupDeviceForDirectConnectionMode(BluetoothGattService service, BluetoothGatt gatt) {
-    	mDevice.currentService = service;
+    	mDevice.setBluetoothGattService(service);
     	Log.d(TAG, "New mode on device " + mDevice.getName() + ": Direct connection");
     	List<BluetoothGattCharacteristic> characteristics = service.getCharacteristics();
     	for (BluetoothGattCharacteristic characteristic:characteristics) {
@@ -196,7 +175,7 @@ class BleDeviceGattManager extends BluetoothGattCallback {
     }
 
     private void setupDeviceForOnBoardingConnectionMode(BluetoothGattService service, BluetoothGatt gatt) {
-    	mDevice.currentService = service;
+        mDevice.setBluetoothGattService(service);
     	Log.d(TAG, "Device new mode on device " + mDevice.getName() + ": on boarding");
     }
 }
