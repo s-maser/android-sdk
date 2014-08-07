@@ -4,36 +4,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import io.relayr.core.observers.Observable;
-import io.relayr.core.observers.Observer;
-
 class BleDeviceManager {
 
     private HashMap<String, BleDevice> discoveredDevices;
-    private Observable<List<BleDevice>> allDevicesObservable;
-    private Observable<List<BleDevice>> onBoardingDevicesObservable;
-    private Observable<List<BleDevice>> directConnectedDevicesObservable;
 
     protected BleDeviceManager() {
         discoveredDevices = new HashMap<>();
-        allDevicesObservable = new Observable<>();
-        onBoardingDevicesObservable = new Observable<>();
-        directConnectedDevicesObservable = new Observable<>();
-    }
-
-    void notifyDiscoveredDevice(BleDevice device) {
-        allDevicesObservable.notifyObservers(getAllConfiguredDevices());
-        switch (device.getMode()) {
-            case ONBOARDING: {
-                onBoardingDeviceListUpdate();
-                break;
-            }
-            case DIRECTCONNECTION: {
-                directConnectedDeviceListUpdate();
-                break;
-            }
-            default:break;
-        }
     }
 
     void addNewDevice(String address, BleDevice device) {
@@ -63,7 +39,7 @@ class BleDeviceManager {
         return getDevices(BleDeviceMode.DIRECTCONNECTION);
     }
 
-    private List<BleDevice> getAllConfiguredDevices() {
+    List<BleDevice> getAllConfiguredDevices() {
         List<BleDevice> list = new ArrayList<>();
 
         for (BleDevice device:discoveredDevices.values()) {
@@ -98,26 +74,6 @@ class BleDeviceManager {
                 }
             }
         }
-    }
-
-    void onBoardingDeviceListUpdate() {
-        onBoardingDevicesObservable.notifyObservers(getOnBoardingDevices());
-    }
-
-    void directConnectedDeviceListUpdate() {
-        directConnectedDevicesObservable.notifyObservers(getDirectConnectedDevices());
-    }
-
-    void subscribeToAllDevices(Observer<List<BleDevice>> observer) {
-        allDevicesObservable.addObserver(observer);
-    }
-
-    void subscribeToOnBoardingDevices(Observer<List<BleDevice>> observer) {
-        onBoardingDevicesObservable.addObserver(observer);
-    }
-
-    void subscribeToDirectConnectedDevices(Observer<List<BleDevice>> observer) {
-        directConnectedDevicesObservable.addObserver(observer);
     }
 
     void removeDevice(BleDevice device) {

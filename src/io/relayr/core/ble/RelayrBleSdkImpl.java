@@ -10,7 +10,8 @@ import android.util.Log;
 import java.util.List;
 
 import io.relayr.Relayr_Application;
-import io.relayr.core.observers.Observer;
+import rx.Observable;
+import rx.Subscriber;
 
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 class RelayrBleSdkImpl extends RelayrBleSdk implements BleDeviceEventCallback {
@@ -20,6 +21,7 @@ class RelayrBleSdkImpl extends RelayrBleSdk implements BleDeviceEventCallback {
 
     private final BleDevicesScanner scanner;
     private final BleDeviceManager discoveredDevices = new BleDeviceManager();
+    private Subscriber<? super List<BleDevice>> mDevicesSubscriber;
 
     RelayrBleSdkImpl() {
         Activity currentActivity = Relayr_Application.currentActivity();
@@ -46,27 +48,18 @@ class RelayrBleSdkImpl extends RelayrBleSdk implements BleDeviceEventCallback {
         scanner.setScanPeriod(SCAN_PERIOD_IN_MILLISECONDS);
     }
 
-    public void scan() {
-        discoveredDevices.refreshDiscoveredDevices();
-        if (!scanner.isScanning()) {
-            scanner.start();
-            Log.d(TAG, "New scanner start");
-        }
-    }
-
-    @Override
-    public void subscribeToAllDevices(Observer<List<BleDevice>> observer) {
-        discoveredDevices.subscribeToAllDevices(observer);
-    }
-
-    @Override
-    public void subscribeToOnBoardingDevices(Observer<List<BleDevice>> observer) {
-        discoveredDevices.subscribeToOnBoardingDevices(observer);
-    }
-
-    @Override
-    public void subscribeToDirectConnectedDevices(Observer<List<BleDevice>> observer) {
-        discoveredDevices.subscribeToDirectConnectedDevices(observer);
+    public Observable<List<BleDevice>> scan() {
+        return Observable.create(new Observable.OnSubscribe<List<BleDevice>>() {
+            @Override
+            public void call(Subscriber<? super List<BleDevice>> subscriber) {
+                mDevicesSubscriber = subscriber;
+                discoveredDevices.refreshDiscoveredDevices();
+                if (!scanner.isScanning()) {
+                    scanner.start();
+                    Log.d(TAG, "New scanner start");
+                }
+            }
+        });
     }
 
     public void stop() {
@@ -81,17 +74,7 @@ class RelayrBleSdkImpl extends RelayrBleSdk implements BleDeviceEventCallback {
     @Override
     public void onModeSwitch(BleDeviceMode mode, BleDevice device) {
         if (discoveredDevices.isFullyConfigured(device.getAddress())) {
-            switch (mode) {
-                case ONBOARDING: {
-                    discoveredDevices.onBoardingDeviceListUpdate();
-                    break;
-                }
-                case DIRECTCONNECTION: {
-                    discoveredDevices.directConnectedDeviceListUpdate();
-                    break;
-                }
-                default:break;
-            }
+            mDevicesSubscriber.onNext(discoveredDevices.getAllConfiguredDevices());
         }
     }
 
@@ -100,7 +83,7 @@ class RelayrBleSdkImpl extends RelayrBleSdk implements BleDeviceEventCallback {
         if (!discoveredDevices.isFullyConfigured(device.getAddress())) {
             discoveredDevices.addNewDevice(device.getAddress(), device);
             Log.d(TAG, "Device " + device.getName() + " added to discovered devices");
-            discoveredDevices.notifyDiscoveredDevice(device);
+            mDevicesSubscriber.onNext(discoveredDevices.getAllConfiguredDevices());
         }
     }
 

@@ -1,6 +1,6 @@
 package io.relayr.core.ble;
 
-enum BleDeviceMode {
+public enum BleDeviceMode {
 	ONBOARDING,
 	DIRECTCONNECTION,
 	UNKNOWN

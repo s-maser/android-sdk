@@ -3,7 +3,7 @@ package io.relayr.core.ble;
 import java.util.List;
 
 import io.relayr.Relayr_SDK;
-import io.relayr.core.observers.Observer;
+import rx.Observable;
 
 public abstract class RelayrBleSdk {
 
@@ -18,18 +18,12 @@ public abstract class RelayrBleSdk {
 
     /** Starts a scan for Bluetooth LE devices. Since there can be changes in the mode of a sensor,
      * the cache of all found devices will be refreshed and they will be discovered again. */
-    public abstract void scan();
+    public abstract Observable<List<BleDevice>> scan();
 
     /** Stops an ongoing Bluetooth LE device scan. */
     public abstract void stop();
 
     /** Whether it's scanning for Bluetooth LE devices. */
     public abstract boolean isScanning();
-
-    public abstract void subscribeToAllDevices(Observer<List<BleDevice>> observer);
-
-    public abstract void subscribeToOnBoardingDevices(Observer<List<BleDevice>> observer);
-
-    public abstract void subscribeToDirectConnectedDevices(Observer<List<BleDevice>> observer);
 
 }

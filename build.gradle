@@ -44,8 +44,14 @@ android {
     }
 }
 
+repositories {
+    mavenCentral()
+}
+
 dependencies {
     compile files('libs/gson-2.2.4.jar')
+    compile 'com.netflix.rxjava:rxjava-core:0.+'
+    compile 'com.netflix.rxjava:rxjava-android:0.+'
 }
 
 task clearJar(type: Delete) {
