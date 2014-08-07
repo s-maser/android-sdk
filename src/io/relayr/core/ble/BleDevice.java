@@ -222,11 +222,9 @@ public class BleDevice {
 	        BluetoothGatt localBluetoothGatt = gatt;
 	        Method localMethod = localBluetoothGatt.getClass().getMethod("refresh", new Class[0]);
 	        if (localMethod != null) {
-	           boolean bool = ((Boolean) localMethod.invoke(localBluetoothGatt, new Object[0])).booleanValue();
-	            return bool;
+                return (Boolean) localMethod.invoke(localBluetoothGatt);
 	         }
-	    }
-	    catch (Exception localException) {
+	    } catch (Exception localException) {
 	        Log.e(TAG, "An exception occurred while refreshing device");
 	    }
 	    return false;
