@@ -1,6 +1,9 @@
 package io.relayr.core.api;
 
-import java.util.ArrayList;
+import android.util.Log;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -8,10 +11,8 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.util.Log;
+import java.util.ArrayList;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import io.relayr.core.app.Relayr_App;
 import io.relayr.core.device.Relayr_Device;
 import io.relayr.core.device.Relayr_DeviceModelDefinition;
@@ -61,19 +62,11 @@ public class Relayr_RequestParser {
 			break;
 		}
 		case 401: {
-			if (call == Relayr_ApiCall.UserInfo) {
-				Relayr_SDKStatus.login();
-			} else {
-				generateError(jsonContent);
-			}
+            generateError(jsonContent);
 			break;
 		}
 		case 403: {
-			if (call == Relayr_ApiCall.UserInfo) {
-				Relayr_SDKStatus.login();
-			} else {
-				generateError(jsonContent);
-			}
+            generateError(jsonContent);
 			break;
 		}
 		case 500: {
