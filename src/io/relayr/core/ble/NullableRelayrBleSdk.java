@@ -2,7 +2,6 @@ package io.relayr.core.ble;
 
 import java.util.List;
 
-import io.relayr.core.observers.Observable;
 import io.relayr.core.observers.Observer;
 
 class NullableRelayrBleSdk extends RelayrBleSdk {
@@ -12,8 +11,6 @@ class NullableRelayrBleSdk extends RelayrBleSdk {
     public void stop() { }
 
     public boolean isScanning() { return false; }
-
-    public void refresh() { }
 
     @Override
     public void subscribeToAllDevices(Observer<List<BleDevice>> observer) { }

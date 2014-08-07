@@ -47,14 +47,6 @@ class RelayrBleSdkImpl extends RelayrBleSdk implements BleDeviceEventCallback {
     }
 
     public void scan() {
-        if (!scanner.isScanning()) {
-            discoveredDevices.clearDiscoveredDevices();
-            scanner.start();
-            Log.d(TAG, "New scanner start");
-        }
-    }
-
-    public void refresh() {
         discoveredDevices.refreshDiscoveredDevices();
         if (!scanner.isScanning()) {
             scanner.start();

@@ -16,7 +16,8 @@ public abstract class RelayrBleSdk {
                 new NullableRelayrBleSdk();
     }
 
-    /** Starts a scan for Bluetooth LE devices. */
+    /** Starts a scan for Bluetooth LE devices. Since there can be changes in the mode of a sensor,
+     * the cache of all found devices will be refreshed and they will be discovered again. */
     public abstract void scan();
 
     /** Stops an ongoing Bluetooth LE device scan. */
@@ -24,10 +25,6 @@ public abstract class RelayrBleSdk {
 
     /** Whether it's scanning for Bluetooth LE devices. */
     public abstract boolean isScanning();
-
-    /** Refreshes the cache of the discovered Bluetooth LE devices and performs the {@link #scan()}
-     * operation again. */
-    public abstract void refresh();
 
     public abstract void subscribeToAllDevices(Observer<List<BleDevice>> observer);
 
