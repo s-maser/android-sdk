@@ -134,6 +134,7 @@ public class BleDevice {
             if (status != BleDeviceStatus.CONFIGURING) {
                 status = BleDeviceStatus.DISCONNECTING;
             }
+            refreshDeviceCache();
             gatt.disconnect();
             gatt.close();
             gatt = null;
