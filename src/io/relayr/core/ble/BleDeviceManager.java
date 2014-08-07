@@ -6,11 +6,7 @@ import java.util.List;
 
 class BleDeviceManager {
 
-    private HashMap<String, BleDevice> discoveredDevices;
-
-    protected BleDeviceManager() {
-        discoveredDevices = new HashMap<>();
-    }
+    private final HashMap<String, BleDevice> discoveredDevices = new HashMap<>();
 
     void addNewDevice(String address, BleDevice device) {
         discoveredDevices.put(address, device);
@@ -25,42 +21,22 @@ class BleDeviceManager {
     }
 
     void clearDiscoveredDevices() {
-        for (BleDevice device:discoveredDevices.values()) {
+        for (BleDevice device: discoveredDevices.values()) {
             if (device != null) device.disconnect();
         }
         discoveredDevices.clear();
     }
 
-    private List<BleDevice> getOnBoardingDevices() {
-        return getDevices(BleDeviceMode.ONBOARDING);
-    }
-
-    private List<BleDevice> getDirectConnectedDevices() {
-        return getDevices(BleDeviceMode.DIRECTCONNECTION);
-    }
-
     List<BleDevice> getAllConfiguredDevices() {
-        List<BleDevice> list = new ArrayList<>();
-
-        for (BleDevice device:discoveredDevices.values()) {
-            if ((device != null) && (device.getMode() != BleDeviceMode.UNKNOWN)) {
-                list.add(device);
-            }
-        }
-
-        return list;
-    }
-
-    private List<BleDevice> getDevices(BleDeviceMode deviceMode) {
-        List<BleDevice> list = new ArrayList<>();
+        List<BleDevice> configuredDevices = new ArrayList<>();
 
         for (BleDevice device: discoveredDevices.values()) {
-            if ((device != null) && (device.getMode() == deviceMode)) {
-                list.add(device);
+            if ((device != null) && (device.getMode() != BleDeviceMode.UNKNOWN)) {
+                configuredDevices.add(device);
             }
         }
 
-        return list;
+        return configuredDevices;
     }
 
     void refreshDiscoveredDevices() {
