@@ -82,14 +82,11 @@ class BleDeviceGattManager extends BluetoothGattCallback {
     			if (mDevice.getStatus() == BleDeviceStatus.CONFIGURING) {
     				mDevice.disconnect();
     			}
-    			break;
-    		}
-    		if (serviceUUID.equals(BleShortUUID.MODE_ON_BOARDING)) {
+    		} else if (serviceUUID.equals(BleShortUUID.MODE_ON_BOARDING)) {
     			setupDeviceForOnBoardingConnectionMode(service, gatt);
     			mDevice.setMode(BleDeviceMode.ONBOARDING);
     			mDevice.setStatus(BleDeviceStatus.CONNECTED);
     			mBleDeviceEventCallback.onDeviceDiscovered(mDevice);
-    			break;
     		}
     	}
     }
