@@ -72,8 +72,9 @@ class BleDeviceGattManager extends BluetoothGattCallback {
     @Override
     public void onServicesDiscovered(BluetoothGatt gatt, int status) {
     	List<BluetoothGattService> services = gatt.getServices();
-    	for (BluetoothGattService service:services) {
+    	for (BluetoothGattService service: services) {
     		String serviceUUID = getShortUUID(service.getUuid().toString());
+            if (!BleDeviceMode.containsService(serviceUUID)) continue;
             mDevice.setMode(BleDeviceMode.fromUuid(serviceUUID));
 
     		Log.d(TAG, "Discovered service on device " + mDevice.getName() + ": " + serviceUUID);
@@ -88,6 +89,7 @@ class BleDeviceGattManager extends BluetoothGattCallback {
                 mDevice.disconnect();
                 mBleDeviceEventCallback.onDeviceConnectedToMasterModuleDiscovered(mDevice);
             }
+            return;
     	}
     }
 
