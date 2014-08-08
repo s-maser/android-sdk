@@ -56,7 +56,7 @@ public class BleDevice {
         mModeSwitchCallback = modeSwitchCallback;
 		this.bluetoothDevice = bluetoothDevice;
 		this.status = BleDeviceStatus.DISCONNECTED;
-		this.mode = BleDeviceMode.UNKNOWN;
+		this.mode = BleDeviceMode.CONNECTED_TO_MASTER_MODULE;
 		this.type = BleDeviceType.getDeviceType(bluetoothDevice.getName());
 	}
 
@@ -111,7 +111,8 @@ public class BleDevice {
 		return type;
 	}
 
-	public void connect() {
+	void connect() {
+        setStatus(BleDeviceStatus.CONFIGURING);
 		connect(mNullableConnectionCallback);
 	}
 
@@ -142,6 +143,12 @@ public class BleDevice {
         }
 	}
 
+    void onConnect() {
+        setStatus(BleDeviceStatus.CONNECTED);
+        Log.d(TAG, "Callback detected: sending onConnect event to " + type);
+        mConnectionCallback.onConnect(this);
+    }
+
     void onDisconnect() {
         setStatus(BleDeviceStatus.DISCONNECTED);
         mConnectionCallback.onDisconnect(this);
@@ -159,20 +166,20 @@ public class BleDevice {
 
 	private String getModeString() {
 		switch(this.mode) {
-		case ONBOARDING: {
+		case ON_BOARDING: {
 			return "MODE_ON_BOARDING";
 		}
-		case DIRECTCONNECTION: {
+		case DIRECT_CONNECTION: {
 			return "MODE_DIRECT_CONNECTION";
 		}
 		default: {
-			return "UNKNOWN";
+			return "CONNECTED_TO_MASTER_MODULE";
 		}
 		}
 	}
 
 	public void updateConfiguration(final byte[] newConfiguration) {
-        if (bluetoothGattService != null && mode == BleDeviceMode.DIRECTCONNECTION) {
+        if (bluetoothGattService != null && mode == BleDeviceMode.DIRECT_CONNECTION) {
             List<BluetoothGattCharacteristic> characteristics = bluetoothGattService.getCharacteristics();
             for (BluetoothGattCharacteristic characteristic:characteristics) {
                 String characteristicUUID = getShortUUID(characteristic.getUuid().toString());
@@ -200,7 +207,7 @@ public class BleDevice {
 
     private void write(byte[] bytes, String characteristicUUID, String logName) {
         assert(bytes != null);
-        if (bluetoothGattService != null && mode == BleDeviceMode.ONBOARDING) {
+        if (bluetoothGattService != null && mode == BleDeviceMode.ON_BOARDING) {
             List<BluetoothGattCharacteristic> characteristics = bluetoothGattService.getCharacteristics();
             for (BluetoothGattCharacteristic characteristic:characteristics) {
                 String deviceCharacteristicUUID = getShortUUID(characteristic.getUuid().toString());
@@ -248,7 +255,6 @@ public class BleDevice {
             gatt.discoverServices();
         } catch (Exception e) { //DeadObjectException
             disconnect();
-            setStatus(BleDeviceStatus.CONFIGURING);
             connect();
         }
     }

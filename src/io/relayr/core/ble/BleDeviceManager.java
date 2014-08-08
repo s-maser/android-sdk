@@ -31,7 +31,7 @@ class BleDeviceManager {
         List<BleDevice> configuredDevices = new ArrayList<>();
 
         for (BleDevice device: discoveredDevices.values()) {
-            if ((device != null) && (device.getMode() != BleDeviceMode.UNKNOWN)) {
+            if ((device != null) && (device.getMode() != BleDeviceMode.CONNECTED_TO_MASTER_MODULE)) {
                 configuredDevices.add(device);
             }
         }
@@ -45,7 +45,6 @@ class BleDeviceManager {
                 if (device.isConnected()) {
                     device.forceCacheRefresh();
                 } else {
-                    device.setStatus(BleDeviceStatus.CONFIGURING);
                     device.connect();
                 }
             }

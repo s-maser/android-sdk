@@ -26,21 +26,19 @@ class RelayrBleSdkImpl extends RelayrBleSdk implements BleDeviceEventCallback {
         BluetoothAdapter bluetoothAdapter = BleUtils.getBluetoothAdapter(RelayrApp.get());
         scanner = new BleDevicesScanner(bluetoothAdapter, new BluetoothAdapter.LeScanCallback() {
 
-            private boolean hasANewDeviceBeenDiscovered(BluetoothDevice device) {
-                return !discoveredDevices.isDeviceDiscovered(device.getAddress()) &&
-                        BleDeviceType.getDeviceType(device.getName()) != BleDeviceType.Unknown;
+            private boolean hasAlreadyBeenDiscovered(BluetoothDevice device) {
+                return discoveredDevices.isDeviceDiscovered(device.getAddress()) ||
+                        BleDeviceType.getDeviceType(device.getName()) == BleDeviceType.Unknown;
             }
 
             @Override
             public void onLeScan(BluetoothDevice device, final int rssi, byte[] scanRecord) {
-                if (hasANewDeviceBeenDiscovered(device)) {
-                    Log.d(TAG, "New device: "+ device.getName() + " [" + device.getAddress() + "]");
-                    BleDevice relayrDevice = new BleDevice(device, RelayrBleSdkImpl.this);
-                    discoveredDevices.addNewDevice(relayrDevice.getAddress(), null);
-                    relayrDevice.setStatus(BleDeviceStatus.CONFIGURING);
-                    Log.d(TAG, "Device configuration start: "+ relayrDevice.toString());
-                    relayrDevice.connect();
-                }
+                if (hasAlreadyBeenDiscovered(device)) return;
+                BleDevice relayrDevice = new BleDevice(device, RelayrBleSdkImpl.this);
+                relayrDevice.connect();
+                // TODO: ADD DISCOVERED BUT NOT CONFIGURED DEVICES INSTEAD OF NULL VALUES
+                discoveredDevices.addNewDevice(relayrDevice.getAddress(), null);
+                Log.d(TAG, "Configuring New device: "+ device.getName() + " [" + device.getAddress() + "]");
             }
         });
         scanner.setScanPeriod(SCAN_PERIOD_IN_MILLISECONDS);
@@ -86,7 +84,7 @@ class RelayrBleSdkImpl extends RelayrBleSdk implements BleDeviceEventCallback {
     }
 
     @Override
-    public void onUnknownDeviceDiscovered(BleDevice device) {
+    public void onDeviceConnectedToMasterModuleDiscovered(BleDevice device) {
         discoveredDevices.removeDevice(device);
     }
 }

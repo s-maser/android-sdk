@@ -47,7 +47,7 @@ public class Relayr_ApiConnector {
 		case UserToken: {
 			return "UserToken";
 		}
-		default: return "UNKNOWN";
+		default: return "CONNECTED_TO_MASTER_MODULE";
 		}
 	}
 
