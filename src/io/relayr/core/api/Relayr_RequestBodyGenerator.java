@@ -1,15 +1,16 @@
 package io.relayr.core.api;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import com.google.gson.Gson;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
-import com.google.gson.Gson;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import io.relayr.core.error.Relayr_Exception;
-import io.relayr.core.settings.Relayr_SDKSettings;
+import io.relayr.core.settings.RelayrProperties;
 import io.relayr.core.settings.Relayr_SDKStatus;
 
 public class Relayr_RequestBodyGenerator {
@@ -56,8 +57,8 @@ public class Relayr_RequestBodyGenerator {
 		case UserToken: {
 			List<NameValuePair> parameters = new ArrayList<NameValuePair>();
             parameters.add(new BasicNameValuePair(RELAYR_CODEPARAM, (String) params[0]));
-            parameters.add(new BasicNameValuePair(RELAYR_CLIENTIDPARAM, (String) Relayr_SDKSettings.getClientId()));
-            parameters.add(new BasicNameValuePair(RELAYR_CLIENTSECRETPARAM, (String) Relayr_SDKSettings.getClientSecret()));
+            parameters.add(new BasicNameValuePair(RELAYR_CLIENTIDPARAM, RelayrProperties.get().clientId));
+            parameters.add(new BasicNameValuePair(RELAYR_CLIENTSECRETPARAM, RelayrProperties.get().clientSecret));
             parameters.add(new BasicNameValuePair(RELAYR_GRANTTYPEPARAM, RELAYR_DEFAULTGRANTTYPE));
             parameters.add(new BasicNameValuePair(RELAYR_REDIRECTURLPARAM, Relayr_APICommons.ACCESS_REDIRECTION_URI));
             parameters.add(new BasicNameValuePair(RELAYR_SCOPEPARAM, ""));

@@ -16,7 +16,7 @@ import io.relayr.core.device.Relayr_Device;
 import io.relayr.core.device.Relayr_DeviceModelDefinition;
 import io.relayr.core.error.Relayr_Exception;
 import io.relayr.core.event_listeners.LoginEventListener;
-import io.relayr.core.settings.Relayr_SDKSettings;
+import io.relayr.core.settings.RelayrProperties;
 import io.relayr.core.settings.Relayr_SDKStatus;
 import io.relayr.core.storage.Relayr_DataStorage;
 import io.relayr.core.user.Relayr_User;
@@ -28,17 +28,15 @@ public class Relayr_SDK {
     /** Should be called when the {@link android.app.Application} is created */
     public static void init(Context context) {
         RelayrApp.init(context);
+        Relayr_DataStorage.loadLocalData();
     }
 
 	public static void init() throws Exception {
 		if (!Relayr_SDKStatus.isActive()) {
-			if (Relayr_SDKSettings.checkConfigValues()) {
-				Relayr_DataStorage.loadLocalData();
-				Relayr_SDKStatus.synchronizeUserInfo();
-				Relayr_SDKStatus.synchronizeAppInfo();
-				Relayr_SDKStatus.setActive(true);
-				setLoginEventListener(null);
-			}
+            Relayr_SDKStatus.synchronizeUserInfo();
+            Relayr_SDKStatus.synchronizeAppInfo();
+            Relayr_SDKStatus.setActive(true);
+            setLoginEventListener(null);
 		}
 	}
 
@@ -59,7 +57,7 @@ public class Relayr_SDK {
 
 	public static String getVersion() throws Relayr_Exception {
 		if (Relayr_SDKStatus.isActive()) {
-			return Relayr_SDKSettings.getVersion();
+			return RelayrProperties.VERSION;
 		} else {
 			throw new Relayr_Exception("SDK no active", null);
 		}

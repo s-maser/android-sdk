@@ -1,14 +1,14 @@
 package io.relayr.core.api;
 
-import java.util.HashMap;
-
 import android.net.Uri;
 import android.net.Uri.Builder;
 import android.util.Log;
 
+import java.util.HashMap;
+
 import io.relayr.core.app.Relayr_App;
 import io.relayr.core.error.Relayr_Exception;
-import io.relayr.core.settings.Relayr_SDKSettings;
+import io.relayr.core.settings.RelayrProperties;
 import io.relayr.core.settings.Relayr_SDKStatus;
 import io.relayr.core.user.Relayr_User;
 
@@ -44,7 +44,7 @@ public class Relayr_ApiURLGenerator {
 		case UserAuthorization: {
 			urlString.append(RELAYR_OAUTH2TAG);
 			urlString.append(RELAYR_AUTHENTICATIONTAG);
-			parametersCollection.put(RELAYR_CLIENTIDPARAM, Relayr_SDKSettings.getClientId());
+			parametersCollection.put(RELAYR_CLIENTIDPARAM, RelayrProperties.get().clientId);
 			parametersCollection.put(RELAYR_REDIRECTURIPARAM, Relayr_APICommons.AUTH_REDIRECTION_URI);
 			parametersCollection.put(RELAYR_RESPONSETYPEPARAM, RELAYR_CODERESPONSETYPE);
 			parametersCollection.put(RELAYR_SCOPEPARAM, RELAYR_DEFAULTSCOPE);
