@@ -93,8 +93,6 @@ public class BleDevice {
 		this.mode = mode;
 		notifyModeSwitch(oldMode);
 		notifyModeSwitch(mode);
-		BleDeviceValue model = new BleDeviceValue(value, BleDataParser.getFormattedValue(type, value));
-		deviceValueSubscriber.onNext(model);
 	}
 
 	private void notifyModeSwitch(BleDeviceMode mode) {
@@ -104,7 +102,7 @@ public class BleDevice {
 	public void setValue(byte[] value) {
 		this.value = value;
 		BleDeviceValue model = new BleDeviceValue(value, BleDataParser.getFormattedValue(type, value));
-        deviceValueSubscriber.onNext(model);
+        if (deviceValueSubscriber != null) deviceValueSubscriber.onNext(model);
 	}
 
 	public BleDeviceType getType() {
