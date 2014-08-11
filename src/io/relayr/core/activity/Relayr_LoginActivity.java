@@ -13,19 +13,29 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import javax.inject.Inject;
+
+import io.relayr.RelayrApp;
+import io.relayr.Relayr_SDK;
+import io.relayr.core.api.RelayrApi;
+import io.relayr.core.event_listeners.LoginEventListener;
 import io.relayr.core.settings.RelayrProperties;
-import io.relayr.core.settings.Relayr_SDKStatus;
+import io.relayr.core.storage.Relayr_DataStorage;
+import io.relayr.core.user.Relayr_User;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 public class Relayr_LoginActivity extends Relayr_Activity {
 
     private static final String API_ENDPOINT = "https://api.relayr.io";
-
-	private WebView mWebView;
+    @Inject RelayrApi mRelayrApi;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-        mWebView = new WebView(this);
+        RelayrApp.inject(this);
+        WebView mWebView = new WebView(this);
         setContentView(mWebView);
 
 		mWebView.setWebChromeClient(new WebChromeClient());
@@ -45,16 +55,36 @@ public class Relayr_LoginActivity extends Relayr_Activity {
 				String accessCode = getAccessCode(url);
 				if (accessCode != null) {
 					Log.d("Relayr_LoginActivity", "onPageStarted access code: " + accessCode);
-					try {
-						Relayr_SDKStatus.synchronizeTokenInfo(Relayr_LoginActivity.this, accessCode);
-					} catch (Exception e) {
-						Log.d("Relayr_LoginActivity", "Error: " + e.getMessage());
-					}
-					finish();
-				}
+
+                    mRelayrApi
+                            .userInfo()
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(new Subscriber<Relayr_User>() {
+
+                                @Override
+                                public void onCompleted() {
+
+                                }
+
+                                @Override
+                                public void onError(Throwable e) {
+
+                                }
+
+                                @Override
+                                public void onNext(Relayr_User relayr_user) {
+                                    Relayr_DataStorage.saveLocalData();
+                                    LoginEventListener listener = Relayr_SDK.getLoginEventListener();
+                                    if (listener != null) {
+                                        listener.onUserLoggedInSuccessfully();
+                                    }
+                                }
+                            });
+                }
+                finish();
 			}
 		});
-
         mWebView.loadUrl(getLoginUrl());
 	}
 

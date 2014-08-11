@@ -49,9 +49,13 @@ repositories {
 }
 
 dependencies {
-    compile files('libs/gson-2.2.4.jar')
     compile 'com.netflix.rxjava:rxjava-core:0.+'
     compile 'com.netflix.rxjava:rxjava-android:0.+'
+    compile 'com.squareup.dagger:dagger:1.2.2'
+    provided 'com.squareup.dagger:dagger-compiler:1.2.1'
+    compile 'com.squareup.okhttp:okhttp:1.6.0'
+    compile 'com.squareup.okhttp:okhttp-urlconnection:1.6.0'
+    compile 'com.squareup.retrofit:retrofit:1.6.1'
 }
 
 task clearJar(type: Delete) {
