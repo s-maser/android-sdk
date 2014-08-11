@@ -1,6 +1,5 @@
 package io.relayr;
 
-import android.app.Activity;
 import android.content.Context;
 
 import dagger.ObjectGraph;
@@ -39,9 +38,5 @@ public class RelayrApp {
     public static Context get() {
         return sApplicationContext;
     }
-
-	public static void setCurrentActivity(Activity currentActivity) {
-
-	}
 
 }
