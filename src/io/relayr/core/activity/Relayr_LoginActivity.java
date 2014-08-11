@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -12,12 +13,12 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import io.relayr.core.api.Relayr_ApiCall;
-import io.relayr.core.api.Relayr_ApiConnector;
-import io.relayr.core.error.Relayr_Exception;
+import io.relayr.core.settings.RelayrProperties;
 import io.relayr.core.settings.Relayr_SDKStatus;
 
 public class Relayr_LoginActivity extends Relayr_Activity {
+
+    private static final String API_ENDPOINT = "https://api.relayr.io";
 
 	private WebView mWebView;
 
@@ -54,7 +55,7 @@ public class Relayr_LoginActivity extends Relayr_Activity {
 			}
 		});
 
-		loadWebViewContent();
+        mWebView.loadUrl(getLoginUrl());
 	}
 
 	@Override
@@ -62,17 +63,20 @@ public class Relayr_LoginActivity extends Relayr_Activity {
 	    super.onConfigurationChanged(newConfig);
 	}
 
-	private void loadWebViewContent() {
-		try {
-			Object[] parameters = {};
-            String url = (String) Relayr_ApiConnector.doCall(Relayr_ApiCall.UserAuthorization, parameters);
-			mWebView.loadUrl(url);
-		} catch (Relayr_Exception e) {
-			e.printStackTrace();
-		}
-	}
+    private String getLoginUrl() {
+        Uri.Builder uriBuilder = Uri.parse(API_ENDPOINT).buildUpon();
+        uriBuilder.path("/oauth2/auth");
 
-	private String getAccessCode(String url) {
+        uriBuilder.appendQueryParameter("client_id", RelayrProperties.get().clientId);
+        uriBuilder.appendQueryParameter("redirect_uri", "http://localhost");
+        uriBuilder.appendQueryParameter("response_type", "code");
+        uriBuilder.appendQueryParameter("scope", "access-own-user-info");
+
+        return uriBuilder.build().toString();
+    }
+
+
+    private String getAccessCode(String url) {
 		String codeParam = "?code=";
 		if (url.contains(codeParam)) {
 			int tokenPosition = url.indexOf(codeParam);
