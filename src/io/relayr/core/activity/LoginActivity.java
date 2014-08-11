@@ -16,17 +16,19 @@ import android.webkit.WebViewClient;
 import javax.inject.Inject;
 
 import io.relayr.RelayrApp;
-import io.relayr.Relayr_SDK;
+import io.relayr.RelayrSdk;
 import io.relayr.core.api.RelayrApi;
-import io.relayr.core.event_listeners.LoginEventListener;
-import io.relayr.core.settings.RelayrProperties;
-import io.relayr.core.storage.Relayr_DataStorage;
-import io.relayr.core.user.Relayr_User;
+import io.relayr.LoginEventListener;
+import io.relayr.core.storage.DataStorage;
+import io.relayr.core.storage.RelayrProperties;
+import io.relayr.core.model.User;
+import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
-public class Relayr_LoginActivity extends Relayr_Activity {
+public class LoginActivity extends Activity {
 
     private static final String API_ENDPOINT = "https://api.relayr.io";
     @Inject RelayrApi mRelayrApi;
@@ -52,36 +54,42 @@ public class Relayr_LoginActivity extends Relayr_Activity {
 			@Override
 			public void onPageStarted(WebView view, String url, Bitmap favicon) {
 				Log.d("Login_Activity", "Webview opening: " + url);
-				String accessCode = getAccessCode(url);
-				if (accessCode != null) {
-					Log.d("Relayr_LoginActivity", "onPageStarted access code: " + accessCode);
-
+				final String accessToken = getAccessToken(url);
+				if (accessToken != null) {
+					Log.d("Relayr_LoginActivity", "onPageStarted access token: " + accessToken);
                     mRelayrApi
                             .userInfo()
+                            .flatMap(new Func1<User, Observable<User>>() {
+                                @Override
+                                public Observable<User> call(User user) {
+                                    DataStorage.saveUserToken(accessToken);
+                                    DataStorage.saveUserId(user.id);
+                                    return Observable.from(user);
+                                }
+                            })
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(new Subscriber<Relayr_User>() {
+                            .subscribe(new Subscriber<User>() {
 
                                 @Override
                                 public void onCompleted() {
-
+                                    finish();
+                                    LoginEventListener listener = RelayrSdk.getLoginEventListener();
+                                    if (listener != null) listener.onSuccessUserLogIn();
                                 }
 
                                 @Override
                                 public void onError(Throwable e) {
-
+                                    finish();
+                                    LoginEventListener listener = RelayrSdk.getLoginEventListener();
+                                    if (listener != null) listener.onErrorLogin(e);
                                 }
 
                                 @Override
-                                public void onNext(Relayr_User relayr_user) {
-                                    Relayr_DataStorage.saveLocalData();
-                                    LoginEventListener listener = Relayr_SDK.getLoginEventListener();
-                                    if (listener != null) {
-                                        listener.onUserLoggedInSuccessfully();
-                                    }
+                                public void onNext(User user) {
+
                                 }
                             });
-                    finish();
                 }
 			}
 		});
@@ -106,7 +114,7 @@ public class Relayr_LoginActivity extends Relayr_Activity {
     }
 
 
-    private String getAccessCode(String url) {
+    private String getAccessToken(String url) {
 		String codeParam = "?code=";
 		if (url.contains(codeParam)) {
 			int tokenPosition = url.indexOf(codeParam);
@@ -119,7 +127,7 @@ public class Relayr_LoginActivity extends Relayr_Activity {
 	}
 
     public static void startActivity(Activity currentActivity) {
-        Intent loginActivity = new Intent(currentActivity, Relayr_LoginActivity.class);
+        Intent loginActivity = new Intent(currentActivity, LoginActivity.class);
         loginActivity.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         currentActivity.startActivity(loginActivity);
     }

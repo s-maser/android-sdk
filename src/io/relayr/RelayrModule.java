@@ -4,12 +4,12 @@ package io.relayr;
 import dagger.Module;
 
 @Module(
-        includes = {
-
+        staticInjections = {
+            RelayrSdk.class
         },
         injects = {
                 RelayrApp.class
         }, library = true
 )
-public final class RelayrModule { }
+final class RelayrModule { }
 

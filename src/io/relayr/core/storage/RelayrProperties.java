@@ -1,4 +1,4 @@
-package io.relayr.core.settings;
+package io.relayr.core.storage;
 
 import java.io.IOException;
 import java.io.InputStream;

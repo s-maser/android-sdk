@@ -1,25 +1,23 @@
-package io.relayr.core.device;
+package io.relayr.core.model;
 
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
-public class Relayr_Device implements Serializable {
+public class Device implements Serializable {
 
-	/**
-	 *
-	 */
+	/** Auto generated uid */
 	private static final long serialVersionUID = 1L;
-	private final String id;
+	public final String id;
 	private String name;
-	private final Relayr_DeviceModel model;
+	private final Model model;
 	private String owner;
     private String firmwareVersion;
     private final String secret;
     @SerializedName("public") private boolean isPublic;
 
-    public Relayr_Device(String id, String name, Relayr_DeviceModel model, String owner,
-                         String firmwareVersion, String secret, boolean isPublic) {
+    public Device(String id, String name, Model model, String owner,
+                  String firmwareVersion, String secret, boolean isPublic) {
         this.id = id;
         this.name = name;
         this.model = model;
@@ -29,10 +27,6 @@ public class Relayr_Device implements Serializable {
         this.isPublic = isPublic;
     }
 
-    public String getId() {
-		return id;
-	}
-
 	public String getName() {
 		return name;
 	}
@@ -41,7 +35,7 @@ public class Relayr_Device implements Serializable {
 		this.name = name;
 	}
 
-	public Relayr_DeviceModel getModel() {
+	public Model getModel() {
 		return model;
 	}
 

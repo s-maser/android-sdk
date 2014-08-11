@@ -1,14 +1,12 @@
-package io.relayr.core.device;
+package io.relayr.core.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class Relayr_DeviceModel implements Serializable {
+public class Model implements Serializable {
 
-	/**
-	 *
-	 */
+    /** Auto generated uid */
 	private static final long serialVersionUID = 1L;
 	private String id;
 	private String name;

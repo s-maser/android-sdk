@@ -13,7 +13,7 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import io.relayr.core.settings.Relayr_SDKStatus;
+import io.relayr.core.storage.DataStorage;
 import retrofit.Endpoint;
 import retrofit.Endpoints;
 import retrofit.RequestInterceptor;
@@ -46,7 +46,7 @@ public class ApiModule {
     private static final RequestInterceptor requestInterceptor = new RequestInterceptor() {
         @Override
         public void intercept(RequestFacade request) {
-            request.addHeader("Authorization", "Bearer " + Relayr_SDKStatus.getUserToken());
+            request.addHeader("Authorization", "Bearer " + DataStorage.getUserToken());
             request.addHeader("Content-Type", "application/json; charset=UTF-8");
         }
     };

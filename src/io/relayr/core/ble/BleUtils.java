@@ -33,8 +33,12 @@ public abstract class BleUtils {
         return BleUtils.getBleStatus(RelayrApp.get()) == STATUS_BLE_ENABLED;
     }
 
+    private static boolean isSdk18() {
+        return android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2;
+    }
+
     public static boolean isBleSupported() {
-        return isBleSupported(RelayrApp.get());
+        return isSdk18() && isBleSupported(RelayrApp.get());
     }
 
     private static boolean isBleSupported(Context context) {

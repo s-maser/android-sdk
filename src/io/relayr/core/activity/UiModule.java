@@ -4,7 +4,7 @@ import dagger.Module;
 
 @Module(
         injects = {
-                Relayr_LoginActivity.class
+                LoginActivity.class
         },
         complete = false,
         library = true

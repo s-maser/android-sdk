@@ -2,16 +2,16 @@ package io.relayr.core.ble;
 
 import java.util.List;
 
-import io.relayr.Relayr_SDK;
+import io.relayr.RelayrSdk;
 import rx.Observable;
 
 public abstract class RelayrBleSdk {
 
     /** Provides the relayr sdk for bluetooth low energy or an empty implementation if bluetooth is
      * not available on the device. Before calling this method check
-     * {@link io.relayr.Relayr_SDK#isBleSupported} and {@link io.relayr.Relayr_SDK#isBleAvailable}*/
+     * {@link io.relayr.RelayrSdk#isBleSupported} and {@link io.relayr.RelayrSdk#isBleAvailable}*/
     public static RelayrBleSdk newInstance() {
-        return Relayr_SDK.isBleSupported() && Relayr_SDK.isBleAvailable() ?
+        return RelayrSdk.isBleSupported() && RelayrSdk.isBleAvailable() ?
                 new RelayrBleSdkImpl():
                 new NullableRelayrBleSdk();
     }
