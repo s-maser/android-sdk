@@ -5,11 +5,16 @@ import dagger.Module;
 
 @Module(
         staticInjections = {
-            RelayrSdk.class
+                RelayrSdk.class
+        },
+        includes = {
+
         },
         injects = {
                 RelayrApp.class
-        }, library = true
+        },
+        library = true,
+        complete = false
 )
-final class RelayrModule { }
+public final class RelayrModule { }
 

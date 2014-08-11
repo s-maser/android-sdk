@@ -28,6 +28,7 @@ public class RelayrApp {
 
     private static void buildObjectGraphAndInject() {
         sObjectGraph = ObjectGraph.create(Modules.list(sApplicationContext));
+        sObjectGraph.injectStatics();
         sObjectGraph.inject(sRelayrApp);
     }
 
