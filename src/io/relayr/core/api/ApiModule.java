@@ -59,8 +59,8 @@ public class ApiModule {
                 .build();
     }
 
-    @Provides @Singleton ApiModule provideRelayrSDK(RestAdapter restAdapter) {
-        return restAdapter.create(ApiModule.class);
+    @Provides @Singleton RelayrApi provideRelayrSDK(RestAdapter restAdapter) {
+        return restAdapter.create(RelayrApi.class);
     }
 
     @Provides @Singleton OkHttpClient provideOkHttpClient() {
