@@ -8,16 +8,26 @@ import dagger.ObjectGraph;
 public class RelayrApp {
 
     private static Context sApplicationContext;
+    private static RelayrApp sRelayrApp;
     private static ObjectGraph sObjectGraph;
 
-    public static void init(Context context) {
+    private RelayrApp(Context context) {
+        sRelayrApp = this;
         sApplicationContext = context.getApplicationContext();
         buildObjectGraphAndInject();
     }
 
+    public static void init(Context context) {
+        if (sRelayrApp == null) {
+            synchronized (new Object()) {
+                new RelayrApp(context);
+            }
+        }
+    }
+
     private static void buildObjectGraphAndInject() {
         sObjectGraph = ObjectGraph.create(Modules.list(sApplicationContext));
-        sObjectGraph.inject(sApplicationContext);
+        sObjectGraph.inject(sRelayrApp);
     }
 
     public static void inject(Object o) {
