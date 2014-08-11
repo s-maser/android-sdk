@@ -81,8 +81,8 @@ public class Relayr_LoginActivity extends Relayr_Activity {
                                     }
                                 }
                             });
+                    finish();
                 }
-                finish();
 			}
 		});
         mWebView.loadUrl(getLoginUrl());
