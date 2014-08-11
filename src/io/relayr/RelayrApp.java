@@ -20,7 +20,9 @@ public class RelayrApp {
     public static void init(Context context) {
         if (sRelayrApp == null) {
             synchronized (new Object()) {
-                new RelayrApp(context);
+                if (sRelayrApp == null) {
+                    new RelayrApp(context);
+                }
             }
         }
     }
