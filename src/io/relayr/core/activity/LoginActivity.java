@@ -15,13 +15,15 @@ import android.webkit.WebViewClient;
 
 import javax.inject.Inject;
 
+import io.relayr.LoginEventListener;
 import io.relayr.RelayrApp;
 import io.relayr.RelayrSdk;
+import io.relayr.core.api.OauthApi;
 import io.relayr.core.api.RelayrApi;
-import io.relayr.LoginEventListener;
+import io.relayr.core.model.OauthToken;
+import io.relayr.core.model.User;
 import io.relayr.core.storage.DataStorage;
 import io.relayr.core.storage.RelayrProperties;
-import io.relayr.core.model.User;
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
@@ -31,45 +33,59 @@ import rx.schedulers.Schedulers;
 public class LoginActivity extends Activity {
 
     private static final String API_ENDPOINT = "https://api.relayr.io";
+    @Inject OauthApi mOauthApi;
     @Inject RelayrApi mRelayrApi;
+    private volatile boolean isObtainingAccessToken;
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         RelayrApp.inject(this);
         WebView mWebView = new WebView(this);
         setContentView(mWebView);
 
-		mWebView.setWebChromeClient(new WebChromeClient());
-		mWebView.setVerticalScrollBarEnabled(false);
+        mWebView.setWebChromeClient(new WebChromeClient());
+        mWebView.setVerticalScrollBarEnabled(false);
 
-		WebSettings webSettings = mWebView.getSettings();
-		webSettings.setJavaScriptEnabled(true);
-		webSettings.setAppCacheEnabled(true);
-		webSettings.setCacheMode(WebSettings.LOAD_DEFAULT);
+        WebSettings webSettings = mWebView.getSettings();
+        webSettings.setJavaScriptEnabled(true);
+        webSettings.setAppCacheEnabled(true);
+        webSettings.setCacheMode(WebSettings.LOAD_DEFAULT);
 
-		mWebView.setVisibility(View.VISIBLE);
+        mWebView.setVisibility(View.VISIBLE);
 
-		mWebView.setWebViewClient(new WebViewClient(){
-			@Override
-			public void onPageStarted(WebView view, String url, Bitmap favicon) {
-				Log.d("Login_Activity", "Webview opening: " + url);
-				final String accessToken = getAccessToken(url);
-				if (accessToken != null) {
-					Log.d("Relayr_LoginActivity", "onPageStarted access token: " + accessToken);
-                    mRelayrApi
-                            .userInfo()
+        mWebView.setWebViewClient(new WebViewClient(){
+            @Override
+            public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                Log.d("Login_Activity", "Webview opening: " + url);
+                final String code = getCode(url);
+                if (code != null && !isObtainingAccessToken) {
+                    Log.d("Relayr_LoginActivity", "onPageStarted code: " + code);
+                    isObtainingAccessToken = true;
+                    mOauthApi
+                            .authoriseUser(code,
+                                    RelayrProperties.get().clientId,
+                                    RelayrProperties.get().clientSecret,
+                                    "authorization_code",
+                                    "http://localhost",
+                                    "")
+                            .flatMap(new Func1<OauthToken, Observable<User>>() {
+                                @Override
+                                public Observable<User> call(OauthToken token) {
+                                    DataStorage.saveUserToken(token.type + " " + token.token);
+                                    return mRelayrApi.userInfo();
+                                }
+                            })
                             .flatMap(new Func1<User, Observable<User>>() {
                                 @Override
                                 public Observable<User> call(User user) {
-                                    DataStorage.saveUserToken(accessToken);
                                     DataStorage.saveUserId(user.id);
                                     return Observable.from(user);
                                 }
                             })
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(new Subscriber<User>() {
+                            .subscribe(new Subscriber<Object>() {
 
                                 @Override
                                 public void onCompleted() {
@@ -86,20 +102,20 @@ public class LoginActivity extends Activity {
                                 }
 
                                 @Override
-                                public void onNext(User user) {
+                                public void onNext(Object a) {
 
                                 }
                             });
                 }
-			}
-		});
+            }
+        });
         mWebView.loadUrl(getLoginUrl());
-	}
+    }
 
-	@Override
-	public void onConfigurationChanged(Configuration newConfig){
-	    super.onConfigurationChanged(newConfig);
-	}
+    @Override
+    public void onConfigurationChanged(Configuration newConfig){
+        super.onConfigurationChanged(newConfig);
+    }
 
     private String getLoginUrl() {
         Uri.Builder uriBuilder = Uri.parse(API_ENDPOINT).buildUpon();
@@ -114,17 +130,17 @@ public class LoginActivity extends Activity {
     }
 
 
-    private String getAccessToken(String url) {
-		String codeParam = "?code=";
-		if (url.contains(codeParam)) {
-			int tokenPosition = url.indexOf(codeParam);
-			String code = url.substring(tokenPosition + codeParam.length());
-			Log.d("Login_Activity", "Access code: " + code);
-			return code;
-		} else {
-			return null;
-		}
-	}
+    private String getCode(String url) {
+        String codeParam = "?code=";
+        if (url.contains(codeParam)) {
+            int tokenPosition = url.indexOf(codeParam);
+            String code = url.substring(tokenPosition + codeParam.length());
+            Log.d("Login_Activity", "Access code: " + code);
+            return code;
+        } else {
+            return null;
+        }
+    }
 
     public static void startActivity(Activity currentActivity) {
         Intent loginActivity = new Intent(currentActivity, LoginActivity.class);

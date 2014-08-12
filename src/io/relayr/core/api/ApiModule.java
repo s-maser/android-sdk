@@ -9,6 +9,7 @@ import com.squareup.okhttp.OkHttpClient;
 import java.io.File;
 import java.io.IOException;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -46,12 +47,13 @@ public class ApiModule {
     private static final RequestInterceptor requestInterceptor = new RequestInterceptor() {
         @Override
         public void intercept(RequestFacade request) {
-            request.addHeader("Authorization", "Bearer " + DataStorage.getUserToken());
+            request.addHeader("Authorization", DataStorage.getUserToken());
             request.addHeader("Content-Type", "application/json; charset=UTF-8");
         }
     };
 
-    @Provides @Singleton RestAdapter provideRestAdapter(Endpoint endpoint, Client client) {
+    @Provides @Singleton @Named("api") RestAdapter provideApiRestAdapter(Endpoint endpoint,
+                                                                         Client client) {
         return new RestAdapter.Builder()
                 .setClient(client)
                 .setEndpoint(endpoint)
@@ -59,8 +61,20 @@ public class ApiModule {
                 .build();
     }
 
-    @Provides @Singleton RelayrApi provideRelayrSDK(RestAdapter restAdapter) {
+    @Provides @Singleton @Named("oauth") RestAdapter provideOauthRestAdapter(Endpoint endpoint,
+                                                                             Client client) {
+        return new RestAdapter.Builder()
+                .setClient(client)
+                .setEndpoint(endpoint)
+                .build();
+    }
+
+    @Provides @Singleton RelayrApi provideRelayrApi(@Named("api") RestAdapter restAdapter) {
         return restAdapter.create(RelayrApi.class);
+    }
+
+    @Provides @Singleton OauthApi provideOauthApi(@Named("oauth") RestAdapter restAdapter) {
+        return restAdapter.create(OauthApi.class);
     }
 
     @Provides @Singleton OkHttpClient provideOkHttpClient() {
