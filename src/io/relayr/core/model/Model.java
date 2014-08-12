@@ -54,18 +54,14 @@ public class Model implements Serializable {
 		this.firmwareVersion = firmwareVersion;
 	}
 
-	@Override
-	public String toString() {
-		StringBuilder stringBuilder = new StringBuilder();
-
-		stringBuilder.append("[\n" +
-						"\tid:\t" + getId() + "\n" +
-						"\tname:\t" + getName() + "\n" +
-						"\tmanufacturer:\t" + getManufacturer() + "\n" +
-						"\treadings:\t" + getReadings().toString() + "\n" +
-						"\tfirmwareVersiona:\t" + getFirmwareVersion() + "\n" +
-						"]");
-
-		return stringBuilder.toString();
-	}
+    @Override
+    public String toString() {
+        return "Model{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", manufacturer='" + manufacturer + '\'' +
+                ", readings=" + readings +
+                ", firmwareVersion='" + firmwareVersion + '\'' +
+                '}';
+    }
 }
