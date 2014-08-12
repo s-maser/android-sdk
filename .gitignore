@@ -28,5 +28,5 @@ proguard/
 # Intellij project files
 *.iml
 /.idea/*
-/local.properties
+
 .metadata
