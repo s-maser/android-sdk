@@ -10,11 +10,11 @@ public interface OauthApi {
 
     @FormUrlEncoded
     @POST("/oauth2/token")
-    public Observable<OauthToken> authoriseUser(@Field("code") String code,
-                                                @Field("client_id") String clientId,
-                                                @Field("client_secret") String clientSecret,
-                                                @Field("grant_type") String grantType,
-                                                @Field("redirect_uri") String redirectUri,
-                                                @Field("scope") String scope);
+    Observable<OauthToken> authoriseUser(@Field("code") String code,
+                                         @Field("client_id") String clientId,
+                                         @Field("client_secret") String clientSecret,
+                                         @Field("grant_type") String grantType,
+                                         @Field("redirect_uri") String redirectUri,
+                                         @Field("scope") String scope);
 
 }

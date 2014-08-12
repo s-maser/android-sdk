@@ -20,38 +20,38 @@ import rx.Observable;
 public interface RelayrApi {
 
     @GET("/users/{userId}/devices")
-    public Observable<List<Device>> getUserDevices(@Path("userId") String userId);
+    Observable<List<Device>> getUserDevices(@Path("userId") String userId);
 
     @GET("/oauth2/app-info")
-    public Observable<App> getAppInfo();
+    Observable<App> getAppInfo();
 
     @GET("/oauth2/user-info")
-    public Observable<User> getUserInfo();
+    Observable<User> getUserInfo();
 
     @POST("/users/{userId}/wunderbar")
-    public Observable<CreateWunderBar> createWunderBar(@Path("userId") String userId);
+    Observable<CreateWunderBar> createWunderBar(@Path("userId") String userId);
 
     @GET("/users/{userId}/transmitters")
-    public Observable<List<Transmitter>> getTransmitters(@Path("userId") String userId);
+    Observable<List<Transmitter>> getTransmitters(@Path("userId") String userId);
 
     @GET("/transmitters/{transmitter}")
-    public Observable<Transmitter> getTransmitter(@Path("transmitter") String transmitter);
+    Observable<Transmitter> getTransmitter(@Path("transmitter") String transmitter);
 
     @PATCH("/transmitters/{transmitter}")
-    public Observable<Transmitter> updateTransmitter(@Body Transmitter transmitter,
+    Observable<Transmitter> updateTransmitter(@Body Transmitter transmitter,
                                                      @Path("transmitter") String transmitterId);
 
     @GET("/transmitters/{transmitter}/devices")
-    public Observable<List<TransmitterDevice>> getTransmitterDevices(
+    Observable<List<TransmitterDevice>> getTransmitterDevices(
             @Path("transmitter") String transmitter);
 
     @POST("/apps/{appId}/devices/{deviceId}")
-    public Observable<WebSocketConfig> start(
+    Observable<WebSocketConfig> start(
             @Path("appId") String appId,
             @Path("deviceId") String deviceId);
 
     @DELETE("/apps/{appId}/devices/{deviceId}")
-    public Observable<Void> stop(@Path("appId") String appId,
+    Observable<Void> stop(@Path("appId") String appId,
                                  @Path("deviceId") String deviceId);
 
 }
