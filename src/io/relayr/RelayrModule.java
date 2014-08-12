@@ -16,5 +16,5 @@ import dagger.Module;
         library = true,
         complete = false
 )
-public final class RelayrModule { }
+final class RelayrModule { }
 
