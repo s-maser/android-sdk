@@ -20,29 +20,29 @@ import rx.Observable;
 public interface RelayrApi {
 
     @GET("/users/{userId}/devices")
-    public Observable<List<Device>> userDevices(@Path("userId") String userId);
+    public Observable<List<Device>> getUserDevices(@Path("userId") String userId);
 
     @GET("/oauth2/app-info")
-    public Observable<RelayrApp> appInfo();
+    public Observable<RelayrApp> getAppInfo();
 
     @GET("/oauth2/user-info")
-    public Observable<User> userInfo();
+    public Observable<User> getUserInfo();
 
     @POST("/users/{userId}/wunderbar")
     public Observable<CreateWunderBar> createWunderBar(@Path("userId") String userId);
 
     @GET("/users/{userId}/transmitters")
-    public Observable<List<Transmitter>> transmitters(@Path("userId") String userId);
+    public Observable<List<Transmitter>> getTransmitters(@Path("userId") String userId);
 
     @GET("/transmitters/{transmitter}")
-    public Observable<Transmitter> transmitter(@Path("transmitter") String transmitter);
+    public Observable<Transmitter> getTransmitter(@Path("transmitter") String transmitter);
 
     @PATCH("/transmitters/{transmitter}")
     public Observable<Transmitter> updateTransmitter(@Body Transmitter transmitter,
                                                      @Path("transmitter") String transmitterId);
 
     @GET("/transmitters/{transmitter}/devices")
-    public Observable<List<TransmitterDevice>> transmitterDevices(
+    public Observable<List<TransmitterDevice>> getTransmitterDevices(
             @Path("transmitter") String transmitter);
 
     @POST("/apps/{appId}/devices/{deviceId}")

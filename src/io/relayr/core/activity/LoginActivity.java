@@ -73,7 +73,7 @@ public class LoginActivity extends Activity {
                                 @Override
                                 public Observable<User> call(OauthToken token) {
                                     DataStorage.saveUserToken(token.type + " " + token.token);
-                                    return mRelayrApi.userInfo();
+                                    return mRelayrApi.getUserInfo();
                                 }
                             })
                             .flatMap(new Func1<User, Observable<User>>() {
