@@ -68,7 +68,7 @@ public class LoginActivity extends Activity {
                                     RelayrProperties.get().clientId,
                                     RelayrProperties.get().clientSecret,
                                     "authorization_code",
-                                    "http://localhost",
+                                    REDIRECT_URI,
                                     "")
                             .flatMap(new Func1<OauthToken, Observable<User>>() {
                                 @Override
