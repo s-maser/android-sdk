@@ -15,6 +15,7 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 import io.relayr.core.storage.DataStorage;
+import io.relayr.core.storage.RelayrProperties;
 import retrofit.Endpoint;
 import retrofit.Endpoints;
 import retrofit.RequestInterceptor;
@@ -29,6 +30,7 @@ import retrofit.client.OkClient;
 public class ApiModule {
 
     private static final String API_ENDPOINT = "https://api.relayr.io";
+    private static final String USER_AGENT = "relayr android sdk " + RelayrProperties.VERSION;
     private static final int DISK_CACHE_SIZE = 50 * 1024 * 1024; // 50MB
     private final Context app;
 
@@ -44,11 +46,19 @@ public class ApiModule {
         return new OkClient(client);
     }
 
-    private static final RequestInterceptor requestInterceptor = new RequestInterceptor() {
+    private static final RequestInterceptor apiRequestInterceptor = new RequestInterceptor() {
         @Override
         public void intercept(RequestFacade request) {
+            request.addHeader("User-Agent", USER_AGENT);
             request.addHeader("Authorization", DataStorage.getUserToken());
             request.addHeader("Content-Type", "application/json; charset=UTF-8");
+        }
+    };
+
+    private static final RequestInterceptor oauthRequestInterceptor = new RequestInterceptor() {
+        @Override
+        public void intercept(RequestFacade request) {
+            request.addHeader("User-Agent", USER_AGENT);
         }
     };
 
@@ -57,7 +67,7 @@ public class ApiModule {
         return new RestAdapter.Builder()
                 .setClient(client)
                 .setEndpoint(endpoint)
-                .setRequestInterceptor(requestInterceptor)
+                .setRequestInterceptor(apiRequestInterceptor)
                 .build();
     }
 
@@ -66,6 +76,7 @@ public class ApiModule {
         return new RestAdapter.Builder()
                 .setClient(client)
                 .setEndpoint(endpoint)
+                .setRequestInterceptor(oauthRequestInterceptor)
                 .build();
     }
 
