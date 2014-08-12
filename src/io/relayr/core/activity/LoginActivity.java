@@ -1,5 +1,6 @@
 package io.relayr.core.activity;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -38,6 +39,7 @@ public class LoginActivity extends Activity {
     @Inject RelayrApi mRelayrApi;
     private volatile boolean isObtainingAccessToken;
 
+    @SuppressLint("setJavaScriptEnabled")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
