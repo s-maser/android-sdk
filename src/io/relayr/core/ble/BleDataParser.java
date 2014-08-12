@@ -5,24 +5,24 @@ import org.json.JSONObject;
 
 abstract class BleDataParser {
 
-	protected static String COLOR_DATA_INDEX = "clr";
-	protected static String R_COLOR_DATA_INDEX = "r";
-	protected static String G_COLOR_DATA_INDEX = "g";
-	protected static String B_COLOR_DATA_INDEX = "b";
-	protected static String PROXIMITY_DATA_INDEX = "prox";
-	protected static String LIGHT_DATA_INDEX = "light";
-	protected static String ACCELEROMETER_DATA_INDEX = "accel";
-	protected static String X_ACCELEROMETER_DATA_INDEX = "x";
-	protected static String Y_ACCELEROMETER_DATA_INDEX = "y";
-	protected static String Z_ACCELEROMETER_DATA_INDEX = "z";
-	protected static String GYROSCOPE_DATA_INDEX = "gyro";
-	protected static String X_GYROSCOPE_DATA_INDEX = "x";
-	protected static String Y_GYROSCOPE_DATA_INDEX = "y";
-	protected static String Z_GYROSCOPE_DATA_INDEX = "z";
-	protected static String HUMIDITY_DATA_INDEX = "hum";
-	protected static String TEMPERATURE_DATA_INDEX = "temp";
-	protected static String SOUND_LEVEL_DATA_INDEX = "snd_level";
-	protected static String TIMESTAMP_DATA_INDEX = "ts";
+	private static final String COLOR_DATA_INDEX = "clr";
+	private static final String R_COLOR_DATA_INDEX = "r";
+	private static final String G_COLOR_DATA_INDEX = "g";
+	private static final String B_COLOR_DATA_INDEX = "b";
+	private static final String PROXIMITY_DATA_INDEX = "prox";
+	private static final String LIGHT_DATA_INDEX = "light";
+	private static final String ACCELEROMETER_DATA_INDEX = "accel";
+	private static final String X_ACCELEROMETER_DATA_INDEX = "x";
+	private static final String Y_ACCELEROMETER_DATA_INDEX = "y";
+	private static final String Z_ACCELEROMETER_DATA_INDEX = "z";
+	private static final String GYROSCOPE_DATA_INDEX = "gyro";
+	private static final String X_GYROSCOPE_DATA_INDEX = "x";
+	private static final String Y_GYROSCOPE_DATA_INDEX = "y";
+	private static final String Z_GYROSCOPE_DATA_INDEX = "z";
+	private static final String HUMIDITY_DATA_INDEX = "hum";
+	private static final String TEMPERATURE_DATA_INDEX = "temp";
+	private static final String SOUND_LEVEL_DATA_INDEX = "snd_level";
+	private static final String TIMESTAMP_DATA_INDEX = "ts";
 
     public static JSONObject getFormattedValue(BleDeviceType type, byte[] value) {
         switch (type) {
@@ -42,7 +42,7 @@ abstract class BleDataParser {
         }
     }
 
-	protected static JSONObject getLIGHTSensorData(byte[] value) {
+	private static JSONObject getLIGHTSensorData(byte[] value) {
 		JSONObject returnValue = initResponseData();
 		try {
 			if (value != null) {
@@ -80,7 +80,7 @@ abstract class BleDataParser {
 		return returnValue;
 	}
 
-	protected static JSONObject getGYROSensorData(byte[] value) {
+	private static JSONObject getGYROSensorData(byte[] value) {
 		JSONObject returnValue = initResponseData();
 		try {
 			if (value != null) {
@@ -130,7 +130,7 @@ abstract class BleDataParser {
 		return returnValue;
 	}
 
-	protected static JSONObject getHTUSensorData(byte[] value) {
+	private static JSONObject getHTUSensorData(byte[] value) {
 		JSONObject returnValue = initResponseData();
 		try {
 			if (value != null) {
@@ -149,7 +149,7 @@ abstract class BleDataParser {
 		return returnValue;
 	}
 
-	protected static JSONObject getMICSensorData(byte[] value) {
+	private static JSONObject getMICSensorData(byte[] value) {
 		JSONObject returnValue = new JSONObject();
 		try {
 			if (value != null) {
