@@ -3,7 +3,6 @@ package io.relayr.core.activity;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -60,7 +59,7 @@ public class LoginActivity extends Activity {
         mWebView.setWebViewClient(new WebViewClient(){
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
-                Log.d("Login_Activity", "Webview opening: " + url);
+                Log.d("Login_Activity", "WebView opening: " + url);
                 final String code = getCode(url);
                 if (code != null && !isObtainingAccessToken) {
                     Log.d("Relayr_LoginActivity", "onPageStarted code: " + code);
@@ -113,11 +112,6 @@ public class LoginActivity extends Activity {
             }
         });
         mWebView.loadUrl(getLoginUrl());
-    }
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig){
-        super.onConfigurationChanged(newConfig);
     }
 
     private String getLoginUrl() {
