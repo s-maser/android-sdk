@@ -38,6 +38,6 @@ public class DataStorage {
     }
 
     public static void logOut() {
-        STORAGE.edit().clear();
+        STORAGE.edit().clear().apply();
     }
 }
