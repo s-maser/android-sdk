@@ -39,19 +39,18 @@ public interface RelayrApi {
 
     @PATCH("/transmitters/{transmitter}")
     Observable<Transmitter> updateTransmitter(@Body Transmitter transmitter,
-                                                     @Path("transmitter") String transmitterId);
+                                              @Path("transmitter") String transmitterId);
 
     @GET("/transmitters/{transmitter}/devices")
     Observable<List<TransmitterDevice>> getTransmitterDevices(
             @Path("transmitter") String transmitter);
 
     @POST("/apps/{appId}/devices/{deviceId}")
-    Observable<WebSocketConfig> start(
-            @Path("appId") String appId,
-            @Path("deviceId") String deviceId);
+    Observable<WebSocketConfig> start(@Path("appId") String appId,
+                                      @Path("deviceId") String deviceId);
 
     @DELETE("/apps/{appId}/devices/{deviceId}")
     Observable<Void> stop(@Path("appId") String appId,
-                                 @Path("deviceId") String deviceId);
+                          @Path("deviceId") String deviceId);
 
 }
