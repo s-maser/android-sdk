@@ -2,9 +2,9 @@ package io.relayr.core.api;
 
 import java.util.List;
 
+import io.relayr.core.model.App;
 import io.relayr.core.model.Device;
 import io.relayr.core.model.CreateWunderBar;
-import io.relayr.core.model.RelayrApp;
 import io.relayr.core.model.Transmitter;
 import io.relayr.core.model.TransmitterDevice;
 import io.relayr.core.model.WebSocketConfig;
@@ -23,7 +23,7 @@ public interface RelayrApi {
     public Observable<List<Device>> getUserDevices(@Path("userId") String userId);
 
     @GET("/oauth2/app-info")
-    public Observable<RelayrApp> getAppInfo();
+    public Observable<App> getAppInfo();
 
     @GET("/oauth2/user-info")
     public Observable<User> getUserInfo();
