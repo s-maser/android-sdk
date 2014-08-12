@@ -24,7 +24,6 @@ public class BleDevice {
 	private BluetoothGatt gatt;
 	private BleDeviceStatus status;
 	private BleDeviceMode mode;
-	private byte[] value;
 	private Subscriber<? super BleDeviceValue> deviceValueSubscriber;
 	private final BluetoothDevice bluetoothDevice;
 	private final BleDeviceType type;
@@ -100,7 +99,6 @@ public class BleDevice {
 	}
 
 	public void setValue(byte[] value) {
-		this.value = value;
 		BleDeviceValue model = new BleDeviceValue(value, BleDataParser.getFormattedValue(type, value));
         if (deviceValueSubscriber != null) deviceValueSubscriber.onNext(model);
 	}
