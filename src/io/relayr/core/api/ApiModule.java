@@ -30,7 +30,7 @@ import retrofit.client.OkClient;
 public class ApiModule {
 
     private static final String API_ENDPOINT = "https://api.relayr.io";
-    private static final String USER_AGENT = "relayr android sdk " + RelayrProperties.VERSION;
+    private static final String USER_AGENT = "Relayr-Android-Sdk:" + RelayrProperties.VERSION;
     private static final int DISK_CACHE_SIZE = 50 * 1024 * 1024; // 50MB
     private final Context app;
 
