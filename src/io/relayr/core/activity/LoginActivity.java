@@ -33,6 +33,7 @@ import rx.schedulers.Schedulers;
 public class LoginActivity extends Activity {
 
     private static final String API_ENDPOINT = "https://api.relayr.io";
+    private static final String REDIRECT_URI = "http://localhost";
     @Inject OauthApi mOauthApi;
     @Inject RelayrApi mRelayrApi;
     private volatile boolean isObtainingAccessToken;
@@ -122,7 +123,7 @@ public class LoginActivity extends Activity {
         uriBuilder.path("/oauth2/auth");
 
         uriBuilder.appendQueryParameter("client_id", RelayrProperties.get().clientId);
-        uriBuilder.appendQueryParameter("redirect_uri", "http://localhost");
+        uriBuilder.appendQueryParameter("redirect_uri", REDIRECT_URI);
         uriBuilder.appendQueryParameter("response_type", "code");
         uriBuilder.appendQueryParameter("scope", "access-own-user-info");
 
@@ -132,9 +133,10 @@ public class LoginActivity extends Activity {
 
     private String getCode(String url) {
         String codeParam = "?code=";
-        if (url.contains(codeParam)) {
+        if (url.contains(REDIRECT_URI) && url.contains(codeParam)) {
             int tokenPosition = url.indexOf(codeParam);
             String code = url.substring(tokenPosition + codeParam.length());
+            if (code.contains("&")) code = code.substring(0, code.indexOf("&"));
             Log.d("Login_Activity", "Access code: " + code);
             return code;
         } else {
