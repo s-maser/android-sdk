@@ -18,6 +18,7 @@ import javax.inject.Inject;
 import io.relayr.LoginEventListener;
 import io.relayr.RelayrApp;
 import io.relayr.RelayrSdk;
+import io.relayr.core.api.ApiModule;
 import io.relayr.core.api.OauthApi;
 import io.relayr.core.api.RelayrApi;
 import io.relayr.core.model.OauthToken;
@@ -32,7 +33,6 @@ import rx.schedulers.Schedulers;
 
 public class LoginActivity extends Activity {
 
-    private static final String API_ENDPOINT = "https://api.relayr.io";
     private static final String REDIRECT_URI = "http://localhost";
     @Inject OauthApi mOauthApi;
     @Inject RelayrApi mRelayrApi;
@@ -119,7 +119,7 @@ public class LoginActivity extends Activity {
     }
 
     private String getLoginUrl() {
-        Uri.Builder uriBuilder = Uri.parse(API_ENDPOINT).buildUpon();
+        Uri.Builder uriBuilder = Uri.parse(ApiModule.API_ENDPOINT).buildUpon();
         uriBuilder.path("/oauth2/auth");
 
         uriBuilder.appendQueryParameter("client_id", RelayrProperties.get().clientId);
