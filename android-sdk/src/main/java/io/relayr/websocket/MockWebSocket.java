@@ -12,13 +12,13 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
-public class MockWebSocket extends WebSocket {
+class MockWebSocket extends WebSocket {
 
     private static final String TAG = MockWebSocket.class.getSimpleName();
 
     private final MockBackend mMockBackend;
 
-    public MockWebSocket(WebSocketConfig webSocketConfig, MockBackend mockBackend) {
+    MockWebSocket(WebSocketConfig webSocketConfig, MockBackend mockBackend) {
         super(webSocketConfig);
         mMockBackend = mockBackend;
     }

@@ -8,23 +8,23 @@ import com.pubnub.api.PubnubException;
 import io.relayr.model.WebSocketConfig;
 
 /** It facilitates the subscription to channels in order to get the readings from the devices. */
-public class WebSocket {
+class WebSocket {
 
     private final Pubnub mPubnub;
 
     /** The authKey and cipherKey won't change while there is at least one sensor publishing data. */
-    public WebSocket(WebSocketConfig webSocketConfig) {
+    WebSocket(WebSocketConfig webSocketConfig) {
         mPubnub = new Pubnub(webSocketConfig.subscribeKey, webSocketConfig.subscribeKey,
                 webSocketConfig.authKey, webSocketConfig.cipherKey, true);
         mPubnub.setAuthKey(webSocketConfig.authKey);
     }
 
-    public boolean isSubscribedToAnyone() {
+    boolean isSubscribedToAnyone() {
         return mPubnub.getSubscribedChannelsArray().length == 0;
     }
 
     /** Subscribe to a device in order to get it's readings */
-    public void subscribe(String channel, final WebSocketCallback webSocketCallback) {
+    void subscribe(String channel, final WebSocketCallback webSocketCallback) {
         if (webSocketCallback == null) return;
         try {
             mPubnub.subscribe(channel, new Callback() {
@@ -56,12 +56,12 @@ public class WebSocket {
     }
 
     /** Stop getting notifications from a specific sensor. */
-    public void unSubscribe(String channel) {
+    void unSubscribe(String channel) {
         mPubnub.unsubscribe(channel);
     }
 
     /** Stop getting notifications from all the sensors. */
-    public void unSubscribeAll() {
+    void unSubscribeAll() {
         mPubnub.unsubscribeAll();
     }
 }

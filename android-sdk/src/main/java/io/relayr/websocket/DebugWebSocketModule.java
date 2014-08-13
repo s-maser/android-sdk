@@ -12,7 +12,7 @@ import io.relayr.api.MockBackend;
 )
 public class DebugWebSocketModule {
 
-    @Provides @Singleton public WebSocketFactory provideWebSocketFactory(MockBackend loader) {
+    @Provides @Singleton WebSocketFactory provideWebSocketFactory(MockBackend loader) {
         return new MockWebSocketFactory(loader);
     }
 }

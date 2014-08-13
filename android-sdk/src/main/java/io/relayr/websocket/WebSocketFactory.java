@@ -2,9 +2,9 @@ package io.relayr.websocket;
 
 import io.relayr.model.WebSocketConfig;
 
-public class WebSocketFactory {
+class WebSocketFactory {
 
-    public WebSocket createWebSocket(WebSocketConfig webSocketConfig) {
+    WebSocket createWebSocket(WebSocketConfig webSocketConfig) {
         return new WebSocket(webSocketConfig);
     }
 

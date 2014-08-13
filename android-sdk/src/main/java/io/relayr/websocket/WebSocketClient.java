@@ -39,7 +39,7 @@ public class WebSocketClient {
         }
     }
 
-    @Inject public WebSocketClient(SubscriptionApi subscriptionApi, WebSocketFactory factory) {
+    @Inject WebSocketClient(SubscriptionApi subscriptionApi, WebSocketFactory factory) {
         mSubscriptionApi = subscriptionApi;
         mWebSocketFactory = factory;
     }

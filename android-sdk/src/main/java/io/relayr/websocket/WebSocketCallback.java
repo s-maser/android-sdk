@@ -1,8 +1,5 @@
 package io.relayr.websocket;
 
-/**
- *  Contains
- */
 interface WebSocketCallback {
 
     void connectCallback(Object message);
