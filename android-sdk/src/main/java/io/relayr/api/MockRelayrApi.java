@@ -38,7 +38,8 @@ public class MockRelayrApi implements RelayrApi {
 
     @Override
     public Observable<App> getAppInfo() {
-        return mMockBackend.createObservable(new TypeToken<App>() {}, APP_INFO);
+        return mMockBackend.createObservable(new TypeToken<App>() {
+        }, APP_INFO);
     }
 
     @Override

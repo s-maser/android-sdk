@@ -5,7 +5,7 @@ import android.content.Context;
 import io.relayr.activity.UiModule;
 import io.relayr.api.DebugApiModule;
 
-final class Modules {
+final class DebugModules {
     static Object[] list(Context app) {
         return new Object[] {
                 new RelayrModule(),
@@ -14,7 +14,7 @@ final class Modules {
         };
     }
 
-    private Modules() {
+    private DebugModules() {
         // No instances.
     }
 }

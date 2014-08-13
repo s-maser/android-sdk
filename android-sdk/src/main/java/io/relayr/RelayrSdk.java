@@ -20,7 +20,14 @@ public class RelayrSdk {
 
     /** Should be called when the {@link android.app.Application} is created */
     public static void init(Context context) {
-        RelayrApp.init(context);
+        RelayrApp.init(context, false);
+    }
+
+    /** Should be called when the {@link android.app.Application} is created. It produces mock
+     * values in order to test the behaviour without the need of a WunderBar or an internet
+     * connection */
+    public static void initInMockMode(Context context) {
+        RelayrApp.init(context, true);
     }
 
     /** Returns the version of the sdk */
