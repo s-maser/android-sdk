@@ -6,8 +6,6 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import io.relayr.websocket.MockWebSocketFactory;
-import io.relayr.websocket.WebSocketFactory;
 
 @Module(
         complete = false,
@@ -23,10 +21,6 @@ public class DebugApiModule {
 
     @Provides @Singleton MockBackend provideMockBackend() {
         return new MockBackend(app);
-    }
-
-    @Provides @Singleton public WebSocketFactory provideWebSocketFactory(MockBackend loader) {
-        return new MockWebSocketFactory(loader);
     }
 
     @Provides @Singleton OauthApi provideOauthApi(MockBackend loader) {
