@@ -5,12 +5,12 @@ import android.content.Context;
 
 import javax.inject.Inject;
 
-import io.relayr.core.activity.LoginActivity;
-import io.relayr.core.api.RelayrApi;
-import io.relayr.core.ble.BleUtils;
-import io.relayr.core.ble.RelayrBleSdk;
-import io.relayr.core.storage.DataStorage;
-import io.relayr.core.storage.RelayrProperties;
+import io.relayr.activity.LoginActivity;
+import io.relayr.api.RelayrApi;
+import io.relayr.ble.BleUtils;
+import io.relayr.ble.RelayrBleSdk;
+import io.relayr.storage.DataStorage;
+import io.relayr.storage.RelayrProperties;
 
 public class RelayrSdk {
 
@@ -49,7 +49,7 @@ public class RelayrSdk {
 		DataStorage.logOut();
 	}
 
-    /** {@link io.relayr.core.ble.RelayrBleSdk#newInstance()} */
+    /** {@link io.relayr.ble.RelayrBleSdk#newInstance()} */
      public static RelayrBleSdk getRelayrBleSdk() {
         return RelayrBleSdk.newInstance();
     }

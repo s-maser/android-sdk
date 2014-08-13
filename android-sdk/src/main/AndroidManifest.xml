@@ -4,7 +4,7 @@
     <application
         android:allowBackup="true">
 
-        <activity android:name="io.relayr.core.activity.LoginActivity"
+        <activity android:name=".activity.LoginActivity"
             android:configChanges="orientation|keyboardHidden|keyboard"
             android:screenOrientation="portrait"
             android:theme="@style/android:Theme.Holo.Light.NoActionBar"/>
