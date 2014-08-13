@@ -1,0 +1,56 @@
+[
+    {
+        "id": "6ee404c7-73c9-455e-8721-53a267aff56e",
+        "name": "My Wunderbar Accelerometer & Gyroscope",
+        "model": "173c44b5-334e-493f-8eb8-82c8cc65d29f",
+        "firmwareVersion": "1.0.0",
+        "secret": "527183",
+        "owner": "b9ecd88a-81dc-4505-b5c4-02a2e0f3e136",
+        "public": false
+    },
+    {
+        "id": "2876f24f-fa41-4f7e-85ac-566226520657",
+        "name": "My Wunderbar Light & Proximity Sensor",
+        "model": "a7ec1b21-8582-4304-b1cf-15a1fc66d1e8",
+        "firmwareVersion": "1.0.0",
+        "secret": "319526",
+        "owner": "b9ecd88a-81dc-4505-b5c4-02a2e0f3e136",
+        "public": false
+    },
+    {
+        "id": "7f448a06-75e3-4742-96c4-380b7d44ee38",
+        "name": "My Wunderbar Microphone",
+        "model": "4f38b6c6-a8e9-4f93-91cd-2ac4064b7b5a",
+        "firmwareVersion": "1.0.0",
+        "secret": "143567",
+        "owner": "b9ecd88a-81dc-4505-b5c4-02a2e0f3e136",
+        "public": false
+    },
+    {
+        "id": "b0134c1c-c855-4bbd-8364-83d2697d8e4b",
+        "name": "My Wunderbar Thermometer & Humidity Sensor",
+        "model": "ecf6cf94-cb07-43ac-a85e-dccf26b48c86",
+        "firmwareVersion": "1.0.0",
+        "secret": "819683",
+        "owner": "b9ecd88a-81dc-4505-b5c4-02a2e0f3e136",
+        "public": false
+    },
+    {
+        "id": "44401212-e2b8-4e1e-9ffa-d47fcd855874",
+        "name": "My Wunderbar Bridge Module",
+        "model": "ebd828dd-250c-4baf-807d-69d85bed065b",
+        "firmwareVersion": "1.0.0",
+        "secret": "458881",
+        "owner": "b9ecd88a-81dc-4505-b5c4-02a2e0f3e136",
+        "public": false
+    },
+    {
+        "id": "d3ba190c-f92b-4819-abe9-3a4eee4808fd",
+        "name": "My Wunderbar Infrared Sensor ",
+        "model": "bab45b9c-1c44-4e71-8e98-a321c658df47",
+        "firmwareVersion": "1.0.0",
+        "secret": "540200",
+        "owner": "b9ecd88a-81dc-4505-b5c4-02a2e0f3e136",
+        "public": false
+    }
+]

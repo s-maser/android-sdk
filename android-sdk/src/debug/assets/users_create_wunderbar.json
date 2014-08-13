@@ -1,0 +1,131 @@
+{
+    "masterModule": {
+        "id": "2a5c66d2-5fe2-4864-aefe-444cf55d1ed7",
+        "secret": "kSCWVXv2rgTK",
+        "owner": "b9ecd88a-81dc-4505-b5c4-02a2e0f3e136",
+        "name": "My Wunderbar Master Module"
+    },
+    "gyroscope": {
+        "id": "89ccaaef-cb1f-4148-b6fb-2616ad9b36bc",
+        "name": "My Wunderbar Accelerometer & Gyroscope",
+        "model": {
+            "id": "173c44b5-334e-493f-8eb8-82c8cc65d29f",
+            "name": "Wunderbar Accelerometer & Gyroscope",
+            "manufacturer": "Relayr GmbH",
+            "readings": [
+                {
+                    "meaning": "angular_speed",
+                    "unit": "degrees_per_second"
+                },
+                {
+                    "meaning": "acceleration",
+                    "unit": "g"
+                }
+            ]
+        },
+        "firmwareVersion": "1.0.0",
+        "secret": "041497",
+        "owner": "b9ecd88a-81dc-4505-b5c4-02a2e0f3e136",
+        "public": false
+    },
+    "light": {
+        "id": "b5e4b117-3f51-4f78-94e0-475c3d08689e",
+        "name": "My Wunderbar Light & Proximity Sensor",
+        "model": {
+            "id": "a7ec1b21-8582-4304-b1cf-15a1fc66d1e8",
+            "name": "Wunderbar Light & Proximity Sensor",
+            "manufacturer": "Relayr GmbH",
+            "readings": [
+                {
+                    "meaning": "proximity",
+                    "unit": "number"
+                },
+                {
+                    "meaning": "color",
+                    "unit": "rgb"
+                },
+                {
+                    "meaning": "luminosity",
+                    "unit": "lumen"
+                }
+            ]
+        },
+        "firmwareVersion": "1.0.0",
+        "secret": "190554",
+        "owner": "b9ecd88a-81dc-4505-b5c4-02a2e0f3e136",
+        "public": false
+    },
+    "microphone": {
+        "id": "02aae9b1-143f-463c-93c0-01a6713cb62b",
+        "name": "My Wunderbar Microphone",
+        "model": {
+            "id": "4f38b6c6-a8e9-4f93-91cd-2ac4064b7b5a",
+            "name": "Wunderbar Microphone",
+            "manufacturer": "Relayr GmbH",
+            "readings": [
+                {
+                    "meaning": "noise_level",
+                    "unit": "dba"
+                }
+            ]
+        },
+        "firmwareVersion": "1.0.0",
+        "secret": "486803",
+        "owner": "b9ecd88a-81dc-4505-b5c4-02a2e0f3e136",
+        "public": false
+    },
+    "thermometer": {
+        "id": "4ddcd0d9-ae7a-448d-99fe-59d7ef99bb0a",
+        "name": "My Wunderbar Thermometer & Humidity Sensor",
+        "model": {
+            "id": "ecf6cf94-cb07-43ac-a85e-dccf26b48c86",
+            "name": "Wunderbar Thermometer & Humidity Sensor",
+            "manufacturer": "Relayr GmbH",
+            "readings": [
+                {
+                    "meaning": "temperature",
+                    "unit": "celsius",
+                    "maximum": 100,
+                    "minimum": -100,
+                    "precision": 0.25
+                },
+                {
+                    "meaning": "humidity",
+                    "unit": "percent"
+                }
+            ]
+        },
+        "firmwareVersion": "1.0.0",
+        "secret": "456255",
+        "owner": "b9ecd88a-81dc-4505-b5c4-02a2e0f3e136",
+        "public": false
+    },
+    "infrared": {
+        "id": "60fa00ef-dc92-4a05-8c94-9748280248e5",
+        "name": "My Wunderbar Infrared Sensor ",
+        "model": {
+            "id": "bab45b9c-1c44-4e71-8e98-a321c658df47",
+            "name": "Wunderbar Infrared Sensor",
+            "manufacturer": "Relayr GmbH",
+            "readings": []
+        },
+        "firmwareVersion": "1.0.0",
+        "secret": "670780",
+        "owner": "b9ecd88a-81dc-4505-b5c4-02a2e0f3e136",
+        "public": false
+    },
+    "bridge": {
+        "id": "f05bb14b-408c-490e-91d6-ae8d21dd2392",
+        "name": "My Wunderbar Bridge Module",
+        "model": {
+            "id": "ebd828dd-250c-4baf-807d-69d85bed065b",
+            "name": "Wunderbar Bridge Module",
+            "manufacturer": "Relayr GmbH",
+            "readings": []
+        },
+        "firmwareVersion": "1.0.0",
+        "secret": "909623",
+        "owner": "b9ecd88a-81dc-4505-b5c4-02a2e0f3e136",
+        "public": false
+    }
+}

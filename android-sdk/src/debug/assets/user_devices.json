@@ -1,0 +1,90 @@
+[
+    {
+        "id": "d4650445-d85f-4c4a-bbb3-2da7ccd9c28d",
+        "title": "Fridge thermometer",
+        "model": {
+            "id": "ecf6cf94-cb07-43ac-a85e-dccf26b48c86",
+            "name": "Wunderbar Thermometer & Humidity Sensor",
+            "manufacturer": "Relayr GmbH",
+            "readings": [
+                {
+                    "meaning": "temperature",
+                    "unit": "celsius",
+                    "maximum": 100,
+                    "minimum": -100,
+                    "precision": 0.25
+                },
+                {
+                    "meaning": "humidity",
+                    "unit": "percent"
+                }
+            ]
+        },
+        "firmwareVersion": "1.0.0",
+        "owner": "4f1ddffb-d9fa-456b-a73e-33daa6284c39"
+    },
+    {
+        "id": "d4650445-d85f-4c4a-bbb3-2da7ccd9c282",
+        "title": "Baby Room Microphone",
+        "model": {
+            "id": "4f38b6c6-a8e9-4f93-91cd-2ac4064b7b5a",
+            "name": "Wunderbar Microphone",
+            "manufacturer": "Relayr GmbH",
+            "readings": [
+                {
+                    "meaning": "noise_level",
+                    "unit": "db"
+                }
+            ]
+        },
+        "firmwareVersion": "1.0.0",
+        "owner": "4f1ddffb-d9fa-456b-a73e-33daa6284c39"
+    },
+    {
+        "id": "d4650445-d85f-4c4a-bbb3-2da7ccd9c283",
+        "title": "Disco Light & Proximity Sensor",
+        "model": {
+            "id": "a7ec1b21-8582-4304-b1cf-15a1fc66d1e8",
+            "name": "Wunderbar Light & Proximity Sensor",
+            "manufacturer": "Relayr GmbH",
+            "readings": [
+
+                {
+                    meaning: "luminosity",
+                    unit: "lumen"
+                },
+                {
+                    meaning: "color",
+                    unit: "rgb"
+                },
+                {
+                    meaning: "proximity",
+                    unit: "number"
+                }
+            ]
+        },
+        "firmwareVersion": "1.0.0",
+        "owner": "4f1ddffb-d9fa-456b-a73e-33daa6284c39"
+    },
+    {
+        "id": "d4650445-d85f-4c4a-bbb3-2da7ccd9c284",
+        "title": "Bike Accelerometer & Gyroscope Sensor",
+        "model": {
+            "id": "173c44b5-334e-493f-8eb8-82c8cc65d29f",
+            "name": "Wunderbar Accelerometer & Gyroscope",
+            "manufacturer": "Relayr GmbH",
+            "readings": [
+                {
+                    meaning: "acceleration",
+                    unit: "g"
+                },
+                {
+                    meaning: "angular_speed",
+                    unit: "degrees_per_second"
+                }
+            ]
+        },
+        "firmwareVersion": "1.0.0",
+        "owner": "4f1ddffb-d9fa-456b-a73e-33daa6284c39"
+    }
+]

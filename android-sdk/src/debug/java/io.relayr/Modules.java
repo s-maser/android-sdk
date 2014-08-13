@@ -3,13 +3,13 @@ package io.relayr;
 import android.content.Context;
 
 import io.relayr.activity.UiModule;
-import io.relayr.api.ApiModule;
+import io.relayr.api.DebugApiModule;
 
 final class Modules {
     static Object[] list(Context app) {
         return new Object[] {
                 new RelayrModule(),
-                new ApiModule(app),
+                new DebugApiModule(app),
                 new UiModule()
         };
     }
