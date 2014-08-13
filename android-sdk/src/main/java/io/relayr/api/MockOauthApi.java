@@ -11,10 +11,10 @@ import static io.relayr.api.MockBackend.AUTHORISE_USER;
 
 public class MockOauthApi implements OauthApi {
 
-    private final io.relayr.api.MockBackend mMockBackend;
+    private final MockBackend mMockBackend;
 
     @Inject
-    public MockOauthApi(io.relayr.api.MockBackend mockBackend) {
+    public MockOauthApi(MockBackend mockBackend) {
         mMockBackend = mockBackend;
     }
 

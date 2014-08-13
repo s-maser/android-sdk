@@ -11,12 +11,14 @@ import io.relayr.ble.BleUtils;
 import io.relayr.ble.RelayrBleSdk;
 import io.relayr.storage.DataStorage;
 import io.relayr.storage.RelayrProperties;
+import io.relayr.websocket.WebSocketClient;
 
 public class RelayrSdk {
 
     @Inject static RelayrApi mRelayrApi;
+    @Inject static WebSocketClient mWebSocketClient;
 
-	private static LoginEventListener loginEventListener;
+    private static LoginEventListener loginEventListener;
 
     /** Should be called when the {@link android.app.Application} is created */
     public static void init(Context context) {
@@ -46,15 +48,19 @@ public class RelayrSdk {
         LoginActivity.startActivity(currentActivity);
 	}
 
-    /** Checks whether the user is logged in in the sdk or not */
+    /** Checks whether the user is logged in to the app or not */
 	public static boolean isUserLoggedIn() {
 		return DataStorage.isUserLoggedIn();
 	}
 
-    /** Logs the user out of the sdk */
+    /** Logs the user out of the app */
 	public static void logOut() {
 		DataStorage.logOut();
 	}
+
+    public static WebSocketClient getWebSocketClient() {
+        return mWebSocketClient;
+    }
 
     /** {@link io.relayr.ble.RelayrBleSdk#newInstance()} */
      public static RelayrBleSdk getRelayrBleSdk() {

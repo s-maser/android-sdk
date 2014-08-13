@@ -88,6 +88,11 @@ public class ApiModule {
         return restAdapter.create(OauthApi.class);
     }
 
+    @Provides @Singleton SubscriptionApi provideSubscriptionApi(@Named("api")
+                                                                RestAdapter restAdapter) {
+        return restAdapter.create(SubscriptionApi.class);
+    }
+
     @Provides @Singleton OkHttpClient provideOkHttpClient() {
         return createOkHttpClient(app);
     }

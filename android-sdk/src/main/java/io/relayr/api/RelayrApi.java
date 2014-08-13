@@ -3,14 +3,12 @@ package io.relayr.api;
 import java.util.List;
 
 import io.relayr.model.App;
-import io.relayr.model.Device;
 import io.relayr.model.CreateWunderBar;
+import io.relayr.model.Device;
 import io.relayr.model.Transmitter;
 import io.relayr.model.TransmitterDevice;
-import io.relayr.model.WebSocketConfig;
 import io.relayr.model.User;
 import retrofit.http.Body;
-import retrofit.http.DELETE;
 import retrofit.http.GET;
 import retrofit.http.PATCH;
 import retrofit.http.POST;
@@ -44,13 +42,5 @@ public interface RelayrApi {
     @GET("/transmitters/{transmitter}/devices")
     Observable<List<TransmitterDevice>> getTransmitterDevices(
             @Path("transmitter") String transmitter);
-
-    @POST("/apps/{appId}/devices/{deviceId}")
-    Observable<WebSocketConfig> start(@Path("appId") String appId,
-                                      @Path("deviceId") String deviceId);
-
-    @DELETE("/apps/{appId}/devices/{deviceId}")
-    Observable<Void> stop(@Path("appId") String appId,
-                          @Path("deviceId") String deviceId);
 
 }

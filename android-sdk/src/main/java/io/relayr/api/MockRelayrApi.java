@@ -12,23 +12,21 @@ import io.relayr.model.Device;
 import io.relayr.model.Transmitter;
 import io.relayr.model.TransmitterDevice;
 import io.relayr.model.User;
-import io.relayr.model.WebSocketConfig;
 import rx.Observable;
 
 import static io.relayr.api.MockBackend.APP_INFO;
 import static io.relayr.api.MockBackend.TRANSMITTER_DEVICES;
-import static io.relayr.api.MockBackend.USER_INFO;
 import static io.relayr.api.MockBackend.USERS_CREATE_WUNDERBAR;
 import static io.relayr.api.MockBackend.USERS_TRANSMITTER;
 import static io.relayr.api.MockBackend.USERS_TRANSMITTERS;
 import static io.relayr.api.MockBackend.USER_DEVICES;
-import static io.relayr.api.MockBackend.APPS_DEVICES_START;
+import static io.relayr.api.MockBackend.USER_INFO;
 
 public class MockRelayrApi implements RelayrApi {
 
-    private final io.relayr.api.MockBackend mMockBackend;
+    private final MockBackend mMockBackend;
 
-    @Inject public MockRelayrApi(io.relayr.api.MockBackend mockBackend) {
+    @Inject public MockRelayrApi(MockBackend mockBackend) {
         mMockBackend = mockBackend;
     }
 
@@ -75,16 +73,4 @@ public class MockRelayrApi implements RelayrApi {
         return mMockBackend.createObservable(new TypeToken<List<TransmitterDevice>>() { },
                 TRANSMITTER_DEVICES);
     }
-
-    @Override
-    public Observable<WebSocketConfig> start(String appId, String sensorId) {
-        return mMockBackend.createObservable(new TypeToken<WebSocketConfig>() { },
-                APPS_DEVICES_START);
-    }
-
-    @Override
-    public Observable<Void> stop(String appId, String sensorId) {
-        return Observable.from();
-    }
-
 }

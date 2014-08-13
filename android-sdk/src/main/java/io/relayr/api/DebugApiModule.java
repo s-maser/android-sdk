@@ -6,6 +6,8 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import io.relayr.websocket.MockWebSocketFactory;
+import io.relayr.websocket.WebSocketFactory;
 
 @Module(
         complete = false,
@@ -19,20 +21,24 @@ public class DebugApiModule {
         app = context;
     }
 
-    @Provides @Singleton io.relayr.api.MockBackend provideMockBackend() {
-        return new io.relayr.api.MockBackend(app);
+    @Provides @Singleton MockBackend provideMockBackend() {
+        return new MockBackend(app);
     }
 
-    /*@Provides @Singleton public WebSocketFactory provideWebSocketFactory(MockBackend loader) {
+    @Provides @Singleton public WebSocketFactory provideWebSocketFactory(MockBackend loader) {
         return new MockWebSocketFactory(loader);
-    }*/
-
-    @Provides @Singleton OauthApi provideOauthApi(io.relayr.api.MockBackend loader) {
-        return new io.relayr.api.MockOauthApi(loader);
     }
 
-    @Provides @Singleton RelayrApi provideRelayrApi(io.relayr.api.MockBackend loader) {
-        return new io.relayr.api.MockRelayrApi(loader);
+    @Provides @Singleton OauthApi provideOauthApi(MockBackend loader) {
+        return new MockOauthApi(loader);
+    }
+
+    @Provides @Singleton RelayrApi provideRelayrApi(MockBackend loader) {
+        return new MockRelayrApi(loader);
+    }
+
+    @Provides @Singleton SubscriptionApi provideSubscriptionApi(MockBackend loader) {
+        return new MockSubscriptionApi(loader);
     }
 
 }
