@@ -22,6 +22,7 @@ import static io.relayr.api.MockBackend.USERS_CREATE_WUNDERBAR;
 import static io.relayr.api.MockBackend.USERS_TRANSMITTER;
 import static io.relayr.api.MockBackend.USERS_TRANSMITTERS;
 import static io.relayr.api.MockBackend.USER_DEVICES;
+import static io.relayr.api.MockBackend.APPS_DEVICES_START;
 
 public class MockRelayrApi implements RelayrApi {
 
@@ -49,12 +50,14 @@ public class MockRelayrApi implements RelayrApi {
 
     @Override
     public Observable<CreateWunderBar> createWunderBar(String userId) {
-        return mMockBackend.createObservable(new TypeToken<CreateWunderBar>() {}, USERS_CREATE_WUNDERBAR);
+        return mMockBackend.createObservable(new TypeToken<CreateWunderBar>() {},
+                USERS_CREATE_WUNDERBAR);
     }
 
     @Override
     public Observable<List<Transmitter>> getTransmitters(String userId) {
-        return mMockBackend.createObservable(new TypeToken<List<Transmitter>>() {}, USERS_TRANSMITTERS);
+        return mMockBackend.createObservable(new TypeToken<List<Transmitter>>() {},
+                USERS_TRANSMITTERS);
     }
 
     @Override
@@ -63,7 +66,7 @@ public class MockRelayrApi implements RelayrApi {
     }
 
     @Override
-    public Observable<Transmitter> updateTransmitter(Transmitter transmitter, String transmitterId) {
+    public Observable<Transmitter> updateTransmitter(Transmitter transmitter, String id) {
         return Observable.from(transmitter);
     }
 
@@ -75,7 +78,8 @@ public class MockRelayrApi implements RelayrApi {
 
     @Override
     public Observable<WebSocketConfig> start(String appId, String sensorId) {
-        return Observable.from(new WebSocketConfig());
+        return mMockBackend.createObservable(new TypeToken<WebSocketConfig>() { },
+                APPS_DEVICES_START);
     }
 
     @Override

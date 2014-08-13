@@ -31,6 +31,7 @@ public class MockBackend {
     public static final String USERS_TRANSMITTERS = "users_transmitters.json";
     public static final String USERS_TRANSMITTER = "users_transmitter.json";
     public static final String TRANSMITTER_DEVICES = "users_transmitters_devices.json";
+    public static final String APPS_DEVICES_START = "apps_devices_start.json";
 
     private final Context mContext;
 
