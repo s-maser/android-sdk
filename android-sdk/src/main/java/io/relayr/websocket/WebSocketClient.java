@@ -31,7 +31,6 @@ public class WebSocketClient {
     private final Map<String, PublishSubject<Object>> mWebSocketConnections = new HashMap<>();
     private WebSocket mWebSocket = new UnInitializedWebSocket();
 
-
     private static class UnInitializedWebSocket extends WebSocket {
 
         public UnInitializedWebSocket() {
@@ -96,17 +95,38 @@ public class WebSocketClient {
         return subscribe(subject, subscriber);
     }
 
-    public void stop() {
-        // iterate.mWebSocketConnections ->
-        //          connection.onCompleted();
-        //          mWebSocketConnections.remove(connection);
+    /*public void unSubscribeAll() {
+        mWebSocket.unSubscribeAll();
+        // mSubscriptionApi.unSubscribeAll();
+        Observable
+                .from(mWebSocketConnections.keySet())
+                .flatMap(new Func1<String, Observable<?>>() {
+                    @Override
+                    public Observable<?> call(String deviceId) {
+                        return mSubscriptionApi.unSubscribe(appId, deviceId);
+                    }
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<Object>() {
+                    @Override
+                    public void onCompleted() {
 
-        // mWebSocket.unSubscribeAll();
+                    }
 
-        // mRelayrSDK.stopAll();
-    }
+                    @Override
+                    public void onError(Throwable e) {
 
-    public void stop(final String sensorId) {
+                    }
+
+                    @Override
+                    public void onNext(Object o) {
+
+                    }
+                });
+    }*/
+
+    public void unSubscribe(final String sensorId) {
         if (mWebSocketConnections.containsKey(sensorId)) {
             mWebSocketConnections.get(sensorId).onCompleted();
             mWebSocketConnections.remove(sensorId);
