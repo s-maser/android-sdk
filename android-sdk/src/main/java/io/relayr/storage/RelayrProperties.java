@@ -14,17 +14,20 @@ public final class RelayrProperties {
     private static final String PROPERTIES_KEY_CLIENT_ID = "clientId";
     private static final String PROPERTIES_KEY_CLIENT_SECRET = "clientSecret";
     private static final String PROPERTIES_KEY_APP_ID = "appId";
+    private static final String PROPERTIES_KEY_REDIRECT_URI = "redirect_uri";
 
     private static RelayrProperties mRelayrProperties = null;
 
 	public final String clientId;
     public final String clientSecret;
     public final String appId;
+    public final String redirectUri;
 
-    private RelayrProperties(String clientId, String clientSecret, String appId) {
+    private RelayrProperties(String clientId, String clientSecret, String appId, String redirectUri) {
         this.clientId = clientId;
         this.clientSecret = clientSecret;
         this.appId = appId;
+        this.redirectUri = redirectUri;
     }
 
     public static RelayrProperties get() {
@@ -52,7 +55,8 @@ public final class RelayrProperties {
         String clientId = getProperty(properties.getProperty(PROPERTIES_KEY_CLIENT_ID));
         String clientSecret = getProperty(properties.getProperty(PROPERTIES_KEY_CLIENT_SECRET));
         String appId = getProperty(properties.getProperty(PROPERTIES_KEY_APP_ID));
-        return new RelayrProperties(clientId, clientSecret, appId);
+        String redirectUri = getProperty(properties.getProperty(PROPERTIES_KEY_REDIRECT_URI));
+        return new RelayrProperties(clientId, clientSecret, appId, redirectUri);
 	}
 
     private static String getProperty(String property) {
