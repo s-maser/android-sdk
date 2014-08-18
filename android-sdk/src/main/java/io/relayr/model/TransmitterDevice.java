@@ -1,5 +1,9 @@
 package io.relayr.model;
 
+/**
+ * The transmitter device object holds the same information as the {@link io.relayr.model.Device}
+ * The difference is that the model attribute in the former is an ID rather than an object.
+ */
 public class TransmitterDevice extends Transmitter {
 
     public final String model;
