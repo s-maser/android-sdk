@@ -4,6 +4,11 @@ import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
+/** The Device class is a representation of the device entity.
+ * A device entity is any external entity capable of gathering measurements
+ * or one which is capable of receiving information from the relayr platform.
+ * Examples would be a thermometer, a gyroscope or an infrared sensor.
+ * */
 public class Device implements Serializable {
 
 	/** Auto generated uid */

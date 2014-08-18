@@ -1,5 +1,6 @@
 package io.relayr.model;
 
+/** Holds information about the ids of the available devices in the relayr platform */
 public enum DeviceModel {
 
     LIGHT_PROX_COLOR("a7ec1b21-8582-4304-b1cf-15a1fc66d1e8"),

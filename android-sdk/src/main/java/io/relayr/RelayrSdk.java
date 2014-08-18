@@ -13,6 +13,10 @@ import io.relayr.storage.DataStorage;
 import io.relayr.storage.RelayrProperties;
 import io.relayr.websocket.WebSocketClient;
 
+/** The RelayrSdk Class serves as the access point to all endpoints in the Android SDK.
+ * It includes basic calls such as user login validation and can also call the handlers of the
+ * other classes- {@link io.relayr.api.RelayrApi}, {@link io.relayr.ble.RelayrBleSdk} and
+ * {@link io.relayr.websocket.WebSocketClient}. */
 public class RelayrSdk {
 
     @Inject static RelayrApi mRelayrApi;
@@ -20,72 +24,97 @@ public class RelayrSdk {
 
     private static LoginEventListener loginEventListener;
 
-    /** Should be called when the {@link android.app.Application} is created */
+    /** Initializes the SDK. Should be called when the {@link android.app.Application} is
+     * created. */
     public static void init(Context context) {
         RelayrApp.init(context, false);
     }
 
-    /** Should be called when the {@link android.app.Application} is created. It produces mock
-     * values in order to test the behaviour without the need of a WunderBar or an internet
-     * connection */
+    /** Initializes the SDK in Mock Mode.
+     * In this mode, mock reading values are generated.
+     * Used for testing purposes, without the need of a WunderBar or an internet connection.
+     * Should be called when the *{@link android.app.Application}* is created. */
     public static void initInMockMode(Context context) {
         RelayrApp.init(context, true);
     }
 
-    /** Returns the version of the sdk */
+    /**
+     * Returns the version of the SDK
+     * @return the version String
+     */
 	public static String getVersion() {
         return RelayrProperties.VERSION;
 	}
 
-    /** Returns the handler of the api */
+    /** @return the handler of the Relayr API.
+     * Used as an access point to class {@link RelayrApi} */
     public static RelayrApi getRelayrApi() {
         return mRelayrApi;
     }
 
-    /** Launches the log in Activity that will log the user into the app */
+    /** Launches the login activity. Enables the user to log in to the relayr platform. */
 	public static void logIn(Activity currentActivity, LoginEventListener listener) {
         loginEventListener = listener;
         LoginActivity.startActivity(currentActivity);
 	}
 
-    /** Checks whether the user is logged in to the app or not */
+    /**
+     * Checks whether or not a user is logged in to the relayr platform.
+     * @return true if the user is logged in, false otherwise.
+     */
 	public static boolean isUserLoggedIn() {
 		return DataStorage.isUserLoggedIn();
 	}
 
-    /** Logs the user out of the app */
+    /** Logs the user out of the relayr platform. */
 	public static void logOut() {
 		DataStorage.logOut();
 	}
 
+    /** @return the handler of the WebSocket client
+    * Used as an access point to the class {@link WebSocketClient} */
     public static WebSocketClient getWebSocketClient() {
         return mWebSocketClient;
     }
 
-    /** {@link io.relayr.ble.RelayrBleSdk#newInstance()} */
+    /**
+     * Accessor for the Bluetooth LE SDK
+     * @return the handler of the Relayr BLE SDK
+     */
      public static RelayrBleSdk getRelayrBleSdk() {
         return RelayrBleSdk.newInstance();
     }
 
-    /** Checks whether ble is supported or not. It should be called before using
-     * {@link #getRelayrBleSdk} */
+    /** Checks whether or not Bluetooth is supported.
+     * @return true if Bluetooth is supported, false otherwise.
+     * Should be called before the RelayrBleSdk handler {@link #getRelayrBleSdk} */
     public static boolean isBleSupported() {
         return BleUtils.isBleSupported();
     }
 
-    /** Checks whether ble is on or off. Bluetooth can be activated by calling
-     * {@link #promptUserToActivateBluetooth}. It should be called before using
-     * {@link #getRelayrBleSdk} */
+    /** Checks whether Bluetooth is turned on or not.
+     * @return true if Bluetooth is turned on, false otherwise.
+     * Should be called before calling the RelayrBleSdk handler {@link #getRelayrBleSdk}.
+     * The user can be prompted to activate their Bluetooth using
+     * {@link #promptUserToActivateBluetooth} */
     public static boolean isBleAvailable() {
         return BleUtils.isBleAvailable();
     }
 
-    /** Launches an activity to ask the user to activate the bluetooth. It won't do anything if
-     * bluetooth is not supported {@link #isBleSupported} */
+    /**
+     * Prompts the user to activate Bluetooth.
+     * The method will not perform any action in case Bluetooth is not supported,
+     * i.e. if {@link #isBleSupported()} returns true.
+     * @param activity an instance of {@link android.app.Activity}
+     */
     public static void promptUserToActivateBluetooth(Activity activity) {
         if (isBleSupported()) BleUtils.promptUserToActivateBluetooth(activity);
     }
 
+    /**
+     * Listener indicating a 'login' event
+     * @return the listener or null if doesn't exist
+     */
 	public static LoginEventListener getLoginEventListener() {
 		return loginEventListener;
 	}

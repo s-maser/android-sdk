@@ -1,38 +1,57 @@
-#Relayr-Android SDK - Developer's documentation
+#BETA Relayr-Android SDK - Developer's documentation
 
-##Sortware required
-- Eclipse (*Lastversion revised: 4.2.2*)
-- Eclipse ADT plugin: http://developer.android.com/tools/sdk/eclipse-adt.html
+relayr is all about bringing things to life, allowing app developers access to the physical world around them.
+
+The Android SDK enables app developers to easily interact with the relayr platform.
+
 
 ##Setup
-- Clone the *android-sdk-code* repository: https://github.com/relayr/android-sdk-code.git
-- Clone the *android-sdk* repository: https://github.com/relayr/android-sdk.git
-- Import both projects into Eclipse: File -> Import -> Existing Android code into workspace
 
-##Debug
-Relayr-Android SDK is divided in two Android libraries: *android-sdk-code* and *android-sdk*. The first one is used 
-to store all the classes involved in the SDK funtionalities. The second one is the Android library which is given to the
-costumers with the SDK classes included as a jar file.
+- Create an Android Project [See Thermometer demo](https://github.com/relayr/android-demo-apps/commit/3e33f01c7e693e5ee0f9884dea8218731b8c9c8b)
+- Create an empty Git repository or reinitialize an existing one:
+    ```
+    git init
+    ```
+- Add the android relayr sdk as a git submodule: [Add the Android Relayr Sdk](https://github.com/relayr/android-demo-apps/commit/f2c17c6a9a20f0c0e1f12cf8c38c2afd5ed4449d)
+    ```
+    git submodule add https://github.com/relayr/android-sdk.git libraries/relayr-sdk
+    ```
+- Reference the relayr sdk project in your settings.gradle file: 
+    ```
+    include ':app' ':libraries:relayr-sdk:android-sdk'
+    ```
+- Reference the relayr sdk project in your build.gradle inside your app folder:
+    ```
+    dependencies {
+        compile project(':libraries:relayr-sdk:android-sdk')
+    }
+    ```
+- [Create a relayr app](https://developer.relayr.io/dashboard/apps/myApps) and [save the relayrsdk.properties file inside src/main/assets](https://github.com/relayr/android-demo-apps/commit/06b85d467fdf6300367d6d997a0f89fc3b9a184c) 
+- Subclass an Android Application inside your app and [initialize the Sdk](https://github.com/relayr/android-demo-apps/commit/27bef2e3c588c0e2351294a7fdc6418240af4bd4)
+    ```
+    public class MyApplication extends Application {
+        @Override
+        public void onCreate() {
+            super.onCreate();
+            RelayrSdk.initSdk(this);
+        }
+    }
+    ```
+- Reference your Application and add internet permission in the Android Manifest
+    ```
+    <uses-permission android:name="android.permission.INTERNET" />
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme"
+        android:name=".MyApplication">
+    ```
+- [Log the user into the app](https://github.com/relayr/android-demo-apps/commit/19bf3578de9fd2c20e2ebab50c5a280500d411c9) and start using the sdk!
+    ```
+    RelayrSdk.logIn(this, this);
+    ```
+    
+##Examples
 
-New classes have to be included in the android-sdk-code. To generate the library jar:
-
-1. Select the project
-2. Click on File (at the top menu) 
-3. Export 
-4. JAR file
-5. Select just the 'src' folder of the *android-sdk-code* project to export. Define the destination path and click on finish
-6. Include the jar file in the livs folder of the *android-sdk project*.
-
-
-Check the *Relayr-Android SDK - User's documentation* to know how to add the *android-sdk* library into an Android app.
-
-##Test
-SDK tests are located on the test folder of https://github.com/relayr/android-test.git. The tests are jUnit4 files. To run all the test you need to checkout the sdk test environment at https://github.com/relayr/android-sdk-test-environment.git.
-
-Check the link to know how to run jUnit4
-test on Eclipse: http://javarevisited.blogspot.nl/2013/03/how-to-write-unit-test-in-java-eclipse-netbeans-example-run.html.
-
-##Release
-- Export the *android-sdk-code* project to a jar file.
-- Copy the android-sdk-code.jar file to the libs directory of the *android-sdk* library.
-- Create a new realese at https://github.com/relayr/android-sdk and create a link to download a zip the project files.
+Take a look at our [Android Demos](https://github.com/relayr/android-demo-apps) to get started.

@@ -1,7 +1,11 @@
 package io.relayr.model;
 
 import java.io.Serializable;
-
+/** The first basic entity in the relayr platform is the user.
+ * Every user registers with an email address,
+ * a respective name and password and is assigned a unique userId.
+ * A user can be both an application owner (a publisher) and an end user.
+ * A user is required in order to add other entities to the relayr platform. */
 public class User implements Serializable {
 
 	/** Auto generated uid */

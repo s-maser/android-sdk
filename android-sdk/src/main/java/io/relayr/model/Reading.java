@@ -1,5 +1,6 @@
 package io.relayr.model;
 
+/** A reading is the information gathered by the device. */
 public class Reading {
 
     public long ts;

@@ -4,6 +4,13 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * A model is an entity which holds the following information about a device:
+ * Name
+ * Manufacturer
+ * List of readings provided along with the minimum and maximum values and the units in which these
+ * are measured.
+ */
 public class Model implements Serializable {
 
     /** Auto generated uid */
