@@ -14,7 +14,7 @@ public final class RelayrProperties {
     private static final String PROPERTIES_KEY_CLIENT_ID = "clientId";
     private static final String PROPERTIES_KEY_CLIENT_SECRET = "clientSecret";
     private static final String PROPERTIES_KEY_APP_ID = "appId";
-    private static final String PROPERTIES_KEY_REDIRECT_URI = "redirectUri";
+    private static final String PROPERTIES_KEY_REDIRECT_URI = "redirect_uri";
 
     private static RelayrProperties mRelayrProperties = null;
 
