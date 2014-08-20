@@ -76,3 +76,5 @@ task makeJar(type: Copy) {
 }
 
 makeJar.dependsOn(clearJar, build)
+
+apply from: rootProject.file('gradle/gradle-mvn-push.gradle')
