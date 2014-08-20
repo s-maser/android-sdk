@@ -71,7 +71,7 @@ afterEvaluate { project ->
                     licenses {
                         license {
                             name 'The MIT License'
-                            url 'http://opensource.org/licenses/MIT'
+                            url 'http://ithings4u.mit-license.org/'
                             distribution 'repo'
                         }
                     }
