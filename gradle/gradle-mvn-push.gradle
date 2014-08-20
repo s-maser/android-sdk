@@ -21,20 +21,6 @@ def isReleaseBuild() {
     return android.defaultConfig.versionName.contains("SNAPSHOT") == false
 }
 
-def getReleaseRepositoryUrl() {
-    return hasProperty('RELEASE_REPOSITORY_URL') ? RELEASE_REPOSITORY_URL
-            : "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
-}
-
-def getSnapshotRepositoryUrl() {
-    logger.error("is snapshot")
-    return hasProperty('SNAPSHOT_REPOSITORY_URL') ? SNAPSHOT_REPOSITORY_URL
-            : "https://oss.sonatype.org/content/repositories/snapshots/"
-}
-
-logger.error(sonatypePassword)
-logger.error(sonatypeUsername)
-
 afterEvaluate { project ->
     uploadArchives {
         repositories {
@@ -45,11 +31,11 @@ afterEvaluate { project ->
                 pom.artifactId = "android-sdk"
                 pom.version = android.defaultConfig.versionName
 
-                repository(url: getReleaseRepositoryUrl()) {
+                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
                     //read from ~/.gradle/gradle.properties
                     authentication(userName: sonatypeUsername, password: sonatypePassword)
                 }
-                snapshotRepository(url: getSnapshotRepositoryUrl()) {
+                snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
                     //read from ~/.gradle/gradle.properties
                     authentication(userName: sonatypeUsername, password: sonatypePassword)
                 }
