@@ -18,7 +18,7 @@ apply plugin: 'maven'
 apply plugin: 'signing'
 
 def isReleaseBuild() {
-    return versionName.contains("SNAPSHOT") == false
+    return android.defaultConfig.versionName.contains("SNAPSHOT") == false
 }
 
 def getReleaseRepositoryUrl() {
@@ -27,17 +27,13 @@ def getReleaseRepositoryUrl() {
 }
 
 def getSnapshotRepositoryUrl() {
+    logger.error("is snapshot")
     return hasProperty('SNAPSHOT_REPOSITORY_URL') ? SNAPSHOT_REPOSITORY_URL
             : "https://oss.sonatype.org/content/repositories/snapshots/"
 }
 
-def getRepositoryUsername() {
-    return hasProperty('NEXUS_USERNAME') ? NEXUS_USERNAME : ""
-}
-
-def getRepositoryPassword() {
-    return hasProperty('NEXUS_PASSWORD') ? NEXUS_PASSWORD : ""
-}
+logger.error(sonatypePassword)
+logger.error(sonatypeUsername)
 
 afterEvaluate { project ->
     uploadArchives {
@@ -47,13 +43,15 @@ afterEvaluate { project ->
 
                 pom.groupId = "io.relayr"
                 pom.artifactId = "android-sdk"
-                pom.version = versionName
+                pom.version = android.defaultConfig.versionName
 
                 repository(url: getReleaseRepositoryUrl()) {
-                    authentication(userName: getRepositoryUsername(), password: getRepositoryPassword())
+                    //read from ~/.gradle/gradle.properties
+                    authentication(userName: sonatypeUsername, password: sonatypePassword)
                 }
                 snapshotRepository(url: getSnapshotRepositoryUrl()) {
-                    authentication(userName: getRepositoryUsername(), password: getRepositoryPassword())
+                    //read from ~/.gradle/gradle.properties
+                    authentication(userName: sonatypeUsername, password: sonatypePassword)
                 }
 
                 pom.project {
