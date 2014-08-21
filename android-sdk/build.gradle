@@ -8,9 +8,9 @@ android {
         minSdkVersion 15
         targetSdkVersion 20
         versionCode 1
-        versionName '0.0.2-SNAPSHOT'
+        versionName '0.0.2'
     }
-    
+
 
     lintOptions {
         abortOnError true
