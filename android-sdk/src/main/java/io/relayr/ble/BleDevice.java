@@ -203,7 +203,7 @@ public class BleDevice {
 
     private void write(byte[] bytes, String characteristicUUID, String logName) {
         assert(bytes != null);
-        if (bluetoothGattService != null && mode == BleDeviceMode.ON_BOARDING) {
+        if (bluetoothGattService != null && mode == BleDeviceMode.ON_BOARDING && isConnected()) {
             List<BluetoothGattCharacteristic> characteristics = bluetoothGattService.getCharacteristics();
             for (BluetoothGattCharacteristic characteristic:characteristics) {
                 String deviceCharacteristicUUID = getShortUUID(characteristic.getUuid().toString());
