@@ -10,7 +10,6 @@ import io.relayr.api.RelayrApi;
 import io.relayr.ble.BleUtils;
 import io.relayr.ble.RelayrBleSdk;
 import io.relayr.storage.DataStorage;
-import io.relayr.storage.RelayrProperties;
 import io.relayr.websocket.WebSocketClient;
 
 /** The RelayrSdk Class serves as the access point to all endpoints in the Android SDK.
@@ -43,7 +42,7 @@ public class RelayrSdk {
      * @return the version String
      */
 	public static String getVersion() {
-        return RelayrProperties.VERSION;
+        return BuildConfig.VERSION_NAME;
 	}
 
     /** @return the handler of the Relayr API.

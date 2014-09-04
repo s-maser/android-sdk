@@ -8,8 +8,6 @@ import io.relayr.RelayrApp;
 
 public final class RelayrProperties {
 
-	public static final String VERSION = "0.0.1";
-
     private static final String PROPERTIES_FILE_NAME = "relayrsdk.properties";
     private static final String PROPERTIES_KEY_CLIENT_ID = "clientId";
     private static final String PROPERTIES_KEY_CLIENT_SECRET = "clientSecret";
