@@ -15,13 +15,15 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 import io.relayr.storage.DataStorage;
-import io.relayr.storage.RelayrProperties;
 import retrofit.Endpoint;
 import retrofit.Endpoints;
 import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
 import retrofit.client.Client;
 import retrofit.client.OkClient;
+
+import static io.relayr.BuildConfig.PACKAGE_NAME;
+import static io.relayr.BuildConfig.VERSION_NAME;
 
 @Module(
         complete = false,
@@ -30,7 +32,7 @@ import retrofit.client.OkClient;
 public class ApiModule {
 
     public static final String API_ENDPOINT = "https://api.relayr.io";
-    private static final String USER_AGENT = "Relayr-Android-Sdk:" + RelayrProperties.VERSION;
+    private static final String USER_AGENT = PACKAGE_NAME + ".sdk.android/" + VERSION_NAME;
     private static final int DISK_CACHE_SIZE = 50 * 1024 * 1024; // 50MB
     private final Context app;
 
