@@ -88,13 +88,7 @@ public class BleDevice {
 	}
 
 	public void setMode(BleDeviceMode mode) {
-		BleDeviceMode oldMode = this.mode;
 		this.mode = mode;
-		notifyModeSwitch(oldMode);
-		notifyModeSwitch(mode);
-	}
-
-	private void notifyModeSwitch(BleDeviceMode mode) {
         mModeSwitchCallback.onModeSwitch(mode, this);
 	}
 
