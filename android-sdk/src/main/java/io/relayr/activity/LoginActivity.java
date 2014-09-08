@@ -48,7 +48,7 @@ public class LoginActivity extends Activity {
         RelayrApp.inject(this);
         View view = View.inflate(this, R.layout.login_layout, null);
         mWebView = (WebView) view.findViewById(R.id.web_view);
-        mLoadingView = findViewById(R.id.loading_spinner);
+        mLoadingView = view.findViewById(R.id.loading_spinner);
         setContentView(view);
 
         // Initially hide the loading view.
