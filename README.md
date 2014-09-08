@@ -7,24 +7,9 @@ The Android SDK enables app developers to easily interact with the relayr platfo
 
 ##Setup
 
-- Create an Android Project [See Thermometer demo](https://github.com/relayr/android-demo-apps/commit/3e33f01c7e693e5ee0f9884dea8218731b8c9c8b)
-- Create an empty Git repository or reinitialize an existing one:
+- Grab the latest version from maven central:
     ```
-    git init
-    ```
-- Add the android relayr sdk as a git submodule: [Add the Android Relayr Sdk](https://github.com/relayr/android-demo-apps/commit/f2c17c6a9a20f0c0e1f12cf8c38c2afd5ed4449d)
-    ```
-    git submodule add https://github.com/relayr/android-sdk.git libraries/relayr-sdk
-    ```
-- Reference the relayr sdk project in your settings.gradle file: 
-    ```
-    include ':app' ':libraries:relayr-sdk:android-sdk'
-    ```
-- Reference the relayr sdk project in your build.gradle inside your app folder:
-    ```
-    dependencies {
-        compile project(':libraries:relayr-sdk:android-sdk')
-    }
+    compile 'io.relayr:android-sdk:0.0.+'
     ```
 - [Create a relayr app](https://developer.relayr.io/dashboard/apps/myApps) and [save the relayrsdk.properties file inside src/main/assets](https://github.com/relayr/android-demo-apps/commit/06b85d467fdf6300367d6d997a0f89fc3b9a184c) 
 - Subclass an Android Application inside your app and [initialize the Sdk](https://github.com/relayr/android-demo-apps/commit/27bef2e3c588c0e2351294a7fdc6418240af4bd4)
