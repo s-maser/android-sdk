@@ -16,6 +16,7 @@ import android.webkit.WebViewClient;
 import javax.inject.Inject;
 
 import io.relayr.LoginEventListener;
+import io.relayr.R;
 import io.relayr.RelayrApp;
 import io.relayr.RelayrSdk;
 import io.relayr.api.ApiModule;
@@ -33,18 +34,25 @@ import rx.schedulers.Schedulers;
 
 public class LoginActivity extends Activity {
 
-    private static final String REDIRECT_URI = "http://localhost";
     @Inject OauthApi mOauthApi;
     @Inject RelayrApi mRelayrApi;
     private volatile boolean isObtainingAccessToken;
+    private WebView mWebView;
+    private View mLoadingView;
+    private static final String REDIRECT_URI = "http://localhost";
 
     @SuppressLint("setJavaScriptEnabled")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         RelayrApp.inject(this);
-        WebView mWebView = new WebView(this);
-        setContentView(mWebView);
+        View view = View.inflate(this, R.layout.login_layout, null);
+        mWebView = (WebView) view.findViewById(R.id.web_view);
+        mLoadingView = findViewById(R.id.loading_spinner);
+        setContentView(view);
+
+        // Initially hide the loading view.
+        mLoadingView.setVisibility(View.GONE);
 
         mWebView.setWebChromeClient(new WebChromeClient());
         mWebView.setVerticalScrollBarEnabled(false);
@@ -56,7 +64,7 @@ public class LoginActivity extends Activity {
 
         mWebView.setVisibility(View.VISIBLE);
 
-        mWebView.setWebViewClient(new WebViewClient(){
+        mWebView.setWebViewClient(new WebViewClient() {
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 Log.d("Login_Activity", "WebView opening: " + url);
@@ -64,6 +72,8 @@ public class LoginActivity extends Activity {
                 if (code != null && !isObtainingAccessToken) {
                     Log.d("Relayr_LoginActivity", "onPageStarted code: " + code);
                     isObtainingAccessToken = true;
+                    mLoadingView.setVisibility(View.VISIBLE);
+                    mWebView.setVisibility(View.GONE);
                     mOauthApi
                             .authoriseUser(code,
                                     RelayrProperties.get().clientId,
