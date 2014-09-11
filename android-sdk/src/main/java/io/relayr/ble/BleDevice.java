@@ -143,6 +143,7 @@ public class BleDevice {
         setStatus(BleDeviceStatus.DISCONNECTED);
         mConnectionCallback.onDisconnect(this);
         mConnectionCallback = mNullableConnectionCallback;
+        if (deviceValueSubscriber != null) deviceValueSubscriber.onCompleted();
     }
 
 	public boolean isConnected() {

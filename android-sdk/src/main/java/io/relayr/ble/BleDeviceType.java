@@ -1,6 +1,8 @@
 package io.relayr.ble;
 
 
+import io.relayr.model.DeviceModel;
+
 public enum BleDeviceType {
 	WunderbarHTU,
 	WunderbarGYRO,
@@ -37,4 +39,14 @@ public enum BleDeviceType {
 		}
 		return Unknown;
 	}
+
+    public static BleDeviceType from(DeviceModel model) {
+        if (model.equals(DeviceModel.TEMPERATURE_HUMIDITY)) return WunderbarHTU;
+        if (model.equals(DeviceModel.ACCELEROMETER_GYROSCOPE)) return WunderbarGYRO;
+        if (model.equals(DeviceModel.LIGHT_PROX_COLOR)) return WunderbarLIGHT;
+        if (model.equals(DeviceModel.MICROPHONE)) return WunderbarMIC;
+        if (model.equals(DeviceModel.GROVE)) return WunderbarBRIDG;
+        if (model.equals(DeviceModel.IR_TRANSMITTER)) return WunderbarIR;
+        return Unknown;
+    }
 }

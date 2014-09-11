@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.List;
 
 import io.relayr.RelayrApp;
+import io.relayr.SocketClient;
 import rx.Observable;
 import rx.Subscriber;
 
@@ -70,6 +71,11 @@ class RelayrBleSdkImpl extends RelayrBleSdk implements BleDeviceEventCallback {
 
     public boolean isScanning() {
         return scanner.isScanning();
+    }
+
+    @Override
+    public SocketClient getBleSocketClient() {
+        return new BleSocketClient();
     }
 
     @Override
