@@ -6,6 +6,8 @@ import android.bluetooth.BluetoothDevice;
 import android.os.Build;
 import android.util.Log;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import io.relayr.RelayrApp;
@@ -21,6 +23,7 @@ class RelayrBleSdkImpl extends RelayrBleSdk implements BleDeviceEventCallback {
     private final BleDevicesScanner scanner;
     private final BleDeviceManager discoveredDevices = new BleDeviceManager();
     private Subscriber<? super List<BleDevice>> mDevicesSubscriber;
+    private Collection<BleDeviceType> mDevicesInterestedIn = Collections.emptySet();
 
     RelayrBleSdkImpl() {
         BluetoothAdapter bluetoothAdapter = BleUtils.getBluetoothAdapter(RelayrApp.get());
@@ -33,7 +36,8 @@ class RelayrBleSdkImpl extends RelayrBleSdk implements BleDeviceEventCallback {
 
             @Override
             public void onLeScan(BluetoothDevice device, final int rssi, byte[] scanRecord) {
-                if (hasAlreadyBeenDiscovered(device)) return;
+                if (!mDevicesInterestedIn.contains(BleDeviceType.getDeviceType(device.getName())) ||
+                        hasAlreadyBeenDiscovered(device)) return;
                 BleDevice relayrDevice = new BleDevice(device, RelayrBleSdkImpl.this);
                 relayrDevice.connect();
                 // TODO: ADD DISCOVERED BUT NOT CONFIGURED DEVICES INSTEAD OF NULL VALUES
@@ -44,10 +48,11 @@ class RelayrBleSdkImpl extends RelayrBleSdk implements BleDeviceEventCallback {
         scanner.setScanPeriod(SCAN_PERIOD_IN_MILLISECONDS);
     }
 
-    public Observable<List<BleDevice>> scan() {
+    public Observable<List<BleDevice>> scan(final Collection<BleDeviceType> deviceTypes) {
         return Observable.create(new Observable.OnSubscribe<List<BleDevice>>() {
             @Override
             public void call(Subscriber<? super List<BleDevice>> subscriber) {
+                if (deviceTypes != null) mDevicesInterestedIn = deviceTypes;
                 mDevicesSubscriber = subscriber;
                 discoveredDevices.refreshDiscoveredDevices();
                 if (!scanner.isScanning()) {
