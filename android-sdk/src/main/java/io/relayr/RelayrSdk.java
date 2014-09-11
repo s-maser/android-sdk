@@ -72,7 +72,7 @@ public class RelayrSdk {
 
     /** @return the handler of the WebSocket client
     * Used as an access point to the class {@link WebSocketClient} */
-    public static WebSocketClient getWebSocketClient() {
+    public static SocketClient getWebSocketClient() {
         return mWebSocketClient;
     }
 
