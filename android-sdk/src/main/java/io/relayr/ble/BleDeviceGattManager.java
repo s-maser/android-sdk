@@ -83,6 +83,7 @@ class BleDeviceGattManager extends BluetoothGattCallback {
                 mDevice.setStatus(BleDeviceStatus.CONNECTED);
                 mBleDeviceEventCallback.onDeviceDiscovered(mDevice);
             } else if (mDevice.getMode().equals(BleDeviceMode.DIRECT_CONNECTION)) {
+                mBleDeviceEventCallback.onDeviceDiscovered(mDevice);
                 setupDeviceForDirectConnectionMode(service, gatt);
     		} else if (mDevice.getMode().equals(BleDeviceMode.CONNECTED_TO_MASTER_MODULE)) {
                 mDevice.setStatus(BleDeviceStatus.DISCONNECTED);
