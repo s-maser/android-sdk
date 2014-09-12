@@ -1,6 +1,5 @@
 package io.relayr.ble;
 
-
 public enum BleDeviceType {
 	WunderbarHTU,
 	WunderbarGYRO,
@@ -11,6 +10,7 @@ public enum BleDeviceType {
 	WunderbarApp,
 	Unknown;
 
+    /** Convert the sensor name advertised in ble that into a device type */
 	public static BleDeviceType getDeviceType(String deviceName) {
 		if (deviceName != null) {
 			if (deviceName.equals("WunderbarHTU")) {
