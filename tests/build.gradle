@@ -1,0 +1,84 @@
+apply plugin: 'com.android.library'
+apply plugin: 'robolectric'
+apply plugin: 'jacoco'
+
+jacoco {
+    toolVersion = "0.7.0.201403182114"
+}
+
+android {
+    compileSdkVersion 20
+    buildToolsVersion "20.0.0"
+
+    defaultConfig {
+        minSdkVersion 15
+        targetSdkVersion 18
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        debug {
+            runProguard false
+            testCoverageEnabled = true
+        }
+        release {
+            runProguard true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            testCoverageEnabled = false
+        }
+    }
+    lintOptions {
+        abortOnError false
+        disable 'InvalidPackage'
+    }
+}
+
+dependencies {
+    compile project(':android-sdk')
+
+    androidTestCompile 'junit:junit:4.11'
+    androidTestCompile 'com.squareup:fest-android:1.0.7'
+    androidTestCompile 'org.mockito:mockito-all:1.9.5'
+    androidTestCompile 'org.robolectric:robolectric:2.3'
+
+    androidTestCompile project(':android-sdk').android.libraryVariants.toList().first().javaCompile.classpath
+    androidTestCompile project(':android-sdk').android.libraryVariants.toList().first().javaCompile.outputs.files
+    androidTestCompile files(project(':android-sdk').plugins.findPlugin("com.android.library").getBootClasspath())
+}
+
+robolectric {
+    // configure the set of classes for JUnit tests
+    include '**/*Test.class'
+
+    // configure max heap size of the test JVM
+    maxHeapSize = "2048m"
+}
+
+jacoco {
+    toolVersion = "0.7.1.201405082137"
+}
+
+task robolectricReports(type: JacocoReport, dependsOn: "testDebug") {
+    group = "Reporting"
+
+    description = "Generate Jacoco coverage reports"
+
+    classDirectories = fileTree(
+            dir: '../android-sdk/build/intermediates/classes/debug',
+            excludes: ['**/R.class',
+                       '**/*$*.*',
+                       '**/BuildConfig.*',
+                       '**/Manifest*.*']
+    )
+
+    def coverageSourceDirs = ['../android-sdk/src/main/java']
+    additionalSourceDirs = files(coverageSourceDirs)
+    sourceDirectories = files(coverageSourceDirs)
+    executionData = files('../tests/build/jacoco/testDebug.exec')
+
+    reports {
+        xml.enabled = true
+        html.enabled = true
+    }
+
+}
