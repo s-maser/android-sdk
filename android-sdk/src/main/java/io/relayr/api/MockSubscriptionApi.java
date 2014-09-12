@@ -6,6 +6,7 @@ import javax.inject.Inject;
 
 import io.relayr.model.WebSocketConfig;
 import rx.Observable;
+import rx.Subscriber;
 
 import static io.relayr.api.MockBackend.APPS_DEVICES_START;
 
@@ -26,7 +27,13 @@ public class MockSubscriptionApi implements SubscriptionApi {
 
     @Override
     public Observable<Void> unSubscribe(String appId, String deviceId) {
-        return Observable.from();
+        return Observable.create(new Observable.OnSubscribe<Void>() {
+            @Override
+            public void call(Subscriber<? super Void> subscriber) {
+                subscriber.onNext(null);
+                subscriber.onCompleted();
+            }
+        });
     }
 
 }
