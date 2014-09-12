@@ -11,6 +11,7 @@ import io.relayr.model.TransmitterDevice;
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
 
 public class BleSocketClient implements SocketClient {
@@ -29,7 +30,7 @@ public class BleSocketClient implements SocketClient {
                             public void call(Subscriber<? super BleDevice> subscriber) {
                                 // TODO: read BleDevice sensorID characteristic,
                                 // TODO: compare it with the TransmitterDevice and filter them out
-                                for (BleDevice bleDevice: bleDevices)
+                                for (BleDevice bleDevice : bleDevices)
                                     if (bleDevice.getMode().equals(BleDeviceMode.DIRECT_CONNECTION))
                                         subscriber.onNext(bleDevice);
                             }
@@ -42,6 +43,7 @@ public class BleSocketClient implements SocketClient {
                         return bleDevice.subscribeToDeviceValueChanges();
                     }
                 })
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<BleDeviceValue>() {
                     @Override
                     public void onCompleted() {
