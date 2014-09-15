@@ -1,42 +1,16 @@
-#BETA Relayr-Android SDK - Developer's documentation
+# The relayr Android SDK 
 
-relayr is all about bringing things to life, allowing app developers access to the physical world around them.
+Hi and welcome to the relayr Android SDK, we are genuinely excited to have you on board!
 
-The Android SDK enables app developers to easily interact with the relayr platform.
+The Android SDK provides you with programmatic access points to the relayr API, it allows you to use the relayr [Cloud Platform](https://developer.relayr.io/documents/Welcome/Platform) in your application and in the future - handle Bluetooth LE connection to your sensor modules. 
 
+We realize that you probably want to skip introductions and get down to building your app so here are the first steps to [get you started](https://developer.relayr.io/documents/Android/GettingStarted).
 
-##Setup
+## SDK Reference 
 
-- Grab the latest version from maven central:
-    ```
-    compile 'io.relayr:android-sdk:0.0.+'
-    ```
-- [Create a relayr app](https://developer.relayr.io/dashboard/apps/myApps) and [save the relayrsdk.properties file inside src/main/assets](https://github.com/relayr/android-demo-apps/commit/06b85d467fdf6300367d6d997a0f89fc3b9a184c) 
-- Subclass an Android Application inside your app and [initialize the Sdk](https://github.com/relayr/android-demo-apps/commit/27bef2e3c588c0e2351294a7fdc6418240af4bd4)
-    ```
-    public class MyApplication extends Application {
-        @Override
-        public void onCreate() {
-            super.onCreate();
-            RelayrSdk.initSdk(this);
-        }
-    }
-    ```
-- Reference your Application and add internet permission in the Android Manifest
-    ```
-    <uses-permission android:name="android.permission.INTERNET" />
-    <application
-        android:allowBackup="true"
-        android:icon="@drawable/ic_launcher"
-        android:label="@string/app_name"
-        android:theme="@style/AppTheme"
-        android:name=".MyApplication">
-    ```
-- [Log the user into the app](https://github.com/relayr/android-demo-apps/commit/19bf3578de9fd2c20e2ebab50c5a280500d411c9) and start using the sdk!
-    ```
-    RelayrSdk.logIn(this, this);
-    ```
-    
-##Examples
+Click <a href="https://developer.relayr.io/rendered-doc/javadoc/index.html" target="_blank">here</a> for a detailed list of the relayr SDK methods
 
-Take a look at our [Android Demos](https://github.com/relayr/android-demo-apps) to get started.
+## Sample Project
+
+We've built an easy to implement, quick and simple thermometer application to get you introduced to the relayr Android world. Have a look <a href="https://github.com/relayr/android-demo-apps/tree/master/thermometer">here</a> to get inspired	
+
