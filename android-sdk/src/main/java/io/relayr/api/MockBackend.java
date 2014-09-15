@@ -8,15 +8,11 @@ import com.google.gson.reflect.TypeToken;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.Type;
 import java.util.List;
 
 import javax.inject.Inject;
 
-import io.relayr.model.Device;
 import io.relayr.model.Reading;
-import io.relayr.model.Transmitter;
-import io.relayr.model.WunderBar;
 import rx.Observable;
 import rx.Subscriber;
 
@@ -67,34 +63,13 @@ public class MockBackend {
         return new Gson().fromJson(load(resource), typeToken.getType());
     }
 
-    public List<Device> getRelayrDevices() throws Exception {
-        return load(new TypeToken<List<Device>>(){}, USER_DEVICES);
-    }
-
     public Reading[] getWebSocketReadings() {
-        String content = "";
         try {
-            content = load(WEB_SOCKET_READINGS);
+            List<Reading> readings = load(new TypeToken<List<Reading>>() { }, WEB_SOCKET_READINGS);
+            return readings.toArray(new Reading[readings.size()]);
         } catch (Exception e) {
-            e.printStackTrace();
+            return null;
         }
-
-        Type type = new TypeToken<List<Reading>>(){}.getType();
-        List<Reading> readings = new Gson().fromJson(content, type);
-        return readings.toArray(new Reading[readings.size()]);
-    }
-
-    public WunderBar createWunderBar() throws Exception {
-        return load(new TypeToken<WunderBar>() {}, USERS_CREATE_WUNDERBAR);
-    }
-
-    public List<Transmitter> getTransmitters() throws Exception {
-        return load(new TypeToken<List<Transmitter>>() {}, USERS_TRANSMITTERS);
-    }
-
-    public List<Transmitter> getTransmitterDevices() throws Exception {
-        return load(new TypeToken<List<Transmitter>>() {}, TRANSMITTER_DEVICES);
-
     }
 
     public <T> Observable<T> createObservable(final TypeToken<T> typeToken, final String asset) {
