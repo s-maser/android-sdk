@@ -38,10 +38,9 @@ class RelayrBleSdkImpl extends RelayrBleSdk implements BleDeviceEventCallback {
             public void onLeScan(BluetoothDevice device, final int rssi, byte[] scanRecord) {
                 if (!mDevicesInterestedIn.contains(BleDeviceType.getDeviceType(device.getName())) ||
                         hasAlreadyBeenDiscovered(device)) return;
-                BleDevice relayrDevice = new BleDevice(device, RelayrBleSdkImpl.this);
+                BleDevice relayrDevice = new BleDevice(device, RelayrBleSdkImpl.this, device.getAddress());
                 relayrDevice.connect();
-                // TODO: ADD DISCOVERED BUT NOT CONFIGURED DEVICES INSTEAD OF NULL VALUES
-                discoveredDevices.addNewDevice(relayrDevice.getAddress(), null);
+                discoveredDevices.addNewDiscoveredDevice(relayrDevice);
                 Log.d(TAG, "Configuring New device: "+ device.getName() + " [" + device.getAddress() + "]");
             }
         });
@@ -54,7 +53,7 @@ class RelayrBleSdkImpl extends RelayrBleSdk implements BleDeviceEventCallback {
             public void call(Subscriber<? super List<BleDevice>> subscriber) {
                 if (deviceTypes != null) mDevicesInterestedIn = deviceTypes;
                 mDevicesSubscriber = subscriber;
-                discoveredDevices.refreshDiscoveredDevices();
+                discoveredDevices.refreshConnectedDevices();
                 if (!scanner.isScanning()) {
                     scanner.start();
                     Log.d(TAG, "New scanner start");
@@ -65,7 +64,7 @@ class RelayrBleSdkImpl extends RelayrBleSdk implements BleDeviceEventCallback {
 
     public void stop() {
         scanner.stop();
-        discoveredDevices.clearDiscoveredDevices();
+        discoveredDevices.clear();
     }
 
     public boolean isScanning() {
@@ -74,22 +73,17 @@ class RelayrBleSdkImpl extends RelayrBleSdk implements BleDeviceEventCallback {
 
     @Override
     public void onModeSwitch(BleDeviceMode mode, BleDevice device) {
-        if (discoveredDevices.isFullyConfigured(device.getAddress())) {
-            mDevicesSubscriber.onNext(discoveredDevices.getAllConfiguredDevices());
+        if (discoveredDevices.isDiscoveredDeviceConnected(device)) {
+            mDevicesSubscriber.onNext(discoveredDevices.getConnectedDevices());
         }
     }
 
     @Override
-    public void onDeviceDiscovered(BleDevice device) {
-        if (!discoveredDevices.isFullyConfigured(device.getAddress())) {
-            discoveredDevices.addNewDevice(device.getAddress(), device);
-            Log.d(TAG, "Device " + device.getName() + " added to discovered devices");
-            mDevicesSubscriber.onNext(discoveredDevices.getAllConfiguredDevices());
+    public void onConnectedDeviceDiscovered(BleDevice device) {
+        if (!discoveredDevices.isDiscoveredDeviceConnected(device)) {
+            discoveredDevices.addNewConnectedDevice(device);
+            Log.d(TAG, "Device " + device.getName() + " added to connected devices");
+            mDevicesSubscriber.onNext(discoveredDevices.getConnectedDevices());
         }
-    }
-
-    @Override
-    public void onDeviceConnectedToMasterModuleDiscovered(BleDevice device) {
-        discoveredDevices.removeDevice(device);
     }
 }

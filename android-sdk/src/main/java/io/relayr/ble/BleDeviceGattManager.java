@@ -48,7 +48,7 @@ class BleDeviceGattManager extends BluetoothGattCallback {
     			} else {
     				mDevice.setStatus(BleDeviceStatus.DISCONNECTED);
     				Log.d(TAG, "Device " + mDevice.getName() + " configured");
-                    mBleDeviceEventCallback.onDeviceDiscovered(mDevice);
+                    mBleDeviceEventCallback.onConnectedDeviceDiscovered(mDevice);
     			}
     			Log.d(TAG, "Device disconnected");
     		} else {
@@ -56,8 +56,7 @@ class BleDeviceGattManager extends BluetoothGattCallback {
     				if (mDevice.getMode() == BleDeviceMode.CONNECTED_TO_MASTER_MODULE) {
     					Log.d(TAG, "Device " + mDevice.getName() + ": unhandled state change without configuration: " + gattStatusToString(status));
     					Log.d(TAG, "Device " + mDevice.getName() + ": removed because error in configuration process");
-                        mBleDeviceEventCallback.onDeviceConnectedToMasterModuleDiscovered(mDevice);
-    					gatt.close();
+                        mDevice.disconnect();
     					mDevice.getConnectionCallback().onError(mDevice, gattStatusToString(status));
     				} else {
     					Log.d(TAG, "Device " + mDevice.getName() + ": unhandled state change configured: " + gattStatusToString(status));
@@ -81,13 +80,11 @@ class BleDeviceGattManager extends BluetoothGattCallback {
             if (mDevice.getMode().equals(BleDeviceMode.ON_BOARDING)) {
                 setupDeviceForOnBoardingConnectionMode(service, gatt);
                 mDevice.setStatus(BleDeviceStatus.CONNECTED);
-                mBleDeviceEventCallback.onDeviceDiscovered(mDevice);
+                mBleDeviceEventCallback.onConnectedDeviceDiscovered(mDevice);
             } else if (mDevice.getMode().equals(BleDeviceMode.DIRECT_CONNECTION)) {
                 setupDeviceForDirectConnectionMode(service, gatt);
     		} else if (mDevice.getMode().equals(BleDeviceMode.CONNECTED_TO_MASTER_MODULE)) {
-                mDevice.setStatus(BleDeviceStatus.DISCONNECTED);
-                mDevice.disconnect();
-                mBleDeviceEventCallback.onDeviceConnectedToMasterModuleDiscovered(mDevice);
+                mDevice.setBluetoothGattService(service);
             }
             return;
     	}

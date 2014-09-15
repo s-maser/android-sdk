@@ -50,13 +50,15 @@ public class BleDevice {
             };
 
 	private BleDeviceConnectionCallback mConnectionCallback = mNullableConnectionCallback;
+    private final String address;
 
-	BleDevice(BluetoothDevice bluetoothDevice, BleDeviceEventCallback modeSwitchCallback) {
+    BleDevice(BluetoothDevice bluetoothDevice, BleDeviceEventCallback modeSwitchCallback, String address) {
         mModeSwitchCallback = modeSwitchCallback;
 		this.bluetoothDevice = bluetoothDevice;
 		this.status = BleDeviceStatus.DISCONNECTED;
 		this.mode = BleDeviceMode.CONNECTED_TO_MASTER_MODULE;
 		this.type = BleDeviceType.getDeviceType(bluetoothDevice.getName());
+        this.address = address;
 	}
 
     public void setBluetoothGattService(BluetoothGattService service) {
@@ -72,7 +74,7 @@ public class BleDevice {
 	}
 
 	public String getAddress() {
-		return bluetoothDevice.getAddress();
+		return address;
 	}
 
 	public BleDeviceStatus getStatus() {
