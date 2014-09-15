@@ -151,21 +151,7 @@ public class BleDevice {
 
 	@Override
 	public String toString() {
-		return getName() + " - [" + getAddress() + "] MODE: " + getModeString();
-	}
-
-	private String getModeString() {
-		switch(this.mode) {
-		case ON_BOARDING: {
-			return "MODE_ON_BOARDING";
-		}
-		case DIRECT_CONNECTION: {
-			return "MODE_DIRECT_CONNECTION";
-		}
-		default: {
-			return "CONNECTED_TO_MASTER_MODULE";
-		}
-		}
+		return getName() + " - [" + getAddress() + "] MODE: " + mode.toString();
 	}
 
 	public void updateConfiguration(final byte[] newConfiguration) {

@@ -20,4 +20,19 @@ public enum BleDeviceMode {
                 serviceUuid.equals(SERVICE_ON_BOARDING) ||
                 serviceUuid.equals(SERVICE_CONNECTED_TO_MASTER_MODULE);
     }
+
+    @Override
+    public String toString() {
+        switch(this) {
+            case ON_BOARDING: {
+                return "MODE_ON_BOARDING";
+            }
+            case DIRECT_CONNECTION: {
+                return "MODE_DIRECT_CONNECTION";
+            }
+            default: {
+                return "CONNECTED_TO_MASTER_MODULE";
+            }
+        }
+    }
 }
