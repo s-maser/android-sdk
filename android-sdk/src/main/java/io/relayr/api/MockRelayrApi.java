@@ -65,7 +65,7 @@ public class MockRelayrApi implements RelayrApi {
 
     @Override
     public Observable<Transmitter> updateTransmitter(Transmitter transmitter, String id) {
-        return Observable.from(transmitter);
+        return Observable.just(transmitter);
     }
 
     @Override
