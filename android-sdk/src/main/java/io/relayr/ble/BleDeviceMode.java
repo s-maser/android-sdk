@@ -3,7 +3,8 @@ package io.relayr.ble;
 public enum BleDeviceMode {
     ON_BOARDING,
     DIRECT_CONNECTION,
-    CONNECTED_TO_MASTER_MODULE;
+    CONNECTED_TO_MASTER_MODULE,
+    UNKNOWN;
 
     private static final String SERVICE_CONNECTED_TO_MASTER_MODULE = "2000";
     private static final String SERVICE_ON_BOARDING = "2001";
@@ -12,13 +13,12 @@ public enum BleDeviceMode {
     public static BleDeviceMode fromUuid(String serviceUuid) {
         return serviceUuid.equals(SERVICE_DIRECT_CONNECTION) ? DIRECT_CONNECTION:
                 serviceUuid.equals(SERVICE_ON_BOARDING) ? ON_BOARDING:
-                        CONNECTED_TO_MASTER_MODULE;
+                serviceUuid.equals(SERVICE_CONNECTED_TO_MASTER_MODULE) ? CONNECTED_TO_MASTER_MODULE:
+                        UNKNOWN;
     }
 
     public static boolean containsService(String serviceUuid) {
-        return serviceUuid.equals(SERVICE_DIRECT_CONNECTION) ||
-                serviceUuid.equals(SERVICE_ON_BOARDING) ||
-                serviceUuid.equals(SERVICE_CONNECTED_TO_MASTER_MODULE);
+        return !fromUuid(serviceUuid).equals(UNKNOWN);
     }
 
     @Override
