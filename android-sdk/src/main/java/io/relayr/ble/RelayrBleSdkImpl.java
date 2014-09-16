@@ -17,13 +17,13 @@ import rx.Subscriber;
 import static io.relayr.ble.BleDeviceMode.UNKNOWN;
 
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
-class RelayrBleSdkImpl extends RelayrBleSdk implements BleDeviceEventCallback {
+class RelayrBleSdkImpl extends RelayrBleSdk {
 
     private static final String TAG = RelayrBleSdkImpl.class.toString();
     private static final int SCAN_PERIOD_IN_MILLISECONDS = 7000;
 
     private final BleDevicesScanner scanner;
-    private final BleDeviceManager discoveredDevices = new BleDeviceManager();
+    private final BleDeviceManager deviceManager = new BleDeviceManager();
     private Subscriber<? super List<BleDevice>> mDevicesSubscriber;
     private Collection<BleDeviceType> mDevicesInterestedIn = Collections.emptySet();
 
@@ -32,8 +32,8 @@ class RelayrBleSdkImpl extends RelayrBleSdk implements BleDeviceEventCallback {
         scanner = new BleDevicesScanner(bluetoothAdapter, new BluetoothAdapter.LeScanCallback() {
 
             private boolean hasAlreadyBeenDiscovered(BluetoothDevice device) {
-                return discoveredDevices.isDeviceDiscovered(device.getAddress()) ||
-                        BleDeviceType.getDeviceType(device.getName()) == BleDeviceType.Unknown;
+                return deviceManager.isDeviceDiscovered(device.getAddress()) ||
+                        !BleDeviceType.isKnownDevice(device.getAddress());
             }
 
             @Override
@@ -43,9 +43,8 @@ class RelayrBleSdkImpl extends RelayrBleSdk implements BleDeviceEventCallback {
                         hasAlreadyBeenDiscovered(device) || mode.equals(UNKNOWN)) {
                     return;
                 }
-                BleDevice relayrDevice = new BleDevice(device, RelayrBleSdkImpl.this, device.getAddress(), mode);
-                relayrDevice.connect();
-                discoveredDevices.addNewDiscoveredDevice(relayrDevice);
+                deviceManager.addDiscoveredDevice(new BleDevice(device, device.getAddress(), mode));
+                mDevicesSubscriber.onNext(deviceManager.getDiscoveredDevices());
                 Log.d(TAG, "Configuring New device: "+ device.getName() + " [" + device.getAddress() + "]");
             }
         });
@@ -58,7 +57,7 @@ class RelayrBleSdkImpl extends RelayrBleSdk implements BleDeviceEventCallback {
             public void call(Subscriber<? super List<BleDevice>> subscriber) {
                 if (deviceTypes != null) mDevicesInterestedIn = deviceTypes;
                 mDevicesSubscriber = subscriber;
-                discoveredDevices.refreshConnectedDevices();
+                deviceManager.refreshConnectedDevices();
                 if (!scanner.isScanning()) {
                     scanner.start();
                     Log.d(TAG, "New scanner start");
@@ -69,26 +68,10 @@ class RelayrBleSdkImpl extends RelayrBleSdk implements BleDeviceEventCallback {
 
     public void stop() {
         scanner.stop();
-        discoveredDevices.clear();
+        deviceManager.clear();
     }
 
     public boolean isScanning() {
         return scanner.isScanning();
-    }
-
-    @Override
-    public void onModeSwitch(BleDeviceMode mode, BleDevice device) {
-        if (discoveredDevices.isDiscoveredDeviceConnected(device)) {
-            mDevicesSubscriber.onNext(discoveredDevices.getConnectedDevices());
-        }
-    }
-
-    @Override
-    public void onConnectedDeviceDiscovered(BleDevice device) {
-        if (!discoveredDevices.isDiscoveredDeviceConnected(device)) {
-            discoveredDevices.addNewConnectedDevice(device);
-            Log.d(TAG, "Device " + device.getName() + " added to connected devices");
-            mDevicesSubscriber.onNext(discoveredDevices.getConnectedDevices());
-        }
     }
 }

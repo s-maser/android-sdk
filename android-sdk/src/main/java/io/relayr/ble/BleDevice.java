@@ -23,11 +23,10 @@ public class BleDevice {
 	private BluetoothGattService bluetoothGattService = null;
 	private BluetoothGatt gatt;
 	private BleDeviceStatus status;
-	private BleDeviceMode mode;
 	private Subscriber<? super BleDeviceValue> deviceValueSubscriber;
+	private final BleDeviceMode mode;
 	private final BluetoothDevice bluetoothDevice;
 	private final BleDeviceType type;
-    private final BleDeviceEventCallback mModeSwitchCallback;
 
     private static final BleDeviceConnectionCallback mNullableConnectionCallback =
             new BleDeviceConnectionCallback() {
@@ -52,8 +51,7 @@ public class BleDevice {
 	private BleDeviceConnectionCallback mConnectionCallback = mNullableConnectionCallback;
     private final String address;
 
-    BleDevice(BluetoothDevice bluetoothDevice, BleDeviceEventCallback modeSwitchCallback, String address, BleDeviceMode mode) {
-        mModeSwitchCallback = modeSwitchCallback;
+    BleDevice(BluetoothDevice bluetoothDevice, String address, BleDeviceMode mode) {
 		this.bluetoothDevice = bluetoothDevice;
 		this.status = BleDeviceStatus.DISCONNECTED;
 		this.mode = mode;
@@ -89,11 +87,6 @@ public class BleDevice {
 		return mode;
 	}
 
-	public void setMode(BleDeviceMode mode) {
-		this.mode = mode;
-        mModeSwitchCallback.onModeSwitch(mode, this);
-	}
-
 	public void setValue(byte[] value) {
 		BleDeviceValue model = new BleDeviceValue(value, BleDataParser.getFormattedValue(type, value));
         if (deviceValueSubscriber != null) deviceValueSubscriber.onNext(model);
@@ -111,7 +104,7 @@ public class BleDevice {
 	public void connect(BleDeviceConnectionCallback callback) {
         mConnectionCallback = callback == null ? mNullableConnectionCallback: callback;
         if (status != BleDeviceStatus.CONNECTED) {
-            gatt = bluetoothDevice.connectGatt(RelayrApp.get(), true, new BleDeviceGattManager(this, mModeSwitchCallback));
+            gatt = bluetoothDevice.connectGatt(RelayrApp.get(), true, new BleDeviceGattManager(this));
             refreshDeviceCache();
             if (status != BleDeviceStatus.CONFIGURING) {
                 setStatus(BleDeviceStatus.CONNECTING);

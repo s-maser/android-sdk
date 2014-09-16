@@ -37,4 +37,8 @@ public enum BleDeviceType {
 		}
 		return Unknown;
 	}
+
+    public static boolean isKnownDevice(String deviceName) {
+        return !getDeviceType(deviceName).equals(Unknown);
+    }
 }
