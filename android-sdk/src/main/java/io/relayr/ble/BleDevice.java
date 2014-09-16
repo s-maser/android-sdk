@@ -52,11 +52,11 @@ public class BleDevice {
 	private BleDeviceConnectionCallback mConnectionCallback = mNullableConnectionCallback;
     private final String address;
 
-    BleDevice(BluetoothDevice bluetoothDevice, BleDeviceEventCallback modeSwitchCallback, String address) {
+    BleDevice(BluetoothDevice bluetoothDevice, BleDeviceEventCallback modeSwitchCallback, String address, BleDeviceMode mode) {
         mModeSwitchCallback = modeSwitchCallback;
 		this.bluetoothDevice = bluetoothDevice;
 		this.status = BleDeviceStatus.DISCONNECTED;
-		this.mode = BleDeviceMode.CONNECTED_TO_MASTER_MODULE;
+		this.mode = mode;
 		this.type = BleDeviceType.getDeviceType(bluetoothDevice.getName());
         this.address = address;
 	}

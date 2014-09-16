@@ -14,6 +14,8 @@ import io.relayr.RelayrApp;
 import rx.Observable;
 import rx.Subscriber;
 
+import static io.relayr.ble.BleDeviceMode.UNKNOWN;
+
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 class RelayrBleSdkImpl extends RelayrBleSdk implements BleDeviceEventCallback {
 
@@ -36,9 +38,12 @@ class RelayrBleSdkImpl extends RelayrBleSdk implements BleDeviceEventCallback {
 
             @Override
             public void onLeScan(BluetoothDevice device, final int rssi, byte[] scanRecord) {
+                BleDeviceMode mode = BleDeviceMode.fromParcelUuidArray(device.getUuids());
                 if (!mDevicesInterestedIn.contains(BleDeviceType.getDeviceType(device.getName())) ||
-                        hasAlreadyBeenDiscovered(device)) return;
-                BleDevice relayrDevice = new BleDevice(device, RelayrBleSdkImpl.this, device.getAddress());
+                        hasAlreadyBeenDiscovered(device) || mode.equals(UNKNOWN)) {
+                    return;
+                }
+                BleDevice relayrDevice = new BleDevice(device, RelayrBleSdkImpl.this, device.getAddress(), mode);
                 relayrDevice.connect();
                 discoveredDevices.addNewDiscoveredDevice(relayrDevice);
                 Log.d(TAG, "Configuring New device: "+ device.getName() + " [" + device.getAddress() + "]");

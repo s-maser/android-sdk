@@ -1,5 +1,7 @@
 package io.relayr.ble;
 
+import android.os.ParcelUuid;
+
 public enum BleDeviceMode {
     ON_BOARDING,
     DIRECT_CONNECTION,
@@ -19,6 +21,15 @@ public enum BleDeviceMode {
 
     public static boolean containsService(String serviceUuid) {
         return !fromUuid(serviceUuid).equals(UNKNOWN);
+    }
+
+    public static BleDeviceMode fromParcelUuidArray(ParcelUuid[] uuids) {
+        BleDeviceMode mode;
+        for (ParcelUuid uuid: uuids) {
+            mode = BleDeviceMode.fromUuid(BleUtils.getShortUUID(uuid.toString()));
+            if (!mode.equals(UNKNOWN)) return mode;
+        }
+        return UNKNOWN;
     }
 
     @Override
