@@ -25,14 +25,14 @@ public class BleDeviceManagerTest {
 
     @Test public void addDiscoveredDeviceTest() {
         BleDeviceManager deviceManager = new BleDeviceManager();
-        BleDevice device = new BleDevice(Mockito.mock(BluetoothDevice.class), "bla", ON_BOARDING);
+        BleDevice device = new BleDevice(Mockito.mock(BluetoothDevice.class), "", "", ON_BOARDING);
         deviceManager.addDiscoveredDevice(device);
         Assert.assertEquals(1, deviceManager.getDiscoveredDevices().size());
     }
 
     @Test public void clearTest() {
         BleDeviceManager deviceManager = new BleDeviceManager();
-        BleDevice device = new BleDevice(Mockito.mock(BluetoothDevice.class),  "bla", ON_BOARDING);
+        BleDevice device = new BleDevice(Mockito.mock(BluetoothDevice.class), "", "", ON_BOARDING);
         deviceManager.addDiscoveredDevice(device);
         Assert.assertEquals(1, deviceManager.getDiscoveredDevices().size());
         deviceManager.clear();
@@ -41,14 +41,14 @@ public class BleDeviceManagerTest {
 
     @Test public void isDeviceDiscoveredTest() {
         BleDeviceManager deviceManager = new BleDeviceManager();
-        BleDevice device = new BleDevice(Mockito.mock(BluetoothDevice.class),  "bla", ON_BOARDING);
+        BleDevice device = new BleDevice(Mockito.mock(BluetoothDevice.class), "", "", ON_BOARDING);
         deviceManager.addDiscoveredDevice(device);
         Assert.assertTrue(deviceManager.isDeviceDiscovered(device));
     }
 
     @Test public void removeDeviceTest() {
         BleDeviceManager deviceManager = new BleDeviceManager();
-        BleDevice device = new BleDevice(Mockito.mock(BluetoothDevice.class),  "bla", ON_BOARDING);
+        BleDevice device = new BleDevice(Mockito.mock(BluetoothDevice.class), "", "",  ON_BOARDING);
         deviceManager.addDiscoveredDevice(device);
         Assert.assertEquals(1, deviceManager.getDiscoveredDevices().size());
         deviceManager.removeDevice(device);

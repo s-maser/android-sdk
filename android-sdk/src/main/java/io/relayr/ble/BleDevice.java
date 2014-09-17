@@ -12,6 +12,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 import io.relayr.RelayrApp;
+import io.relayr.ble.parser.BleDataParser;
 import rx.Observable;
 import rx.Subscriber;
 
@@ -23,10 +24,12 @@ public class BleDevice {
 	private BluetoothGattService bluetoothGattService = null;
 	private BluetoothGatt gatt;
 	private BleDeviceStatus status;
-	private Subscriber<? super BleDeviceValue> deviceValueSubscriber;
+	private Subscriber<? super String> deviceValueSubscriber;
 	private final BleDeviceMode mode;
 	private final BluetoothDevice bluetoothDevice;
 	private final BleDeviceType type;
+    private final String address;
+    private final String name;
 
     private static final BleDeviceConnectionCallback mNullableConnectionCallback =
             new BleDeviceConnectionCallback() {
@@ -49,14 +52,14 @@ public class BleDevice {
             };
 
 	private BleDeviceConnectionCallback mConnectionCallback = mNullableConnectionCallback;
-    private final String address;
 
-    BleDevice(BluetoothDevice bluetoothDevice, String address, BleDeviceMode mode) {
+    BleDevice(BluetoothDevice bluetoothDevice, String address, String name, BleDeviceMode mode) {
 		this.bluetoothDevice = bluetoothDevice;
 		this.status = BleDeviceStatus.DISCONNECTED;
 		this.mode = mode;
 		this.type = BleDeviceType.getDeviceType(bluetoothDevice.getName());
         this.address = address;
+        this.name = name;
 	}
 
     public void setBluetoothGattService(BluetoothGattService service) {
@@ -68,7 +71,7 @@ public class BleDevice {
     }
 
     public String getName() {
-		return bluetoothDevice.getName();
+		return name;
 	}
 
 	public String getAddress() {
@@ -88,8 +91,8 @@ public class BleDevice {
 	}
 
 	public void setValue(byte[] value) {
-		BleDeviceValue model = new BleDeviceValue(value, BleDataParser.getFormattedValue(type, value));
-        if (deviceValueSubscriber != null) deviceValueSubscriber.onNext(model);
+        if (deviceValueSubscriber != null)
+            deviceValueSubscriber.onNext(BleDataParser.getFormattedValue(type, value));
 	}
 
 	public BleDeviceType getType() {
@@ -207,10 +210,10 @@ public class BleDevice {
 	    return false;
 	}
 
-	public Observable<BleDeviceValue> subscribeToDeviceValueChanges() {
-        return Observable.create(new Observable.OnSubscribe<BleDeviceValue>() {
+	public Observable<String> subscribeToDeviceValueChanges() {
+        return Observable.create(new Observable.OnSubscribe<String>() {
             @Override
-            public void call(Subscriber<? super BleDeviceValue> subscriber) {
+            public void call(Subscriber<? super String> subscriber) {
                 deviceValueSubscriber = subscriber;
             }
         });

@@ -1,6 +1,6 @@
 package io.relayr.ble;
 
-import android.os.ParcelUuid;
+import java.util.List;
 
 public enum BleDeviceMode {
     ON_BOARDING,
@@ -23,10 +23,11 @@ public enum BleDeviceMode {
         return !fromUuid(serviceUuid).equals(UNKNOWN);
     }
 
-    public static BleDeviceMode fromParcelUuidArray(ParcelUuid[] uuids) {
+    public static BleDeviceMode fromServiceUuids(List<String> uuids) {
+        if (uuids == null || uuids.isEmpty()) return UNKNOWN;
         BleDeviceMode mode;
-        for (ParcelUuid uuid: uuids) {
-            mode = BleDeviceMode.fromUuid(BleUtils.getShortUUID(uuid.toString()));
+        for (String uuid: uuids) {
+            mode = BleDeviceMode.fromUuid(BleUtils.getShortUUID(uuid));
             if (!mode.equals(UNKNOWN)) return mode;
         }
         return UNKNOWN;

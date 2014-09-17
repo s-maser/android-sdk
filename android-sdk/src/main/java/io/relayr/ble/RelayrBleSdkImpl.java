@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.List;
 
 import io.relayr.RelayrApp;
+import io.relayr.ble.parser.AdvertisementPacketParser;
 import rx.Observable;
 import rx.Subscriber;
 
@@ -33,17 +34,22 @@ class RelayrBleSdkImpl extends RelayrBleSdk {
 
             private boolean hasAlreadyBeenDiscovered(BluetoothDevice device) {
                 return deviceManager.isDeviceDiscovered(device.getAddress()) ||
-                        !BleDeviceType.isKnownDevice(device.getAddress());
+                        !BleDeviceType.isKnownDevice(device.getName());
+            }
+
+            private boolean isRelevant(BluetoothDevice device, BleDeviceMode mode) {
+                return (!mDevicesInterestedIn.contains(BleDeviceType.getDeviceType(device.getName())) ||
+                        hasAlreadyBeenDiscovered(device) || mode.equals(UNKNOWN));
             }
 
             @Override
             public void onLeScan(BluetoothDevice device, final int rssi, byte[] scanRecord) {
-                BleDeviceMode mode = BleDeviceMode.fromParcelUuidArray(device.getUuids());
-                if (!mDevicesInterestedIn.contains(BleDeviceType.getDeviceType(device.getName())) ||
-                        hasAlreadyBeenDiscovered(device) || mode.equals(UNKNOWN)) {
-                    return;
-                }
-                deviceManager.addDiscoveredDevice(new BleDevice(device, device.getAddress(), mode));
+                List<String> serviceUuids = AdvertisementPacketParser.decodeServicesUuid(scanRecord);
+                String deviceName = AdvertisementPacketParser.decodeDeviceName(scanRecord);
+                BleDeviceMode mode = BleDeviceMode.fromServiceUuids(serviceUuids);
+                if (!isRelevant(device, mode)) return;
+                BleDevice bleDevice = new BleDevice(device, device.getAddress(), deviceName, mode);
+                deviceManager.addDiscoveredDevice(bleDevice);
                 mDevicesSubscriber.onNext(deviceManager.getDiscoveredDevices());
                 Log.d(TAG, "Configuring New device: "+ device.getName() + " [" + device.getAddress() + "]");
             }

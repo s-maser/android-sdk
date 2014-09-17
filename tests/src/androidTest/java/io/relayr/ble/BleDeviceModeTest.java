@@ -1,20 +1,19 @@
 package io.relayr.ble;
 
-import android.os.ParcelUuid;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 
-import java.util.UUID;
+import java.util.ArrayList;
+import java.util.List;
 
 import static io.relayr.ble.BleDeviceMode.CONNECTED_TO_MASTER_MODULE;
 import static io.relayr.ble.BleDeviceMode.DIRECT_CONNECTION;
 import static io.relayr.ble.BleDeviceMode.ON_BOARDING;
 import static io.relayr.ble.BleDeviceMode.UNKNOWN;
 import static io.relayr.ble.BleDeviceMode.containsService;
-import static io.relayr.ble.BleDeviceMode.fromParcelUuidArray;
+import static io.relayr.ble.BleDeviceMode.fromServiceUuids;
 import static io.relayr.ble.BleDeviceMode.fromUuid;
 
 @RunWith(RobolectricTestRunner.class)
@@ -32,20 +31,25 @@ public class BleDeviceModeTest {
         Assert.assertEquals(DIRECT_CONNECTION, fromUuid("2002"));
     }
 
+    @Test public void fromParcelUuidArrayTest_fromNullValue_shouldReturnUnknown() {
+        Assert.assertEquals(UNKNOWN, fromServiceUuids(null));
+    }
+
     @Test public void fromParcelUuidArrayTest_fromEmptyArray_shouldReturnUnknown() {
-        Assert.assertEquals(UNKNOWN, fromParcelUuidArray(new ParcelUuid[0]));
+        Assert.assertEquals(UNKNOWN, fromServiceUuids(new ArrayList<String>()));
     }
 
     @Test public void fromParcelUuidArrayTest_fromRandomUuidArray_shouldReturnUnknown() {
-        ParcelUuid[] uuids = new ParcelUuid[] {new ParcelUuid(UUID.fromString("00002902-0000-1000-8000-00805f9b34fb"))};
-        Assert.assertEquals(UNKNOWN, fromParcelUuidArray(uuids));
+        List<String> uuids = new ArrayList<>();
+        uuids.add("00002902-0000-1000-8000-00805f9b34fb");
+        Assert.assertEquals(UNKNOWN, fromServiceUuids(uuids));
     }
 
     @Test public void fromParcelUuidArrayTest_containingOnBoardingService_shouldReturnOnBoarding() {
-        ParcelUuid uuid1 = new ParcelUuid(UUID.fromString("00002902-0000-1000-8000-00805f9b34fb"));
-        ParcelUuid uuid2 = new ParcelUuid(UUID.fromString("00002001-0000-1000-8000-00805f9b34fb"));
-        ParcelUuid[] uuids = new ParcelUuid[] {uuid1, uuid2};
-        Assert.assertEquals(ON_BOARDING, fromParcelUuidArray(uuids));
+        List<String> uuids = new ArrayList<>();
+        uuids.add("00002902-0000-1000-8000-00805f9b34fb");
+        uuids.add("00002001-0000-1000-8000-00805f9b34fb");
+        Assert.assertEquals(ON_BOARDING, fromServiceUuids(uuids));
     }
 
     @Test public void containsService_shouldReturnFalse() {

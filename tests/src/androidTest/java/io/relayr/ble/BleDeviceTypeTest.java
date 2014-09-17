@@ -47,4 +47,12 @@ public class BleDeviceTypeTest {
         Assert.assertEquals(getDeviceType("WunderbarApp"), WunderbarApp);
     }
 
+    @Test public void isKnownDevice_shouldBeTrue() {
+        Assert.assertTrue(isKnownDevice("WunderbarIR"));
+    }
+
+    @Test public void isKnownDevice_shouldBeFalse() {
+        Assert.assertFalse(isKnownDevice("random device"));
+    }
+
 }
