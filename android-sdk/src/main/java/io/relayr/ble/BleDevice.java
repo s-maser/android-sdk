@@ -107,11 +107,11 @@ public class BleDevice {
 	public void connect(BleDeviceConnectionCallback callback) {
         mConnectionCallback = callback == null ? mNullableConnectionCallback: callback;
         if (status != BleDeviceStatus.CONNECTED) {
-            gatt = bluetoothDevice.connectGatt(RelayrApp.get(), true, new BleDeviceGattManager(this));
             refreshDeviceCache();
             if (status != BleDeviceStatus.CONFIGURING) {
                 setStatus(BleDeviceStatus.CONNECTING);
             }
+            gatt = bluetoothDevice.connectGatt(RelayrApp.get(), true, new BleDeviceGattManager(this));
         } else {
             mConnectionCallback.onConnect(this);
         }
