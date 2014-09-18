@@ -2,79 +2,59 @@ package io.relayr.ble;
 
 import android.annotation.TargetApi;
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
 import android.os.Build;
 import android.util.Log;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import io.relayr.RelayrApp;
-import io.relayr.ble.parser.AdvertisementPacketParser;
 import rx.Observable;
 import rx.Subscriber;
 
-import static io.relayr.ble.BleDeviceMode.UNKNOWN;
-
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
-class RelayrBleSdkImpl extends RelayrBleSdk {
+class RelayrBleSdkImpl extends RelayrBleSdk implements BleScannerFilter.BleFilteredScanCallback {
 
     private static final String TAG = RelayrBleSdkImpl.class.toString();
     private static final int SCAN_PERIOD_IN_MILLISECONDS = 7000;
 
-    private final BleDevicesScanner scanner;
-    private final BleDeviceManager deviceManager = new BleDeviceManager();
     private Subscriber<? super List<BleDevice>> mDevicesSubscriber;
-    private Collection<BleDeviceType> mDevicesInterestedIn = Collections.emptySet();
+    private final BleDevicesScanner mBleDeviceScanner;
+    private final BleDeviceManager mDeviceManager = new BleDeviceManager();
+    private final BleScannerFilter mScannerFilter;
 
     RelayrBleSdkImpl() {
         BluetoothAdapter bluetoothAdapter = BleUtils.getBluetoothAdapter(RelayrApp.get());
-        scanner = new BleDevicesScanner(bluetoothAdapter, new BluetoothAdapter.LeScanCallback() {
-
-            private boolean isRelevant(BluetoothDevice device, BleDeviceMode mode) {
-                return !deviceManager.isDeviceDiscovered(device.getAddress()) &&
-                        BleDeviceType.isKnownDevice(device.getName()) &&
-                        mDevicesInterestedIn.contains(BleDeviceType.getDeviceType(device.getName())) &&
-                        !mode.equals(UNKNOWN);
-            }
-
-            @Override
-            public void onLeScan(BluetoothDevice device, final int rssi, byte[] scanRecord) {
-                String deviceName = AdvertisementPacketParser.decodeDeviceName(scanRecord);
-                List<String> serviceUuids = AdvertisementPacketParser.decodeServicesUuid(scanRecord);
-                BleDeviceMode mode = BleDeviceMode.fromServiceUuids(serviceUuids);
-                if (!isRelevant(device, mode)) return;
-                BleDevice bleDevice = new BleDevice(device, device.getAddress(), deviceName, mode);
-                deviceManager.addDiscoveredDevice(bleDevice);
-                mDevicesSubscriber.onNext(deviceManager.getDiscoveredDevices());
-                Log.d(TAG, "Configuring New device: "+ deviceName + " [" + device.getAddress() + "]");
-            }
-        });
-        scanner.setScanPeriod(SCAN_PERIOD_IN_MILLISECONDS);
+        mScannerFilter = new BleScannerFilter(mDeviceManager, this);
+        mBleDeviceScanner = new BleDevicesScanner(bluetoothAdapter, mScannerFilter);
+        mBleDeviceScanner.setScanPeriod(SCAN_PERIOD_IN_MILLISECONDS);
     }
 
     public Observable<List<BleDevice>> scan(final Collection<BleDeviceType> deviceTypes) {
         return Observable.create(new Observable.OnSubscribe<List<BleDevice>>() {
             @Override
             public void call(Subscriber<? super List<BleDevice>> subscriber) {
-                if (deviceTypes != null) mDevicesInterestedIn = deviceTypes;
+                mScannerFilter.setDevicesInterestedIn(deviceTypes);
                 mDevicesSubscriber = subscriber;
-                deviceManager.refreshConnectedDevices();
-                if (!scanner.isScanning()) {
-                    scanner.start();
-                    Log.d(TAG, "New scanner start");
-                }
+                mDeviceManager.refreshConnectedDevices();
+                mBleDeviceScanner.start();
             }
         });
     }
 
     public void stop() {
-        scanner.stop();
-        deviceManager.clear();
+        mBleDeviceScanner.stop();
+        mDeviceManager.clear();
     }
 
     public boolean isScanning() {
-        return scanner.isScanning();
+        return mBleDeviceScanner.isScanning();
+    }
+
+    @Override
+    public void onLeScan(BleDevice device, int rssi) {
+        mDeviceManager.addDiscoveredDevice(device);
+        mDevicesSubscriber.onNext(mDeviceManager.getDiscoveredDevices());
+        Log.d(TAG, "Configuring New device: " + device + " [" + device.getAddress() + "]");
     }
 }
