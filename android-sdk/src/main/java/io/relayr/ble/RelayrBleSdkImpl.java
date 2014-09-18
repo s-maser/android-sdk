@@ -32,26 +32,23 @@ class RelayrBleSdkImpl extends RelayrBleSdk {
         BluetoothAdapter bluetoothAdapter = BleUtils.getBluetoothAdapter(RelayrApp.get());
         scanner = new BleDevicesScanner(bluetoothAdapter, new BluetoothAdapter.LeScanCallback() {
 
-            private boolean hasAlreadyBeenDiscovered(BluetoothDevice device) {
-                return deviceManager.isDeviceDiscovered(device.getAddress()) ||
-                        !BleDeviceType.isKnownDevice(device.getName());
-            }
-
             private boolean isRelevant(BluetoothDevice device, BleDeviceMode mode) {
-                return (!mDevicesInterestedIn.contains(BleDeviceType.getDeviceType(device.getName())) ||
-                        hasAlreadyBeenDiscovered(device) || mode.equals(UNKNOWN));
+                return !deviceManager.isDeviceDiscovered(device.getAddress()) &&
+                        BleDeviceType.isKnownDevice(device.getName()) &&
+                        mDevicesInterestedIn.contains(BleDeviceType.getDeviceType(device.getName())) &&
+                        !mode.equals(UNKNOWN);
             }
 
             @Override
             public void onLeScan(BluetoothDevice device, final int rssi, byte[] scanRecord) {
-                List<String> serviceUuids = AdvertisementPacketParser.decodeServicesUuid(scanRecord);
                 String deviceName = AdvertisementPacketParser.decodeDeviceName(scanRecord);
+                List<String> serviceUuids = AdvertisementPacketParser.decodeServicesUuid(scanRecord);
                 BleDeviceMode mode = BleDeviceMode.fromServiceUuids(serviceUuids);
                 if (!isRelevant(device, mode)) return;
                 BleDevice bleDevice = new BleDevice(device, device.getAddress(), deviceName, mode);
                 deviceManager.addDiscoveredDevice(bleDevice);
                 mDevicesSubscriber.onNext(deviceManager.getDiscoveredDevices());
-                Log.d(TAG, "Configuring New device: "+ device.getName() + " [" + device.getAddress() + "]");
+                Log.d(TAG, "Configuring New device: "+ deviceName + " [" + device.getAddress() + "]");
             }
         });
         scanner.setScanPeriod(SCAN_PERIOD_IN_MILLISECONDS);
