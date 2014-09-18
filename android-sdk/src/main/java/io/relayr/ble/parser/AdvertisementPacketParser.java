@@ -46,7 +46,7 @@ public class AdvertisementPacketParser {
         String name = null;
         int fieldLength, fieldName;
         int packetLength = data.length;
-        for (int index = 0; index < packetLength; index++) {
+        for (int index = 0; index < packetLength-1; index++) {
             fieldLength = data[index];
             if (fieldLength == 0)
                 break;
