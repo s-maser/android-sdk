@@ -35,11 +35,10 @@ class BleDeviceGattManager extends BluetoothGattCallback {
         if (status != BluetoothGatt.GATT_SUCCESS) return;
     	if (newState == STATE_CONNECTED) {
     		Log.d(TAG, "Device " + mDevice.getName() + " connected");
-    		if (mDevice.getStatus() != BleDeviceStatus.CONFIGURING) {
-    			mDevice.onConnect();
-    		} else {
-    			gatt.discoverServices();
-    		}
+            if (mDevice.getStatus() != BleDeviceStatus.CONNECTED) {
+                Log.d(TAG, "Device " + mDevice.getName() + ": discoverServices");
+                gatt.discoverServices();
+            }
     	} else if (newState == STATE_DISCONNECTED) {
             if (mDevice.getStatus() != BleDeviceStatus.CONFIGURING) {
                 mDevice.onDisconnect();
@@ -81,6 +80,7 @@ class BleDeviceGattManager extends BluetoothGattCallback {
     		} else if (mDevice.getMode().equals(BleDeviceMode.CONNECTED_TO_MASTER_MODULE)) {
 
             }
+            mDevice.onConnect();
             return;
     	}
     }
