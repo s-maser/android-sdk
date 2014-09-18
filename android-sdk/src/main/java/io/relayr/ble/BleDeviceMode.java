@@ -27,7 +27,7 @@ public enum BleDeviceMode {
         if (uuids == null || uuids.isEmpty()) return UNKNOWN;
         BleDeviceMode mode;
         for (String uuid: uuids) {
-            mode = BleDeviceMode.fromUuid(BleUtils.getShortUUID(uuid));
+            mode = BleDeviceMode.fromUuid(uuid);
             if (!mode.equals(UNKNOWN)) return mode;
         }
         return UNKNOWN;
