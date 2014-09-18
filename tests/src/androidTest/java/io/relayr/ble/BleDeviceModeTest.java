@@ -41,14 +41,14 @@ public class BleDeviceModeTest {
 
     @Test public void fromParcelUuidArrayTest_fromRandomUuidArray_shouldReturnUnknown() {
         List<String> uuids = new ArrayList<>();
-        uuids.add("00002902-0000-1000-8000-00805f9b34fb");
+        uuids.add("2902");
         Assert.assertEquals(UNKNOWN, fromServiceUuids(uuids));
     }
 
     @Test public void fromParcelUuidArrayTest_containingOnBoardingService_shouldReturnOnBoarding() {
         List<String> uuids = new ArrayList<>();
-        uuids.add("00002902-0000-1000-8000-00805f9b34fb");
-        uuids.add("00002001-0000-1000-8000-00805f9b34fb");
+        uuids.add("2902");
+        uuids.add("2001");
         Assert.assertEquals(ON_BOARDING, fromServiceUuids(uuids));
     }
 
