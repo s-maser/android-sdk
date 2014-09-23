@@ -49,11 +49,25 @@ android.libraryVariants.all { variant ->
         source = variant.javaCompile.source
         ext.androidJar = files(plugins.findPlugin("com.android.library").getBootClasspath())
         classpath = files(variant.javaCompile.classpath.files) + ext.androidJar
-        options.memberLevel = org.gradle.external.javadoc.JavadocMemberLevel.PRIVATE
+        options.memberLevel = org.gradle.external.javadoc.JavadocMemberLevel.PUBLIC
         options.links("http://docs.oracle.com/javase/7/docs/api/");
         options.links("http://d.android.com/reference");
+        options.links("http://reactivex.io/RxJava/javadoc/");
+        options.links("http://square.github.io/retrofit/javadoc/");
 
         exclude '**/internal/**'
+        exclude '**/BuildConfig.java'
+        exclude '**/R.java'
+        exclude '**/*Module*.java'
+        exclude '**/Mock*.java'
+        exclude '**/RelayrApp.java'
+        exclude '**/api/OauthApi*'
+        exclude '**/api/SubscriptionApi*'
+        exclude '**/activity/*'
+        exclude '**/storage/*'
+        exclude '**/utils/*'
+        exclude '**/ble/parser/*'
+        exclude '**/ble/BleUtils.java'
         failOnError false
     }
 
