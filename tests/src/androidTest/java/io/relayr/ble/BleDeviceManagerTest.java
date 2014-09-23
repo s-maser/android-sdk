@@ -8,7 +8,13 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.robolectric.RobolectricTestRunner;
 
+import java.util.List;
+
+import rx.Subscriber;
+
 import static io.relayr.ble.BleDeviceMode.ON_BOARDING;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @RunWith(RobolectricTestRunner.class)
 public class BleDeviceManagerTest {
@@ -28,6 +34,18 @@ public class BleDeviceManagerTest {
         BleDevice device = new BleDevice(Mockito.mock(BluetoothDevice.class), "", "", ON_BOARDING);
         deviceManager.addDiscoveredDevice(device);
         Assert.assertEquals(1, deviceManager.getDiscoveredDevices().size());
+    }
+
+    @Test public void addDiscoveredDeviceTest_shouldCallOnNext() {
+        @SuppressWarnings("unchecked")
+        Subscriber<? super List<BleDevice>> devicesSubscriber = Mockito.mock(Subscriber.class);
+        BleDeviceManager deviceManager = new BleDeviceManager();
+        deviceManager.init(devicesSubscriber);
+
+        BleDevice device = new BleDevice(Mockito.mock(BluetoothDevice.class), "", "", ON_BOARDING);
+        deviceManager.addDiscoveredDevice(device);
+
+        verify(devicesSubscriber, times(1)).onNext(deviceManager.getDiscoveredDevices());
     }
 
     @Test public void clearTest() {
