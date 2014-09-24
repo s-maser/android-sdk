@@ -7,7 +7,6 @@ import android.os.Build;
 import java.util.Collection;
 import java.util.List;
 
-import io.relayr.RelayrApp;
 import rx.Observable;
 import rx.Subscriber;
 
@@ -18,12 +17,12 @@ class RelayrBleSdkImpl extends RelayrBleSdk implements BleScannerFilter.BleFilte
     private final BleDeviceManager mDeviceManager = new BleDeviceManager();
     private final BleScannerFilter mScannerFilter;
 
-    RelayrBleSdkImpl() {
-        BluetoothAdapter bluetoothAdapter = BleUtils.getBluetoothAdapter(RelayrApp.get());
+    RelayrBleSdkImpl(BluetoothAdapter bluetoothAdapter) {
         mScannerFilter = new BleScannerFilter(mDeviceManager, this);
         mBleDeviceScanner = new BleDevicesScanner(bluetoothAdapter, mScannerFilter);
     }
 
+    @Override
     public Observable<List<BleDevice>> scan(final Collection<BleDeviceType> deviceTypes) {
         return Observable.create(new Observable.OnSubscribe<List<BleDevice>>() {
             @Override
@@ -35,11 +34,13 @@ class RelayrBleSdkImpl extends RelayrBleSdk implements BleScannerFilter.BleFilte
         });
     }
 
+    @Override
     public void stop() {
         mBleDeviceScanner.stop();
         mDeviceManager.clear();
     }
 
+    @Override
     public boolean isScanning() {
         return mBleDeviceScanner.isScanning();
     }

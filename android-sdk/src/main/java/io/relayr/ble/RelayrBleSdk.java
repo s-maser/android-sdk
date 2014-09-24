@@ -1,5 +1,7 @@
 package io.relayr.ble;
 
+import android.bluetooth.BluetoothAdapter;
+
 import java.util.Collection;
 import java.util.List;
 
@@ -19,9 +21,9 @@ public abstract class RelayrBleSdk {
      * to check whether BLE is supported
      * and by {@link io.relayr.RelayrSdk#isBleAvailable} to check whether BLE is activated
      */
-    public static RelayrBleSdk newInstance() {
+    public static RelayrBleSdk newInstance(BluetoothAdapter bluetoothAdapter) {
         return RelayrSdk.isBleSupported() && RelayrSdk.isBleAvailable() ?
-                new RelayrBleSdkImpl():
+                new RelayrBleSdkImpl(bluetoothAdapter) :
                 new NullableRelayrBleSdk();
     }
 
