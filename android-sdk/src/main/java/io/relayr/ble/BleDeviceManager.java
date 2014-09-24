@@ -3,50 +3,48 @@ package io.relayr.ble;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import rx.Subscriber;
 
 class BleDeviceManager {
 
-    private final HashMap<String, BleDevice> discoveredDevices = new HashMap<>();
+    private final Map<String, BleDevice> discoveredDevices = new HashMap<>();
+    private Subscriber<? super List<BleDevice>> mDevicesSubscriber;
 
-    void addNewDevice(String address, BleDevice device) {
-        discoveredDevices.put(address, device);
+    void init(Subscriber<? super List<BleDevice>> devicesSubscriber) {
+        mDevicesSubscriber = devicesSubscriber;
+        refreshConnectedDevices();
+    }
+
+    void addDiscoveredDevice(BleDevice device) {
+        discoveredDevices.put(device.getAddress(), device);
+        if (mDevicesSubscriber != null) mDevicesSubscriber.onNext(getDiscoveredDevices());
     }
 
     boolean isDeviceDiscovered(String address) {
         return discoveredDevices.containsKey(address);
     }
 
-    boolean isFullyConfigured(String address) {
-        return discoveredDevices.get(address) != null;
+    boolean isDeviceDiscovered(BleDevice device) {
+        return isDeviceDiscovered(device.getAddress());
     }
 
-    void clearDiscoveredDevices() {
+    void clear() {
         for (BleDevice device: discoveredDevices.values()) {
-            if (device != null) device.disconnect();
+            if (device.isConnected()) device.disconnect();
         }
         discoveredDevices.clear();
     }
 
-    List<BleDevice> getAllConfiguredDevices() {
-        List<BleDevice> configuredDevices = new ArrayList<>();
-
-        for (BleDevice device: discoveredDevices.values()) {
-            if ((device != null) && (device.getMode() != BleDeviceMode.CONNECTED_TO_MASTER_MODULE)) {
-                configuredDevices.add(device);
-            }
-        }
-
-        return configuredDevices;
+    List<BleDevice> getDiscoveredDevices() {
+        return new ArrayList<>(discoveredDevices.values());
     }
 
-    void refreshDiscoveredDevices() {
+    private void refreshConnectedDevices() {
         for (BleDevice device: discoveredDevices.values()) {
-            if (device != null) {
-                if (device.isConnected()) {
-                    device.forceCacheRefresh();
-                } else {
-                    device.connect();
-                }
+            if (device.isConnected()) {
+                device.forceCacheRefresh();
             }
         }
     }

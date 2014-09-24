@@ -9,9 +9,9 @@ import io.relayr.RelayrApp;
 public final class RelayrProperties {
 
     private static final String PROPERTIES_FILE_NAME = "relayrsdk.properties";
-    private static final String PROPERTIES_KEY_CLIENT_ID = "clientId";
-    private static final String PROPERTIES_KEY_CLIENT_SECRET = "clientSecret";
-    private static final String PROPERTIES_KEY_APP_ID = "appId";
+    static final String PROPERTIES_KEY_CLIENT_ID = "clientId";
+    static final String PROPERTIES_KEY_CLIENT_SECRET = "clientSecret";
+    static final String PROPERTIES_KEY_APP_ID = "appId";
 
     private static RelayrProperties mRelayrProperties = null;
 
@@ -29,24 +29,27 @@ public final class RelayrProperties {
         if (mRelayrProperties == null) {
             synchronized (RelayrProperties.class) {
                 if (mRelayrProperties == null) {
-                    mRelayrProperties = loadPropertiesFile();
+                    mRelayrProperties = loadPropertiesFile(provideProperties());
                 }
             }
         }
         return mRelayrProperties;
     }
 
-    private static RelayrProperties loadPropertiesFile() {
+    private static Properties provideProperties() {
         Properties properties = new Properties();
 
-		try {
-			InputStream inputStream = RelayrApp.get().getAssets().open(PROPERTIES_FILE_NAME);
-			properties.load(inputStream);
+        try {
+            InputStream inputStream = RelayrApp.get().getAssets().open(PROPERTIES_FILE_NAME);
+            properties.load(inputStream);
             inputStream.close();
-		} catch (IOException e) {
-			//throw new Relayr_Exception("Can't find properties file");
-		}
+        } catch (IOException e) {
+            //throw new Relayr_Exception("Can't find properties file");
+        }
+        return properties;
+    }
 
+    static RelayrProperties loadPropertiesFile(Properties properties) {
         String clientId = getProperty(properties.getProperty(PROPERTIES_KEY_CLIENT_ID));
         String clientSecret = getProperty(properties.getProperty(PROPERTIES_KEY_CLIENT_SECRET));
         String appId = getProperty(properties.getProperty(PROPERTIES_KEY_APP_ID));

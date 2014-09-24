@@ -5,7 +5,6 @@ import android.bluetooth.BluetoothGattCharacteristic;
 import android.os.Build;
 
 public enum BleDeviceCharacteristic {
-	CONFIGURATION,
 	SENSOR_ID,
 	PASS_KEY,
 	ON_BOARDING_FLAG,
@@ -17,9 +16,6 @@ public enum BleDeviceCharacteristic {
     }
 
     public static BleDeviceCharacteristic from(String uuid) {
-        if (uuid.equals(BleShortUUID.CHARACTERISTIC_CONFIGURATION)) {
-            return CONFIGURATION;
-        }
         if (uuid.equals(BleShortUUID.CHARACTERISTIC_SENSOR_ID)) {
             return SENSOR_ID;
         }

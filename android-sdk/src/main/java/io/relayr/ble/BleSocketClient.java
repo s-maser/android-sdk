@@ -37,14 +37,14 @@ public class BleSocketClient implements SocketClient {
                         });
                     }
                 })
-                .flatMap(new Func1<BleDevice, Observable<BleDeviceValue>>() {
+                .flatMap(new Func1<BleDevice, Observable<String>>() {
                     @Override
-                    public Observable<BleDeviceValue> call(BleDevice bleDevice) {
+                    public Observable<String> call(BleDevice bleDevice) {
                         return bleDevice.subscribeToDeviceValueChanges();
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<BleDeviceValue>() {
+                .subscribe(new Subscriber<String>() {
                     @Override
                     public void onCompleted() {
 
@@ -56,8 +56,8 @@ public class BleSocketClient implements SocketClient {
                     }
 
                     @Override
-                    public void onNext(BleDeviceValue bleDeviceValue) {
-                        subscriber.onNext(bleDeviceValue.getFormattedValue().toString());
+                    public void onNext(String o) {
+                        subscriber.onNext(o);
                     }
                 });
     }

@@ -11,7 +11,7 @@ import android.os.Looper;
 class BleDevicesScanner implements Runnable, BluetoothAdapter.LeScanCallback {
     private static final String TAG = BleDevicesScanner.class.getSimpleName();
 
-    private static final long DEFAULT_SCAN_PERIOD = 500L;
+    private static final long DEFAULT_SCAN_PERIOD = 7000;
     private static final long PERIOD_SCAN_ONCE = -1;
 
     private final BluetoothAdapter bluetoothAdapter;

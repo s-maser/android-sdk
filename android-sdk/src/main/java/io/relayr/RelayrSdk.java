@@ -1,6 +1,7 @@
 package io.relayr;
 
 import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 
 import javax.inject.Inject;
@@ -12,29 +13,45 @@ import io.relayr.ble.RelayrBleSdk;
 import io.relayr.storage.DataStorage;
 import io.relayr.websocket.WebSocketClient;
 
-/** The RelayrSdk Class serves as the access point to all endpoints in the Android SDK.
+/**
+ * The RelayrSdk Class serves as the access point to all endpoints in the Android SDK.
  * It includes basic calls such as user login validation and can also call the handlers of the
  * other classes- {@link io.relayr.api.RelayrApi}, {@link io.relayr.ble.RelayrBleSdk} and
- * {@link io.relayr.websocket.WebSocketClient}. */
+ * {@link io.relayr.websocket.WebSocketClient}.
+ */
 public class RelayrSdk {
 
     @Inject static RelayrApi mRelayrApi;
     @Inject static WebSocketClient mWebSocketClient;
+    @Inject static BleUtils mBleUtils;
+    @Inject static BluetoothAdapter mBluetoothAdapter;
 
     private static LoginEventListener loginEventListener;
 
-    /** Initializes the SDK. Should be called when the {@link android.app.Application} is
-     * created. */
+    /**
+     * Initializes the SDK. Should be called when the {@link android.app.Application} is
+     * created.
+     */
     public static void init(Context context) {
         RelayrApp.init(context, false);
     }
 
-    /** Initializes the SDK in Mock Mode.
+    /**
+     * Initializes the SDK in Mock Mode.
      * In this mode, mock reading values are generated.
      * Used for testing purposes, without the need of a WunderBar or an internet connection.
-     * Should be called when the *{@link android.app.Application}* is created. */
+     * Should be called when the *{@link android.app.Application}* is created.
+     */
     public static void initInMockMode(Context context) {
         RelayrApp.init(context, true);
+    }
+
+    /**
+     * Resets the SDK throwing away the graph holding all the dependencies. Make sure to
+     * call {@link #init(android.content.Context)} before trying to do anything else.
+     */
+    public static void reset() {
+        RelayrApp.reset();
     }
 
     /**
@@ -70,9 +87,11 @@ public class RelayrSdk {
 		DataStorage.logOut();
 	}
 
-    /** @return the handler of the WebSocket client
-    * Used as an access point to the class {@link WebSocketClient} */
-    public static SocketClient getWebSocketClient() {
+    /**
+     * Used as an access point to the class {@link WebSocketClient}
+     * @return the handler of the WebSocket client
+     */
+    public static WebSocketClient getWebSocketClient() {
         return mWebSocketClient;
     }
 
@@ -81,23 +100,27 @@ public class RelayrSdk {
      * @return the handler of the Relayr BLE SDK
      */
      public static RelayrBleSdk getRelayrBleSdk() {
-        return RelayrBleSdk.newInstance();
+        return RelayrBleSdk.newInstance(mBluetoothAdapter);
     }
 
-    /** Checks whether or not Bluetooth is supported.
+    /**
+     * Checks whether or not Bluetooth is supported.
+     * Should be called before the RelayrBleSdk handler {@link #getRelayrBleSdk}
      * @return true if Bluetooth is supported, false otherwise.
-     * Should be called before the RelayrBleSdk handler {@link #getRelayrBleSdk} */
+     */
     public static boolean isBleSupported() {
-        return BleUtils.isBleSupported();
+        return mBleUtils.isBleSupported();
     }
 
-    /** Checks whether Bluetooth is turned on or not.
+    /**
+     * Checks whether Bluetooth is turned on or not.
      * @return true if Bluetooth is turned on, false otherwise.
      * Should be called before calling the RelayrBleSdk handler {@link #getRelayrBleSdk}.
      * The user can be prompted to activate their Bluetooth using
-     * {@link #promptUserToActivateBluetooth} */
+     * {@link #promptUserToActivateBluetooth}
+     */
     public static boolean isBleAvailable() {
-        return BleUtils.isBleAvailable();
+        return mBleUtils.isBleAvailable();
     }
 
     /**
@@ -107,7 +130,7 @@ public class RelayrSdk {
      * @param activity an instance of {@link android.app.Activity}
      */
     public static void promptUserToActivateBluetooth(Activity activity) {
-        if (isBleSupported()) BleUtils.promptUserToActivateBluetooth(activity);
+        if (isBleSupported()) mBleUtils.promptUserToActivateBluetooth(activity);
     }
 
     /**

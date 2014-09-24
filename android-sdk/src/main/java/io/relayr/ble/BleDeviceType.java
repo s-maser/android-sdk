@@ -1,6 +1,5 @@
 package io.relayr.ble;
 
-
 import io.relayr.model.DeviceModel;
 
 public enum BleDeviceType {
@@ -13,6 +12,7 @@ public enum BleDeviceType {
 	WunderbarApp,
 	Unknown;
 
+    /** Convert the sensor name advertised in ble that into a device type */
 	public static BleDeviceType getDeviceType(String deviceName) {
 		if (deviceName != null) {
 			if (deviceName.equals("WunderbarHTU")) {
@@ -48,5 +48,9 @@ public enum BleDeviceType {
         if (model.equals(DeviceModel.GROVE)) return WunderbarBRIDG;
         if (model.equals(DeviceModel.IR_TRANSMITTER)) return WunderbarIR;
         return Unknown;
+    }
+
+    public static boolean isKnownDevice(String deviceName) {
+        return !getDeviceType(deviceName).equals(Unknown);
     }
 }

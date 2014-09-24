@@ -137,7 +137,7 @@ public class LoginActivity extends Activity {
     }
 
 
-    private String getCode(String url) {
+    static String getCode(String url) {
         String codeParam = "?code=";
         if (url.contains(REDIRECT_URI) && url.contains(codeParam)) {
             int tokenPosition = url.indexOf(codeParam);
