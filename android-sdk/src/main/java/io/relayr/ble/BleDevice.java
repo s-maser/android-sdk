@@ -16,13 +16,16 @@ import io.relayr.ble.parser.BleDataParser;
 import rx.Observable;
 import rx.Subscriber;
 
+import static android.bluetooth.BluetoothGatt.GATT_FAILURE;
+import static android.bluetooth.BluetoothGatt.GATT_REQUEST_NOT_SUPPORTED;
+
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class BleDevice {
 
     private static final String TAG = BleDevice.class.getSimpleName();
 
+	/* package for testing */ BluetoothGatt gatt;
 	private BluetoothGattService bluetoothGattService = null;
-	private BluetoothGatt gatt;
 	private BleDeviceStatus status;
 	private Subscriber<? super String> deviceValueSubscriber;
 	private final BleDeviceMode mode;
@@ -152,21 +155,6 @@ public class BleDevice {
 		return getName() + " - [" + getAddress() + "] MODE: " + mode.toString();
 	}
 
-	public void updateConfiguration(final byte[] newConfiguration) {
-        if (bluetoothGattService != null && mode == BleDeviceMode.DIRECT_CONNECTION) {
-            List<BluetoothGattCharacteristic> characteristics = bluetoothGattService.getCharacteristics();
-            for (BluetoothGattCharacteristic characteristic:characteristics) {
-                String characteristicUUID = getShortUUID(characteristic.getUuid().toString());
-                if (characteristicUUID.equals(BleShortUUID.CHARACTERISTIC_CONFIGURATION)) {
-                    Log.d(TAG, "Discovered configuration characteristic: " + characteristicUUID);
-                    characteristic.setValue(newConfiguration);
-                    boolean status = gatt.writeCharacteristic(characteristic);
-                    Log.d(TAG, "Write action on configuration characteristic: " + (status?"done":"undone"));
-                }
-            }
-        }
-    }
-
 	public void writeSensorId(final byte[] sensorId) {
         write(sensorId, BleShortUUID.CHARACTERISTIC_SENSOR_ID, "sensorId");
 	}
@@ -181,9 +169,11 @@ public class BleDevice {
 
     private void write(byte[] bytes, String characteristicUUID, String logName) {
         assert(bytes != null);
-        if (bluetoothGattService != null && mode == BleDeviceMode.ON_BOARDING && isConnected()) {
+        if (mode != BleDeviceMode.ON_BOARDING) {
+            mConnectionCallback.onWriteError(this, BleDeviceCharacteristic.from(characteristicUUID), GATT_REQUEST_NOT_SUPPORTED);
+        } else if (bluetoothGattService != null && isConnected()) {
             List<BluetoothGattCharacteristic> characteristics = bluetoothGattService.getCharacteristics();
-            for (BluetoothGattCharacteristic characteristic:characteristics) {
+            for (BluetoothGattCharacteristic characteristic: characteristics) {
                 String deviceCharacteristicUUID = getShortUUID(characteristic.getUuid().toString());
                 if ((deviceCharacteristicUUID.equals(characteristicUUID))) {
                     characteristic.setValue(bytes);
@@ -192,12 +182,13 @@ public class BleDevice {
                     return;
                 }
             }
+            mConnectionCallback.onWriteError(this, BleDeviceCharacteristic.from(characteristicUUID), GATT_REQUEST_NOT_SUPPORTED);
         } else {
-            mConnectionCallback.onWriteError(this, BleDeviceCharacteristic.SENSOR_ID, BluetoothGatt.GATT_FAILURE);
+            mConnectionCallback.onWriteError(this, BleDeviceCharacteristic.from(characteristicUUID), GATT_FAILURE);
         }
     }
 
- 	public boolean refreshDeviceCache() {
+ 	private boolean refreshDeviceCache() {
 	    try {
 	        BluetoothGatt localBluetoothGatt = gatt;
 	        Method localMethod = localBluetoothGatt.getClass().getMethod("refresh", new Class[0]);

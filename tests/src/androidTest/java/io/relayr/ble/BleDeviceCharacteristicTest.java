@@ -25,10 +25,6 @@ public class BleDeviceCharacteristicTest {
         Assert.assertEquals(SENSOR_ID, bleDeviceCharacteristic);
     }
 
-    @Test public void from_shortUuidAsString_shouldReturnConfiguration() {
-        Assert.assertEquals(CONFIGURATION, BleDeviceCharacteristic.from("2007"));
-    }
-
     @Test public void from_shortUuidAsString_shouldReturnSensorId() {
         Assert.assertEquals(SENSOR_ID, BleDeviceCharacteristic.from("2010"));
     }
