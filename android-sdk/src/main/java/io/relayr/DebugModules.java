@@ -4,7 +4,7 @@ import android.content.Context;
 
 import io.relayr.activity.UiModule;
 import io.relayr.api.DebugApiModule;
-import io.relayr.ble.BleModule;
+import io.relayr.ble.DebugBleModule;
 import io.relayr.websocket.DebugWebSocketModule;
 
 final class DebugModules {
@@ -13,7 +13,7 @@ final class DebugModules {
                 new RelayrModule(),
                 new DebugApiModule(app),
                 new DebugWebSocketModule(),
-                new BleModule(app),
+                new DebugBleModule(app),
                 new UiModule()
         };
     }

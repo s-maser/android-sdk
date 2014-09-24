@@ -41,4 +41,10 @@ public class RelayrApp {
         return sApplicationContext;
     }
 
+    public static void reset() {
+        sApplicationContext = null;
+        sRelayrApp = null;
+        sObjectGraph = null;
+    }
+
 }

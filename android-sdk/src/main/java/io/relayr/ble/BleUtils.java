@@ -12,7 +12,7 @@ import javax.inject.Inject;
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class BleUtils {
 
-    private static final int STATUS_BLE_ENABLED = 0;
+    protected static final int STATUS_BLE_ENABLED = 0;
     private static final int STATUS_BLUETOOTH_NOT_AVAILABLE = 1;
     private static final int STATUS_BLE_NOT_AVAILABLE = 2;
     private static final int STATUS_BLUETOOTH_DISABLED = 3;
@@ -31,7 +31,7 @@ public class BleUtils {
         return getBleStatus() == STATUS_BLE_ENABLED;
     }
 
-    private boolean isSdk18() {
+    protected boolean isSdk18() {
         return android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2;
     }
 
@@ -39,7 +39,7 @@ public class BleUtils {
         return isSdk18() && isBleSupportedIndeed();
     }
 
-    private boolean isBleSupportedIndeed() {
+    protected boolean isBleSupportedIndeed() {
         return mPackageManager.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE);
     }
 
@@ -50,7 +50,7 @@ public class BleUtils {
         }
     }
 
-    private int getBleStatus() {
+    protected int getBleStatus() {
         if (!isBleSupported()) return STATUS_BLE_NOT_AVAILABLE;
 
         return mBluetoothAdapter == null ? STATUS_BLUETOOTH_NOT_AVAILABLE:
