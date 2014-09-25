@@ -12,6 +12,8 @@ import android.util.Log;
 import java.util.List;
 import java.util.UUID;
 
+import io.relayr.ble.service.ShortUUID;
+
 import static android.bluetooth.BluetoothProfile.STATE_CONNECTED;
 import static android.bluetooth.BluetoothProfile.STATE_DISCONNECTED;
 import static io.relayr.ble.BleUtils.getShortUUID;
@@ -106,7 +108,7 @@ class BleDeviceGattManager extends BluetoothGattCallback {
     	List<BluetoothGattCharacteristic> characteristics = service.getCharacteristics();
     	for (BluetoothGattCharacteristic characteristic:characteristics) {
     		String characteristicUUID = getShortUUID(characteristic.getUuid());
-    		if (characteristicUUID.equals(BleShortUUID.CHARACTERISTIC_DATA_READ)) {
+    		if (characteristicUUID.equals(ShortUUID.CHARACTERISTIC_DATA_READ)) {
     			gatt.setCharacteristicNotification(characteristic, true);
     			BluetoothGattDescriptor descriptor = characteristic.getDescriptor(RELAYR_NOTIFICATION_CHARACTERISTIC);
     			descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);

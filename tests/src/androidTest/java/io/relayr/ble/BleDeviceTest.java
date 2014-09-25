@@ -21,7 +21,7 @@ import static android.bluetooth.BluetoothGatt.GATT_FAILURE;
 import static android.bluetooth.BluetoothGatt.GATT_REQUEST_NOT_SUPPORTED;
 import static io.relayr.ble.BleDeviceMode.DIRECT_CONNECTION;
 import static io.relayr.ble.BleDeviceMode.ON_BOARDING;
-import static io.relayr.ble.BleShortUUID.CHARACTERISTIC_SENSOR_ID;
+import static io.relayr.ble.service.ShortUUID.CHARACTERISTIC_SENSOR_ID;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;

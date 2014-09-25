@@ -13,11 +13,13 @@ import java.util.List;
 
 import io.relayr.RelayrApp;
 import io.relayr.ble.parser.BleDataParser;
+import io.relayr.ble.service.ShortUUID;
 import rx.Observable;
 import rx.Subscriber;
 
 import static android.bluetooth.BluetoothGatt.GATT_FAILURE;
 import static android.bluetooth.BluetoothGatt.GATT_REQUEST_NOT_SUPPORTED;
+import static io.relayr.ble.BleUtils.getShortUUID;
 
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class BleDevice {
@@ -157,15 +159,15 @@ public class BleDevice {
 	}
 
 	public void writeSensorId(final byte[] sensorId) {
-        write(sensorId, BleShortUUID.CHARACTERISTIC_SENSOR_ID, "sensorId");
+        write(sensorId, ShortUUID.CHARACTERISTIC_SENSOR_ID, "sensorId");
 	}
 
 	public void writePassKey(final byte[] passKey) {
-        write(passKey, BleShortUUID.CHARACTERISTIC_PASS_KEY, "passKey");
+        write(passKey, ShortUUID.CHARACTERISTIC_PASS_KEY, "passKey");
 	}
 
 	public void writeOnBoardingFlag(final byte[] onBoardingFlag) {
-        write(onBoardingFlag, BleShortUUID.CHARACTERISTIC_ON_BOARDING_FLAG, "onBoardingFlag");
+        write(onBoardingFlag, ShortUUID.CHARACTERISTIC_ON_BOARDING_FLAG, "onBoardingFlag");
 	}
 
     private void write(byte[] bytes, String characteristicUUID, String logName) {
@@ -175,7 +177,7 @@ public class BleDevice {
         } else if (bluetoothGattService != null && isConnected()) {
             List<BluetoothGattCharacteristic> characteristics = bluetoothGattService.getCharacteristics();
             for (BluetoothGattCharacteristic characteristic: characteristics) {
-                String deviceCharacteristicUUID = getShortUUID(characteristic.getUuid().toString());
+                String deviceCharacteristicUUID = getShortUUID(characteristic.getUuid());
                 if ((deviceCharacteristicUUID.equals(characteristicUUID))) {
                     characteristic.setValue(bytes);
                     boolean status = gatt.writeCharacteristic(characteristic);
@@ -210,10 +212,6 @@ public class BleDevice {
             }
         });
 	}
-
-	private String getShortUUID(String longUUID) {
-    	return longUUID.substring(4, 8);
-    }
 
     public void forceCacheRefresh() {
         refreshDeviceCache();

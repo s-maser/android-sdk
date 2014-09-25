@@ -61,7 +61,7 @@ public class BaseService {
      */
     public int getBatteryLevel() {
         BluetoothGattCharacteristic characteristic = getCharacteristicInServices(
-                mBluetoothGatt.getServices(), BATTERY_LEVEL_SERVICE, BATTERY_LEVEL_CHARACTERISTIC);
+                mBluetoothGatt.getServices(), SERVICE_BATTERY_LEVEL, CHARACTERISTIC_BATTERY_LEVEL);
         if (characteristic == null) return -1;
         return characteristic.getValue().length == 0? -1: characteristic.getValue()[0];
     }
@@ -73,7 +73,7 @@ public class BaseService {
      */
     public String getFirmwareVersion() {
         return getCharacteristicInServicesAsString(
-                mBluetoothGatt.getServices(), DEVICE_INFO_SERVICE, FIRMWARE_VERSION_CHARACTERISTIC);
+                mBluetoothGatt.getServices(), SERVICE_DEVICE_INFO, CHARACTERISTIC_FIRMWARE_VERSION);
     }
 
     /**
@@ -83,7 +83,7 @@ public class BaseService {
      */
     public String getHardwareVersion() {
         return getCharacteristicInServicesAsString(
-                mBluetoothGatt.getServices(), DEVICE_INFO_SERVICE, HARDWARE_VERSION_CHARACTERISTIC);
+                mBluetoothGatt.getServices(), SERVICE_DEVICE_INFO, CHARACTERISTIC_HARDWARE_VERSION);
     }
 
     /**
@@ -93,7 +93,7 @@ public class BaseService {
      */
     public String getManufacturer() {
         return getCharacteristicInServicesAsString(
-                mBluetoothGatt.getServices(), DEVICE_INFO_SERVICE, MANUFACTURER_CHARACTERISTIC);
+                mBluetoothGatt.getServices(), SERVICE_DEVICE_INFO, CHARACTERISTIC_MANUFACTURER);
     }
 
 }

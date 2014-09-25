@@ -4,6 +4,8 @@ import android.annotation.TargetApi;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.os.Build;
 
+import io.relayr.ble.service.ShortUUID;
+
 public enum BleDeviceCharacteristic {
 	SENSOR_ID,
 	PASS_KEY,
@@ -16,13 +18,13 @@ public enum BleDeviceCharacteristic {
     }
 
     public static BleDeviceCharacteristic from(String uuid) {
-        if (uuid.equals(BleShortUUID.CHARACTERISTIC_SENSOR_ID)) {
+        if (uuid.equals(ShortUUID.CHARACTERISTIC_SENSOR_ID)) {
             return SENSOR_ID;
         }
-        if (uuid.equals(BleShortUUID.CHARACTERISTIC_PASS_KEY)) {
+        if (uuid.equals(ShortUUID.CHARACTERISTIC_PASS_KEY)) {
             return PASS_KEY;
         }
-        if (uuid.equals(BleShortUUID.CHARACTERISTIC_ON_BOARDING_FLAG)) {
+        if (uuid.equals(ShortUUID.CHARACTERISTIC_ON_BOARDING_FLAG)) {
             return ON_BOARDING_FLAG;
         }
         return UNKNOWN;

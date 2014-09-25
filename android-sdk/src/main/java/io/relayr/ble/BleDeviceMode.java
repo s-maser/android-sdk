@@ -2,15 +2,15 @@ package io.relayr.ble;
 
 import java.util.List;
 
+import static io.relayr.ble.service.ShortUUID.SERVICE_CONNECTED_TO_MASTER_MODULE;
+import static io.relayr.ble.service.ShortUUID.SERVICE_DIRECT_CONNECTION;
+import static io.relayr.ble.service.ShortUUID.SERVICE_ON_BOARDING;
+
 public enum BleDeviceMode {
     ON_BOARDING,
     DIRECT_CONNECTION,
     CONNECTED_TO_MASTER_MODULE,
     UNKNOWN;
-
-    private static final String SERVICE_CONNECTED_TO_MASTER_MODULE = "2000";
-    private static final String SERVICE_ON_BOARDING = "2001";
-    private static final String SERVICE_DIRECT_CONNECTION = "2002";
 
     public static BleDeviceMode fromUuid(String serviceUuid) {
         return serviceUuid.equals(SERVICE_DIRECT_CONNECTION) ? DIRECT_CONNECTION:
