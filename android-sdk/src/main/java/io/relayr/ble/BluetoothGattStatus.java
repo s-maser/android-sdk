@@ -2,7 +2,7 @@ package io.relayr.ble;
 
 import android.bluetooth.BluetoothGatt;
 
-abstract class BluetoothGattStatus {
+public abstract class BluetoothGattStatus {
 
     static String toString(int status) {
         switch (status) {
@@ -37,7 +37,7 @@ abstract class BluetoothGattStatus {
         }
     }
 
-    static boolean isFailureStatus(int status) {
+    public static boolean isFailureStatus(int status) {
         switch (status) {
             case BluetoothGatt.GATT_FAILURE:
             case BluetoothGatt.GATT_INSUFFICIENT_AUTHENTICATION:

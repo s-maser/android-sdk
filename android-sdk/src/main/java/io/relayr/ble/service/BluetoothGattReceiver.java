@@ -7,6 +7,7 @@ import android.bluetooth.BluetoothGattCallback;
 import android.os.Build;
 
 import io.relayr.RelayrApp;
+import io.relayr.ble.BluetoothGattStatus;
 import rx.Observable;
 import rx.Subscriber;
 
@@ -44,6 +45,8 @@ public class BluetoothGattReceiver extends BluetoothGattCallback {
             } else { // disconnected involuntarily because an error occurred
                 mConnectionChangesSubscriber.onError(new DisconnectionException(status + ""));
             }
+        } else if (BluetoothGattStatus.isFailureStatus(status)) {
+            mConnectionChangesSubscriber.onError(new GattException(status + ""));
         }
     }
 
