@@ -68,7 +68,7 @@ class BleDeviceGattManager extends BluetoothGattCallback {
     public void onServicesDiscovered(BluetoothGatt gatt, int status) {
     	List<BluetoothGattService> services = gatt.getServices();
     	for (BluetoothGattService service: services) {
-    		String serviceUUID = getShortUUID(service.getUuid().toString());
+    		String serviceUUID = getShortUUID(service.getUuid());
             if (!BleDeviceMode.containsService(serviceUUID)) continue;
             mDevice.setStatus(BleDeviceStatus.CONNECTED);
             mDevice.setBluetoothGattService(service);
@@ -105,7 +105,7 @@ class BleDeviceGattManager extends BluetoothGattCallback {
     	Log.d(TAG, "New mode on device " + mDevice.getName() + ": Direct connection");
     	List<BluetoothGattCharacteristic> characteristics = service.getCharacteristics();
     	for (BluetoothGattCharacteristic characteristic:characteristics) {
-    		String characteristicUUID = getShortUUID(characteristic.getUuid().toString());
+    		String characteristicUUID = getShortUUID(characteristic.getUuid());
     		if (characteristicUUID.equals(BleShortUUID.CHARACTERISTIC_DATA_READ)) {
     			gatt.setCharacteristicNotification(characteristic, true);
     			BluetoothGattDescriptor descriptor = characteristic.getDescriptor(RELAYR_NOTIFICATION_CHARACTERISTIC);

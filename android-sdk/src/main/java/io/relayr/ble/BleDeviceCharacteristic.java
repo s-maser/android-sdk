@@ -12,7 +12,7 @@ public enum BleDeviceCharacteristic {
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     public static BleDeviceCharacteristic from(BluetoothGattCharacteristic characteristic) {
-        return from(BleUtils.getShortUUID(characteristic.getUuid().toString()));
+        return from(BleUtils.getShortUUID(characteristic.getUuid()));
     }
 
     public static BleDeviceCharacteristic from(String uuid) {
