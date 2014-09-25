@@ -3,10 +3,15 @@ package io.relayr.ble.service;
 import android.annotation.TargetApi;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
+import android.bluetooth.BluetoothGattCharacteristic;
 import android.os.Build;
 
 import rx.Observable;
 import rx.functions.Func1;
+
+import static io.relayr.ble.service.ShortUUID.*;
+import static io.relayr.ble.service.Utils.getCharacteristicInServices;
+import static io.relayr.ble.service.Utils.getCharacteristicInServicesAsString;
 
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class BaseService {
@@ -15,7 +20,8 @@ public class BaseService {
     private final BluetoothGatt mBluetoothGatt;
     private final BluetoothGattReceiver mBluetoothGattReceiver;
 
-    protected BaseService(BluetoothDevice device, BluetoothGatt gatt, BluetoothGattReceiver receiver) {
+    /* package for testing */
+    BaseService(BluetoothDevice device, BluetoothGatt gatt, BluetoothGattReceiver receiver) {
         mBluetoothDevice = device;
         mBluetoothGatt = gatt;
         mBluetoothGattReceiver = receiver;
@@ -48,12 +54,46 @@ public class BaseService {
         return mBluetoothGattReceiver.disconnect(mBluetoothGatt);
     }
 
-    // device info 180F
-    public void queryBatteryLevel() {} // 2A19
+    /**
+     * Return the stored value of the Battery Level characteristic.
+     * <p>See {@link BluetoothGattCharacteristic#getValue} for details.
+     * @return Cached value of the characteristic
+     */
+    public int getBatteryLevel() {
+        BluetoothGattCharacteristic characteristic = getCharacteristicInServices(
+                mBluetoothGatt.getServices(), BATTERY_LEVEL_SERVICE, BATTERY_LEVEL_CHARACTERISTIC);
+        if (characteristic == null) return -1;
+        return characteristic.getValue().length == 0? -1: characteristic.getValue()[0];
+    }
 
-    // device info 180A
-    public void queryFirmwareVersion() {} // 2A26
-    public void queryHardwareVersion() {} // 2A27
-    public void queryManufacturer() {} // 2A29
+    /**
+     * Return the stored value of the Firmware Version characteristic.
+     * <p>See {@link BluetoothGattCharacteristic#getValue} for details.
+     * @return Cached value of the characteristic
+     */
+    public String getFirmwareVersion() {
+        return getCharacteristicInServicesAsString(
+                mBluetoothGatt.getServices(), DEVICE_INFO_SERVICE, FIRMWARE_VERSION_CHARACTERISTIC);
+    }
+
+    /**
+     * Return the stored value of the Hardware Version characteristic.
+     * <p>See {@link BluetoothGattCharacteristic#getValue} for details.
+     * @return Cached value of the characteristic
+     */
+    public String getHardwareVersion() {
+        return getCharacteristicInServicesAsString(
+                mBluetoothGatt.getServices(), DEVICE_INFO_SERVICE, HARDWARE_VERSION_CHARACTERISTIC);
+    }
+
+    /**
+     * Return the stored value of the Manufacturer characteristic.
+     * <p>See {@link BluetoothGattCharacteristic#getValue} for details.
+     * @return Cached value of the characteristic
+     */
+    public String getManufacturer() {
+        return getCharacteristicInServicesAsString(
+                mBluetoothGatt.getServices(), DEVICE_INFO_SERVICE, MANUFACTURER_CHARACTERISTIC);
+    }
 
 }
