@@ -9,7 +9,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static io.relayr.ble.service.ShortUUID.BATTERY_LEVEL_CHARACTERISTIC;
@@ -29,16 +29,14 @@ public class UtilsTest {
     @Test public void getServiceForUuid() {
         BluetoothGattService service = mock(BluetoothGattService.class);
         when(service.getUuid()).thenReturn(fromString("0000180F-0000-1000-8000-00805f9b34fb"));
-        List<BluetoothGattService> services = new ArrayList<>();
-        services.add(service);
+        List<BluetoothGattService> services = Arrays.asList(service);
         assertNotNull(Utils.getServiceForUuid(services, BATTERY_LEVEL_SERVICE));
     }
 
     @Test public void getCharacteristicForUuid() {
         BluetoothGattCharacteristic characteristic = mock(BluetoothGattCharacteristic.class);
         when(characteristic.getUuid()).thenReturn(fromString("00002A19-0000-1000-8000-00805f9b34fb"));
-        List<BluetoothGattCharacteristic> characteristics = new ArrayList<>();
-        characteristics.add(characteristic);
+        List<BluetoothGattCharacteristic> characteristics = Arrays.asList(characteristic);
         assertNotNull(Utils.getCharacteristicForUuid(characteristics, BATTERY_LEVEL_CHARACTERISTIC));
     }
 
@@ -49,12 +47,10 @@ public class UtilsTest {
         BluetoothGattCharacteristic characteristic = mock(BluetoothGattCharacteristic.class);
         when(characteristic.getUuid()).thenReturn(fromString("00002A19-0000-1000-8000-00805f9b34fb"));
 
-        List<BluetoothGattCharacteristic> characteristics = new ArrayList<>();
-        characteristics.add(characteristic);
+        List<BluetoothGattCharacteristic> characteristics = Arrays.asList(characteristic);
         when(service.getCharacteristics()).thenReturn(characteristics);
 
-        List<BluetoothGattService> services = new ArrayList<>();
-        services.add(service);
+        List<BluetoothGattService> services = Arrays.asList(service);
 
         assertNotNull(Utils.getCharacteristicInServices(services, BATTERY_LEVEL_SERVICE,
                 BATTERY_LEVEL_CHARACTERISTIC));
@@ -69,12 +65,10 @@ public class UtilsTest {
         when(characteristic.getStringValue(0)).thenReturn(expected);
         when(characteristic.getUuid()).thenReturn(fromString("00002A26-0000-1000-8000-00805f9b34fb"));
 
-        List<BluetoothGattCharacteristic> characteristics = new ArrayList<>();
-        characteristics.add(characteristic);
+        List<BluetoothGattCharacteristic> characteristics = Arrays.asList(characteristic);
         when(service.getCharacteristics()).thenReturn(characteristics);
 
-        List<BluetoothGattService> services = new ArrayList<>();
-        services.add(service);
+        List<BluetoothGattService> services = Arrays.asList(service);
 
         assertEquals(expected, Utils.getCharacteristicInServicesAsString(
                 services, DEVICE_INFO_SERVICE, FIRMWARE_VERSION_CHARACTERISTIC));

@@ -13,14 +13,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
 import static android.bluetooth.BluetoothGatt.GATT_FAILURE;
 import static android.bluetooth.BluetoothGatt.GATT_REQUEST_NOT_SUPPORTED;
-import static io.relayr.ble.BleDeviceMode.ON_BOARDING;
 import static io.relayr.ble.BleDeviceMode.DIRECT_CONNECTION;
+import static io.relayr.ble.BleDeviceMode.ON_BOARDING;
 import static io.relayr.ble.BleShortUUID.CHARACTERISTIC_SENSOR_ID;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -49,15 +49,13 @@ public class BleDeviceTest {
     private final BluetoothGattCharacteristic characteristic3 =
             new BluetoothGattCharacteristic(UUID_ON_BOARDING_FLAG, 0, 0);
 
-    private final List<BluetoothGattCharacteristic> characteristics = new ArrayList<>();
+    private final List<BluetoothGattCharacteristic> characteristics =
+            Arrays.asList(characteristic1, characteristic2, characteristic3);
 
     private BleDevice mDevice;
     private BluetoothGattService mService;
 
     @Before public void init() {
-        characteristics.add(characteristic1);
-        characteristics.add(characteristic2);
-        characteristics.add(characteristic3);
         BluetoothDevice d = mock(BluetoothDevice.class);
         mDevice = new BleDevice(d, "dd", "WunderbarHTU", ON_BOARDING);
 
