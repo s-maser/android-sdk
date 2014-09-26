@@ -16,9 +16,9 @@ import static io.relayr.ble.service.Utils.getCharacteristicInServicesAsString;
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class BaseService {
 
-    private final BluetoothDevice mBluetoothDevice;
-    private final BluetoothGatt mBluetoothGatt;
-    private final BluetoothGattReceiver mBluetoothGattReceiver;
+    protected final BluetoothDevice mBluetoothDevice;
+    protected final BluetoothGatt mBluetoothGatt;
+    protected final BluetoothGattReceiver mBluetoothGattReceiver;
 
     /* package for testing */
     BaseService(BluetoothDevice device, BluetoothGatt gatt, BluetoothGattReceiver receiver) {
@@ -28,8 +28,8 @@ public class BaseService {
     }
 
     /* package for testing */
-    static Observable<? extends BaseService> connect(final BluetoothDevice bluetoothDevice,
-                                                     final BluetoothGattReceiver receiver) {
+    static Observable<? extends BluetoothGatt> doConnect(final BluetoothDevice bluetoothDevice,
+                                                         final BluetoothGattReceiver receiver) {
         return receiver
                 .connect(bluetoothDevice)
                 .flatMap(new Func1<BluetoothGatt, Observable<BluetoothGatt>>() {
@@ -37,17 +37,7 @@ public class BaseService {
                     public Observable<BluetoothGatt> call(BluetoothGatt gatt) {
                         return receiver.discoverDevices(gatt);
                     }
-                })
-                .flatMap(new Func1<BluetoothGatt, Observable<BaseService>>() {
-                    @Override
-                    public Observable<BaseService> call(BluetoothGatt gatt) {
-                        return Observable.just(new BaseService(bluetoothDevice, gatt, receiver));
-                    }
                 });
-    }
-
-    public static Observable<? extends BaseService> connect(final BluetoothDevice bluetoothDevice) {
-        return connect(bluetoothDevice, new BluetoothGattReceiver());
     }
 
     public Observable<? extends BluetoothGatt> disconnect() {

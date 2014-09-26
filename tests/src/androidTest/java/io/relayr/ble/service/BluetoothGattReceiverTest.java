@@ -3,6 +3,7 @@ package io.relayr.ble.service;
 import android.annotation.TargetApi;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
+import android.bluetooth.BluetoothGattCharacteristic;
 import android.os.Build;
 
 import org.junit.Before;
@@ -10,10 +11,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 
+import io.relayr.ble.service.error.DisconnectionException;
+import io.relayr.ble.service.error.WriteCharacteristicException;
 import rx.Observable;
 import rx.Observer;
 import rx.functions.Func1;
 
+import static android.bluetooth.BluetoothGatt.GATT_FAILURE;
 import static android.bluetooth.BluetoothGatt.GATT_SUCCESS;
 import static android.bluetooth.BluetoothProfile.STATE_CONNECTED;
 import static android.bluetooth.BluetoothProfile.STATE_DISCONNECTED;
@@ -104,6 +108,32 @@ public class BluetoothGattReceiverTest {
         receiver.onConnectionStateChange(bluetoothGatt, GATT_SUCCESS, STATE_DISCONNECTED);
 
         verify(observer, times(1)).onNext(bluetoothGatt);
+    }
+
+    @Test public void writeCharacteristic_shouldWork() {
+        BluetoothGattReceiver receiver = new BluetoothGattReceiver();
+        @SuppressWarnings("unchecked")
+        Observer<BluetoothGattCharacteristic> observer = mock(Observer.class);
+        BluetoothGattCharacteristic characteristic = mock(BluetoothGattCharacteristic.class);
+        receiver.writeCharacteristic(mock(BluetoothGatt.class), characteristic)
+                .subscribe(observer);
+
+        receiver.onCharacteristicWrite(mock(BluetoothGatt.class), characteristic, GATT_SUCCESS);
+
+        verify(observer, times(1)).onNext(characteristic);
+    }
+
+    @Test public void writeCharacteristic_shouldThrowAnError() {
+        BluetoothGattReceiver receiver = new BluetoothGattReceiver();
+        @SuppressWarnings("unchecked")
+        Observer<BluetoothGattCharacteristic> observer = mock(Observer.class);
+        BluetoothGattCharacteristic characteristic = mock(BluetoothGattCharacteristic.class);
+        receiver.writeCharacteristic(mock(BluetoothGatt.class), characteristic)
+                .subscribe(observer);
+
+        receiver.onCharacteristicWrite(mock(BluetoothGatt.class), characteristic, GATT_FAILURE);
+
+        verify(observer, times(1)).onError(any(WriteCharacteristicException.class));
     }
 
 }

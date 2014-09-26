@@ -37,11 +37,17 @@ public class BaseServiceTest {
         @SuppressWarnings("unchecked")
         Observer<BaseService> observer = mock(Observer.class);
 
-        BluetoothDevice device = mock(BluetoothDevice.class);
-        BluetoothGattReceiver receiver = new BluetoothGattReceiver();
+        final BluetoothDevice device = mock(BluetoothDevice.class);
+        final BluetoothGattReceiver receiver = new BluetoothGattReceiver();
 
         BaseService
-                .connect(device, receiver)
+                .doConnect(device, receiver)
+                .flatMap(new Func1<BluetoothGatt, Observable<BaseService>>() {
+                    @Override
+                    public Observable<BaseService> call(BluetoothGatt gatt) {
+                        return Observable.just(new BaseService(device, gatt, receiver));
+                    }
+                })
                 .subscribe(observer);
 
         receiver.onConnectionStateChange(mock(BluetoothGatt.class), GATT_SUCCESS, STATE_CONNECTED);
@@ -54,11 +60,17 @@ public class BaseServiceTest {
         @SuppressWarnings("unchecked")
         Observer<BluetoothGatt> observer = mock(Observer.class);
 
-        BluetoothDevice device = mock(BluetoothDevice.class);
-        BluetoothGattReceiver receiver = new BluetoothGattReceiver();
+        final BluetoothDevice device = mock(BluetoothDevice.class);
+        final BluetoothGattReceiver receiver = new BluetoothGattReceiver();
 
         BaseService
-                .connect(device, receiver)
+                .doConnect(device, receiver)
+                .flatMap(new Func1<BluetoothGatt, Observable<BaseService>>() {
+                    @Override
+                    public Observable<BaseService> call(BluetoothGatt gatt) {
+                        return Observable.just(new BaseService(device, gatt, receiver));
+                    }
+                })
                 .flatMap(new Func1<BaseService, Observable<? extends BluetoothGatt>>() {
                     @Override
                     public Observable<? extends BluetoothGatt> call(BaseService baseService) {

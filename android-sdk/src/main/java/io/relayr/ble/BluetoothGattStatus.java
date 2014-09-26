@@ -4,7 +4,7 @@ import android.bluetooth.BluetoothGatt;
 
 public abstract class BluetoothGattStatus {
 
-    static String toString(int status) {
+    public static String toString(int status) {
         switch (status) {
             case BluetoothGatt.GATT_FAILURE: {
                 return "Failure";

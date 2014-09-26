@@ -4,10 +4,14 @@ import android.annotation.TargetApi;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
+import android.bluetooth.BluetoothGattCharacteristic;
 import android.os.Build;
 
 import io.relayr.RelayrApp;
 import io.relayr.ble.BluetoothGattStatus;
+import io.relayr.ble.service.error.DisconnectionException;
+import io.relayr.ble.service.error.GattException;
+import io.relayr.ble.service.error.WriteCharacteristicException;
 import rx.Observable;
 import rx.Subscriber;
 
@@ -20,6 +24,7 @@ public class BluetoothGattReceiver extends BluetoothGattCallback {
     private volatile Subscriber<? super BluetoothGatt> mConnectionChangesSubscriber;
     private volatile Subscriber<? super BluetoothGatt> mDisconnectedSubscriber;
     private volatile Subscriber<? super BluetoothGatt> mBluetoothGattServiceSubscriber;
+    private volatile Subscriber<? super BluetoothGattCharacteristic> mWriteCharacteristicSubscriber;
 
     public Observable<BluetoothGatt> connect(final BluetoothDevice bluetoothDevice) {
         return Observable.create(new Observable.OnSubscribe<BluetoothGatt>() {
@@ -74,5 +79,26 @@ public class BluetoothGattReceiver extends BluetoothGattCallback {
                 bluetoothGatt.disconnect();
             }
         });
+    }
+
+    public Observable<BluetoothGattCharacteristic>
+                            writeCharacteristic(final BluetoothGatt bluetoothGatt,
+                                                final BluetoothGattCharacteristic characteristic) {
+        return Observable.create(new Observable.OnSubscribe<BluetoothGattCharacteristic>() {
+            @Override
+            public void call(Subscriber<? super BluetoothGattCharacteristic> subscriber) {
+                mWriteCharacteristicSubscriber = subscriber;
+                bluetoothGatt.writeCharacteristic(characteristic);
+            }
+        });
+    }
+
+    @Override
+    public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
+        if (status == BluetoothGatt.GATT_SUCCESS) {
+            mWriteCharacteristicSubscriber.onNext(characteristic);
+        } else {
+            mWriteCharacteristicSubscriber.onError(new WriteCharacteristicException(characteristic, status));
+        }
     }
 }
