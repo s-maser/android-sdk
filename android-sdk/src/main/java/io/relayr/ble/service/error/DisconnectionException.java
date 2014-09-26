@@ -1,4 +1,4 @@
-package io.relayr.ble.service;
+package io.relayr.ble.service.error;
 
 public class DisconnectionException extends Throwable {
 
