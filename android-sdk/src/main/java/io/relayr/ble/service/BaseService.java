@@ -44,6 +44,15 @@ public class BaseService {
         return mBluetoothGattReceiver.disconnect(mBluetoothGatt);
     }
 
+    protected Observable<BluetoothGattCharacteristic> write(byte[] bytes,
+                                                          String serviceUuid,
+                                                          String characteristicUuid) {
+        BluetoothGattCharacteristic characteristic = getCharacteristicInServices(
+                mBluetoothGatt.getServices(), serviceUuid, characteristicUuid);
+        characteristic.setValue(bytes);
+        return mBluetoothGattReceiver.writeCharacteristic(mBluetoothGatt, characteristic);
+    }
+
     /**
      * Return the stored value of the Battery Level characteristic.
      * <p>See {@link BluetoothGattCharacteristic#getValue} for details.

@@ -13,7 +13,6 @@ import static io.relayr.ble.service.ShortUUID.CHARACTERISTIC_ON_BOARDING_FLAG;
 import static io.relayr.ble.service.ShortUUID.CHARACTERISTIC_PASS_KEY;
 import static io.relayr.ble.service.ShortUUID.CHARACTERISTIC_SENSOR_ID;
 import static io.relayr.ble.service.ShortUUID.SERVICE_ON_BOARDING;
-import static io.relayr.ble.service.Utils.getCharacteristicInServices;
 
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class OnBoardingService extends BaseService {
@@ -33,24 +32,37 @@ public class OnBoardingService extends BaseService {
                 });
     }
 
-    public Observable<BluetoothGattCharacteristic> writeSensorId(byte[] bytes) {
-        return write(bytes, SERVICE_ON_BOARDING, CHARACTERISTIC_SENSOR_ID);
+    /**
+     * Writes the sensorId characteristic to the associated remote device.
+     *
+     * @param sensorId Bytes to write on the remote device
+     * @return Observable<BluetoothGattCharacteristic>, an observable of what will be written in the
+     * device
+     */
+    public Observable<BluetoothGattCharacteristic> writeSensorId(byte[] sensorId) {
+        return write(sensorId, SERVICE_ON_BOARDING, CHARACTERISTIC_SENSOR_ID);
     }
 
-    private Observable<BluetoothGattCharacteristic> write(byte[] bytes,
-                                                          String serviceUuid,
-                                                          String characteristicUuid) {
-        BluetoothGattCharacteristic characteristic = getCharacteristicInServices(
-                mBluetoothGatt.getServices(), serviceUuid, characteristicUuid);
-        characteristic.setValue(bytes);
-        return mBluetoothGattReceiver.writeCharacteristic(mBluetoothGatt, characteristic);
+    /**
+     * Writes the sensorId characteristic to the associated remote device.
+     *
+     * @param passKey Bytes to write on the remote device
+     * @return Observable<BluetoothGattCharacteristic>, an observable of what will be written in the
+     * device
+     */
+    public Observable<BluetoothGattCharacteristic> writeSensorPassKey(byte[] passKey) {
+        return write(passKey, SERVICE_ON_BOARDING, CHARACTERISTIC_PASS_KEY);
     }
 
-    public Observable<BluetoothGattCharacteristic> writeSensorPassKey(byte[] bytes) {
-        return write(bytes, SERVICE_ON_BOARDING, CHARACTERISTIC_PASS_KEY);
-    }
-    public Observable<BluetoothGattCharacteristic> writeOnBoardingFlag(byte[] bytes) {
-        return write(bytes, SERVICE_ON_BOARDING, CHARACTERISTIC_ON_BOARDING_FLAG);
+    /**
+     * Writes the sensorId characteristic to the associated remote device.
+     *
+     * @param onBoardingFlag Bytes to write on the remote device
+     * @return Observable<BluetoothGattCharacteristic>, an observable of what will be written in the
+     * device
+     */
+    public Observable<BluetoothGattCharacteristic> writeOnBoardingFlag(byte[] onBoardingFlag) {
+        return write(onBoardingFlag, SERVICE_ON_BOARDING, CHARACTERISTIC_ON_BOARDING_FLAG);
     }
 
     public void readSensorId() {}
