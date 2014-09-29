@@ -7,6 +7,7 @@ import android.bluetooth.BluetoothGattCharacteristic;
 import android.os.Build;
 
 import rx.Observable;
+import rx.functions.Func1;
 
 import static io.relayr.ble.service.ShortUUID.CHARACTERISTIC_SENSOR_CONFIGURATION;
 import static io.relayr.ble.service.ShortUUID.CHARACTERISTIC_SENSOR_FREQUENCY;
@@ -21,6 +22,17 @@ public class DirectConnectionService extends BaseService {
 
     private DirectConnectionService(BluetoothDevice device, BluetoothGatt gatt, BluetoothGattReceiver receiver) {
         super(device, gatt, receiver);
+    }
+
+    public static Observable<OnBoardingService> connect(final BluetoothDevice bluetoothDevice) {
+        final BluetoothGattReceiver receiver = new BluetoothGattReceiver();
+        return doConnect(bluetoothDevice, new BluetoothGattReceiver())
+                .flatMap(new Func1<BluetoothGatt, Observable<OnBoardingService>>() {
+                    @Override
+                    public Observable<OnBoardingService> call(BluetoothGatt gatt) {
+                        return Observable.just(new OnBoardingService(bluetoothDevice, gatt, receiver));
+                    }
+                });
     }
 
     /**
