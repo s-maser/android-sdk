@@ -61,7 +61,7 @@ public class BaseService {
     public int getBatteryLevel() {
         BluetoothGattCharacteristic characteristic = getCharacteristicInServices(
                 mBluetoothGatt.getServices(), SERVICE_BATTERY_LEVEL, CHARACTERISTIC_BATTERY_LEVEL);
-        if (characteristic == null) return -1;
+        if (characteristic == null || characteristic.getValue() == null) return -1;
         return characteristic.getValue().length == 0? -1: characteristic.getValue()[0];
     }
 
