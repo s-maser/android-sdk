@@ -24,13 +24,13 @@ public class DirectConnectionService extends BaseService {
         super(device, gatt, receiver);
     }
 
-    public static Observable<OnBoardingService> connect(final BluetoothDevice bluetoothDevice) {
+    public static Observable<DirectConnectionService> connect(final BluetoothDevice bluetoothDevice) {
         final BluetoothGattReceiver receiver = new BluetoothGattReceiver();
         return doConnect(bluetoothDevice, new BluetoothGattReceiver())
-                .flatMap(new Func1<BluetoothGatt, Observable<OnBoardingService>>() {
+                .flatMap(new Func1<BluetoothGatt, Observable<DirectConnectionService>>() {
                     @Override
-                    public Observable<OnBoardingService> call(BluetoothGatt gatt) {
-                        return Observable.just(new OnBoardingService(bluetoothDevice, gatt, receiver));
+                    public Observable<DirectConnectionService> call(BluetoothGatt gatt) {
+                        return Observable.just(new DirectConnectionService(bluetoothDevice, gatt, receiver));
                     }
                 });
     }
