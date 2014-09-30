@@ -60,7 +60,10 @@ public class BluetoothGattReceiver extends BluetoothGattCallback {
             @Override
             public void call(Subscriber<? super BluetoothGatt> subscriber) {
                 mBluetoothGattServiceSubscriber = subscriber;
-                bluetoothGatt.discoverServices();
+                if (bluetoothGatt.getServices() != null && bluetoothGatt.getServices().size() > 0)
+                    mBluetoothGattServiceSubscriber.onNext(bluetoothGatt);
+                else
+                    bluetoothGatt.discoverServices();
             }
         });
     }
