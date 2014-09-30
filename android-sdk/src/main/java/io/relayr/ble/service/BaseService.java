@@ -6,12 +6,20 @@ import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.os.Build;
 
+import io.relayr.ble.service.error.GattException;
 import rx.Observable;
 import rx.functions.Func1;
 
-import static io.relayr.ble.service.ShortUUID.*;
+import static io.relayr.ble.service.ShortUUID.CHARACTERISTIC_BATTERY_LEVEL;
+import static io.relayr.ble.service.ShortUUID.CHARACTERISTIC_FIRMWARE_VERSION;
+import static io.relayr.ble.service.ShortUUID.CHARACTERISTIC_HARDWARE_VERSION;
+import static io.relayr.ble.service.ShortUUID.CHARACTERISTIC_MANUFACTURER;
+import static io.relayr.ble.service.ShortUUID.SERVICE_BATTERY_LEVEL;
+import static io.relayr.ble.service.ShortUUID.SERVICE_DEVICE_INFO;
 import static io.relayr.ble.service.Utils.getCharacteristicInServices;
 import static io.relayr.ble.service.Utils.getCharacteristicInServicesAsString;
+import static rx.Observable.*;
+import static rx.Observable.just;
 
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class BaseService {
@@ -54,25 +62,51 @@ public class BaseService {
     }
 
     /**
-     * Return the stored value of the Battery Level characteristic.
-     * <p>See {@link BluetoothGattCharacteristic#getValue} for details.
-     * @return Cached value of the characteristic
+     * Return an observable of the Battery Level characteristic.
+     * <p>See {@link BluetoothGatt#readCharacteristic} for details of what it's done internally.
+     * @return an observable of the Battery Level characteristic
      */
-    public int getBatteryLevel() {
+    public Observable<Integer> getBatteryLevel() {
         BluetoothGattCharacteristic characteristic = getCharacteristicInServices(
                 mBluetoothGatt.getServices(), SERVICE_BATTERY_LEVEL, CHARACTERISTIC_BATTERY_LEVEL);
-        if (characteristic == null || characteristic.getValue() == null) return -1;
-        return characteristic.getValue().length == 0? -1: characteristic.getValue()[0];
+        if (characteristic == null) {
+            return error(new GattException("Battery Level Characteristic not found."));
+        }
+        return mBluetoothGattReceiver
+                .readCharacteristic(mBluetoothGatt, characteristic)
+                .flatMap(new Func1<BluetoothGattCharacteristic, Observable<Integer>>() {
+                    @Override
+                    public Observable<Integer> call(BluetoothGattCharacteristic charac) {
+                        if (charac.getValue() == null || charac.getValue().length == 0) {
+                            error(new GattException("Battery Level Characteristic not found."));
+                        }
+                        return just((int) charac.getValue()[0]);
+                    }
+                });
     }
 
     /**
      * Return the stored value of the Firmware Version characteristic.
-     * <p>See {@link BluetoothGattCharacteristic#getValue} for details.
-     * @return Cached value of the characteristic
+     * <p>See {@link BluetoothGatt#readCharacteristic} for details of what it's done internally.
+     * @return an observable of the Firmware Version characteristic
      */
-    public String getFirmwareVersion() {
-        return getCharacteristicInServicesAsString(
+    public Observable<String> getFirmwareVersion() {
+        BluetoothGattCharacteristic characteristic = getCharacteristicInServices(
                 mBluetoothGatt.getServices(), SERVICE_DEVICE_INFO, CHARACTERISTIC_FIRMWARE_VERSION);
+        if (characteristic.getValue() == null) {
+            return error(new GattException("Firmware Version Characteristic not found."));
+        }
+        return mBluetoothGattReceiver
+                .readCharacteristic(mBluetoothGatt, characteristic)
+                .flatMap(new Func1<BluetoothGattCharacteristic, Observable<String>>() {
+                    @Override
+                    public Observable<String> call(BluetoothGattCharacteristic charac) {
+                        if (charac.getValue() == null || charac.getValue().length == 0) {
+                            error(new GattException("Firmware Version Characteristic not found."));
+                        }
+                        return just(charac.getStringValue(0));
+                    }
+                });
     }
 
     /**

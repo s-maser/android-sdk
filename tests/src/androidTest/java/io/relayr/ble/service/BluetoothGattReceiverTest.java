@@ -21,10 +21,12 @@ import static android.bluetooth.BluetoothGatt.GATT_FAILURE;
 import static android.bluetooth.BluetoothGatt.GATT_SUCCESS;
 import static android.bluetooth.BluetoothProfile.STATE_CONNECTED;
 import static android.bluetooth.BluetoothProfile.STATE_DISCONNECTED;
+import static java.util.UUID.fromString;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricTestRunner.class)
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
@@ -115,6 +117,8 @@ public class BluetoothGattReceiverTest {
         @SuppressWarnings("unchecked")
         Observer<BluetoothGattCharacteristic> observer = mock(Observer.class);
         BluetoothGattCharacteristic characteristic = mock(BluetoothGattCharacteristic.class);
+        when(characteristic.getUuid()).thenReturn(fromString("00002a19-0000-1000-8000-00805f9b34fb"));
+
         receiver.writeCharacteristic(mock(BluetoothGatt.class), characteristic)
                 .subscribe(observer);
 
@@ -128,6 +132,8 @@ public class BluetoothGattReceiverTest {
         @SuppressWarnings("unchecked")
         Observer<BluetoothGattCharacteristic> observer = mock(Observer.class);
         BluetoothGattCharacteristic characteristic = mock(BluetoothGattCharacteristic.class);
+        when(characteristic.getUuid()).thenReturn(fromString("00002a19-0000-1000-8000-00805f9b34fb"));
+
         receiver.writeCharacteristic(mock(BluetoothGatt.class), characteristic)
                 .subscribe(observer);
 

@@ -7,6 +7,7 @@ import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
 import android.os.Build;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
@@ -33,11 +34,16 @@ import static org.mockito.Mockito.when;
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class BaseServiceTest {
 
+    private BluetoothDevice device;
+
+    @Before public void initialise() {
+        device = mock(BluetoothDevice.class);
+    }
+
     @Test public void connectTest() {
         @SuppressWarnings("unchecked")
         Observer<BaseService> observer = mock(Observer.class);
 
-        final BluetoothDevice device = mock(BluetoothDevice.class);
         final BluetoothGattReceiver receiver = new BluetoothGattReceiver();
 
         BaseService
@@ -60,7 +66,6 @@ public class BaseServiceTest {
         @SuppressWarnings("unchecked")
         Observer<BluetoothGatt> observer = mock(Observer.class);
 
-        final BluetoothDevice device = mock(BluetoothDevice.class);
         final BluetoothGattReceiver receiver = new BluetoothGattReceiver();
 
         BaseService
@@ -88,8 +93,6 @@ public class BaseServiceTest {
     }
 
     @Test public void getBatteryLevelTest() {
-        BluetoothDevice device = mock(BluetoothDevice.class);
-
         BluetoothGattService service = mock(BluetoothGattService.class);
         when(service.getUuid()).thenReturn(fromString("0000180f-0000-1000-8000-00805f9b34fb"));
 
@@ -105,19 +108,25 @@ public class BaseServiceTest {
         BluetoothGatt gatt = mock(BluetoothGatt.class);
         when(gatt.getServices()).thenReturn(services);
 
-        BaseService baseService = new BaseService(device, gatt, new BluetoothGattReceiver());
-        assertEquals(100, baseService.getBatteryLevel());
+        BluetoothGattReceiver receiver = new BluetoothGattReceiver();
+        BaseService baseService = new BaseService(device, gatt, receiver);
+        @SuppressWarnings("unchecked")
+        Observer<? super Integer> observer = mock(Observer.class);
+        baseService
+                .getBatteryLevel()
+                .subscribe(observer);
+        receiver.onCharacteristicRead(gatt, characteristic, GATT_SUCCESS);
+        verify(observer).onNext(100);
     }
 
     @Test public void getFirmwareVersionTest() {
-        BluetoothDevice device = mock(BluetoothDevice.class);
-
         BluetoothGattService service = mock(BluetoothGattService.class);
         when(service.getUuid()).thenReturn(fromString("0000180A-0000-1000-8000-00805f9b34fb"));
 
         BluetoothGattCharacteristic characteristic = mock(BluetoothGattCharacteristic.class);
         String expected = "Relayr";
         when(characteristic.getStringValue(0)).thenReturn(expected);
+        when(characteristic.getValue()).thenReturn(expected.getBytes());
         when(characteristic.getUuid()).thenReturn(fromString("00002A26-0000-1000-8000-00805f9b34fb"));
 
         List<BluetoothGattCharacteristic> characteristics = Arrays.asList(characteristic);
@@ -128,13 +137,18 @@ public class BaseServiceTest {
         BluetoothGatt gatt = mock(BluetoothGatt.class);
         when(gatt.getServices()).thenReturn(services);
 
-        BaseService baseService = new BaseService(device, gatt, new BluetoothGattReceiver());
-        assertEquals(expected, baseService.getFirmwareVersion());
+        BluetoothGattReceiver receiver = new BluetoothGattReceiver();
+        BaseService baseService = new BaseService(device, gatt, receiver);
+        @SuppressWarnings("unchecked")
+        Observer<? super String> observer = mock(Observer.class);
+        baseService
+                .getFirmwareVersion()
+                .subscribe(observer);
+        receiver.onCharacteristicRead(gatt, characteristic, GATT_SUCCESS);
+        verify(observer).onNext(expected);
     }
 
     @Test public void getHardwareVersionTest() {
-        BluetoothDevice device = mock(BluetoothDevice.class);
-
         BluetoothGattService service = mock(BluetoothGattService.class);
         when(service.getUuid()).thenReturn(fromString("0000180A-0000-1000-8000-00805f9b34fb"));
 
@@ -156,8 +170,6 @@ public class BaseServiceTest {
     }
 
     @Test public void getManufacturerTest() {
-        BluetoothDevice device = mock(BluetoothDevice.class);
-
         BluetoothGattService service = mock(BluetoothGattService.class);
         when(service.getUuid()).thenReturn(fromString("0000180A-0000-1000-8000-00805f9b34fb"));
 

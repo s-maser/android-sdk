@@ -7,6 +7,10 @@ import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.os.Build;
 
+import java.util.Hashtable;
+import java.util.Map;
+import java.util.UUID;
+
 import io.relayr.RelayrApp;
 import io.relayr.ble.BluetoothGattStatus;
 import io.relayr.ble.service.error.DisconnectionException;
@@ -24,7 +28,10 @@ public class BluetoothGattReceiver extends BluetoothGattCallback {
     private volatile Subscriber<? super BluetoothGatt> mConnectionChangesSubscriber;
     private volatile Subscriber<? super BluetoothGatt> mDisconnectedSubscriber;
     private volatile Subscriber<? super BluetoothGatt> mBluetoothGattServiceSubscriber;
-    private volatile Subscriber<? super BluetoothGattCharacteristic> mWriteCharacteristicSubscriber;
+    private Map<UUID, Subscriber<? super BluetoothGattCharacteristic>>
+            mWriteCharacteristicsSubscriberMap = new Hashtable<>();
+    private Map<UUID, Subscriber<? super BluetoothGattCharacteristic>>
+            mReadCharacteristicsSubscriberMap = new Hashtable<>();
 
     public Observable<BluetoothGatt> connect(final BluetoothDevice bluetoothDevice) {
         return Observable.create(new Observable.OnSubscribe<BluetoothGatt>() {
@@ -90,7 +97,7 @@ public class BluetoothGattReceiver extends BluetoothGattCallback {
         return Observable.create(new Observable.OnSubscribe<BluetoothGattCharacteristic>() {
             @Override
             public void call(Subscriber<? super BluetoothGattCharacteristic> subscriber) {
-                mWriteCharacteristicSubscriber = subscriber;
+                mWriteCharacteristicsSubscriberMap.put(characteristic.getUuid(), subscriber);
                 bluetoothGatt.writeCharacteristic(characteristic);
             }
         });
@@ -98,10 +105,35 @@ public class BluetoothGattReceiver extends BluetoothGattCallback {
 
     @Override
     public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
+        Subscriber<? super BluetoothGattCharacteristic> subscriber =
+                mWriteCharacteristicsSubscriberMap.remove(characteristic.getUuid());
         if (status == BluetoothGatt.GATT_SUCCESS) {
-            mWriteCharacteristicSubscriber.onNext(characteristic);
+            subscriber.onNext(characteristic);
         } else {
-            mWriteCharacteristicSubscriber.onError(new WriteCharacteristicException(characteristic, status));
+            subscriber.onError(new WriteCharacteristicException(characteristic, status));
+        }
+    }
+
+    public Observable<BluetoothGattCharacteristic> readCharacteristic(
+                                                final BluetoothGatt gatt,
+                                                final BluetoothGattCharacteristic characteristic) {
+        return Observable.create(new Observable.OnSubscribe<BluetoothGattCharacteristic>() {
+            @Override
+            public void call(Subscriber<? super BluetoothGattCharacteristic> subscriber) {
+                mReadCharacteristicsSubscriberMap.put(characteristic.getUuid(), subscriber);
+                gatt.readCharacteristic(characteristic);
+            }
+        });
+    }
+
+    @Override
+    public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
+        Subscriber<? super BluetoothGattCharacteristic> subscriber =
+                mReadCharacteristicsSubscriberMap.remove(characteristic.getUuid());
+        if (status == BluetoothGatt.GATT_SUCCESS) {
+            subscriber.onNext(characteristic);
+        } else {
+            subscriber.onError(new WriteCharacteristicException(characteristic, status));
         }
     }
 }
