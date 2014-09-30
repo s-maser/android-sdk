@@ -13,12 +13,18 @@ import java.util.List;
 
 import io.relayr.RelayrApp;
 import io.relayr.ble.parser.BleDataParser;
+import io.relayr.ble.service.BaseService;
+import io.relayr.ble.service.DirectConnectionService;
+import io.relayr.ble.service.MasterModuleService;
+import io.relayr.ble.service.OnBoardingService;
 import io.relayr.ble.service.ShortUUID;
 import rx.Observable;
 import rx.Subscriber;
+import rx.functions.Func1;
 
 import static android.bluetooth.BluetoothGatt.GATT_FAILURE;
 import static android.bluetooth.BluetoothGatt.GATT_REQUEST_NOT_SUPPORTED;
+import static io.relayr.ble.BleDeviceMode.*;
 import static io.relayr.ble.BleUtils.getShortUUID;
 
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
@@ -30,6 +36,7 @@ public class BleDevice {
 	private BluetoothGattService bluetoothGattService = null;
 	private BleDeviceStatus status;
 	private Subscriber<? super String> deviceValueSubscriber;
+    private BaseService mService;
 	private final BleDeviceMode mode;
 	private final BluetoothDevice bluetoothDevice;
 	private final BleDeviceType type;
@@ -100,6 +107,10 @@ public class BleDevice {
             deviceValueSubscriber.onNext(BleDataParser.getFormattedValue(type, value));
 	}
 
+    public BaseService getService() {
+        return mService;
+    }
+
 	public BleDeviceType getType() {
 		return type;
 	}
@@ -108,6 +119,30 @@ public class BleDevice {
         setStatus(BleDeviceStatus.CONFIGURING);
 		connect(mNullableConnectionCallback);
 	}
+
+    private Observable<BaseService> cacheService(Observable<? extends BaseService> service) {
+        return service.flatMap(new Func1<BaseService, Observable<? extends BaseService>>() {
+            @Override
+            public Observable<? extends BaseService> call(BaseService baseService) {
+                mService = baseService;
+                return Observable.just(baseService);
+            }
+        });
+    }
+
+    public Observable<BaseService> newConnect() {
+        if (mService == null) {
+            if (mode == ON_BOARDING) {
+                return cacheService(OnBoardingService.connect(bluetoothDevice));
+            } else if (mode == DIRECT_CONNECTION) {
+                return cacheService(DirectConnectionService.connect(bluetoothDevice));
+            } else {
+                return cacheService(MasterModuleService.connect(bluetoothDevice));
+            }
+        } else {
+            return Observable.just(mService);
+        }
+    }
 
 	public void connect(BleDeviceConnectionCallback callback) {
         mConnectionCallback = callback == null ? mNullableConnectionCallback: callback;
@@ -172,7 +207,7 @@ public class BleDevice {
 
     private void write(byte[] bytes, String characteristicUUID, String logName) {
         assert(bytes != null);
-        if (mode != BleDeviceMode.ON_BOARDING) {
+        if (mode != ON_BOARDING) {
             mConnectionCallback.onWriteError(this, BleDeviceCharacteristic.from(characteristicUUID), GATT_REQUEST_NOT_SUPPORTED);
         } else if (bluetoothGattService != null && isConnected()) {
             List<BluetoothGattCharacteristic> characteristics = bluetoothGattService.getCharacteristics();
