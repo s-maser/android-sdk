@@ -20,11 +20,11 @@ import io.relayr.ble.service.OnBoardingService;
 import io.relayr.ble.service.ShortUUID;
 import rx.Observable;
 import rx.Subscriber;
-import rx.functions.Func1;
 
 import static android.bluetooth.BluetoothGatt.GATT_FAILURE;
 import static android.bluetooth.BluetoothGatt.GATT_REQUEST_NOT_SUPPORTED;
-import static io.relayr.ble.BleDeviceMode.*;
+import static io.relayr.ble.BleDeviceMode.DIRECT_CONNECTION;
+import static io.relayr.ble.BleDeviceMode.ON_BOARDING;
 import static io.relayr.ble.BleUtils.getShortUUID;
 
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
@@ -36,7 +36,6 @@ public class BleDevice {
 	private BluetoothGattService bluetoothGattService = null;
 	private BleDeviceStatus status;
 	private Subscriber<? super String> deviceValueSubscriber;
-    private BaseService mService;
 	private final BleDeviceMode mode;
 	private final BluetoothDevice bluetoothDevice;
 	private final BleDeviceType type;
@@ -107,10 +106,6 @@ public class BleDevice {
             deviceValueSubscriber.onNext(BleDataParser.getFormattedValue(type, value));
 	}
 
-    public BaseService getService() {
-        return mService;
-    }
-
 	public BleDeviceType getType() {
 		return type;
 	}
@@ -120,27 +115,13 @@ public class BleDevice {
 		connect(mNullableConnectionCallback);
 	}
 
-    private Observable<BaseService> cacheService(Observable<? extends BaseService> service) {
-        return service.flatMap(new Func1<BaseService, Observable<? extends BaseService>>() {
-            @Override
-            public Observable<? extends BaseService> call(BaseService baseService) {
-                mService = baseService;
-                return Observable.just(baseService);
-            }
-        });
-    }
-
-    public Observable<BaseService> newConnect() {
-        if (mService == null) {
-            if (mode == ON_BOARDING) {
-                return cacheService(OnBoardingService.connect(bluetoothDevice));
-            } else if (mode == DIRECT_CONNECTION) {
-                return cacheService(DirectConnectionService.connect(bluetoothDevice));
-            } else {
-                return cacheService(MasterModuleService.connect(bluetoothDevice));
-            }
+    public Observable<? extends BaseService> newConnect() {
+        if (mode == ON_BOARDING) {
+            return OnBoardingService.connect(bluetoothDevice).cache();
+        } else if (mode == DIRECT_CONNECTION) {
+            return DirectConnectionService.connect(bluetoothDevice).cache();
         } else {
-            return Observable.just(mService);
+            return MasterModuleService.connect(bluetoothDevice).cache();
         }
     }
 
