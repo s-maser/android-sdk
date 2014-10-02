@@ -15,6 +15,7 @@ import org.robolectric.RobolectricTestRunner;
 import java.util.Arrays;
 import java.util.List;
 
+import io.relayr.ble.service.error.CharacteristicNotFoundException;
 import rx.Observable;
 import rx.Observer;
 import rx.functions.Func1;
@@ -135,6 +136,15 @@ public class BaseServiceTest {
         receiver.onConnectionStateChange(mock(BluetoothGatt.class), GATT_SUCCESS, STATE_DISCONNECTED);
 
         verify(observer, times(1)).onNext(any(BluetoothGatt.class));
+    }
+
+    @Test public void readCharacteristic_shouldThrow_CharacteristicNotFoundException() {
+        @SuppressWarnings("unchecked")
+        Observer<BluetoothGattCharacteristic> observer = mock(Observer.class);
+        baseService
+                .readCharacteristic("non_existing_service", "non_existing_characteristic", "")
+                .subscribe(observer);
+        verify(observer, times(1)).onError(any(CharacteristicNotFoundException.class));
     }
 
     @Test public void getBatteryLevelTest() {

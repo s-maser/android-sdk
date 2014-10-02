@@ -6,7 +6,7 @@ import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.os.Build;
 
-import io.relayr.ble.service.error.GattException;
+import io.relayr.ble.service.error.CharacteristicNotFoundException;
 import rx.Observable;
 import rx.functions.Func1;
 
@@ -66,18 +66,13 @@ public class BaseService {
      * @return an observable of the Battery Level characteristic
      */
     public Observable<Integer> getBatteryLevel() {
-        BluetoothGattCharacteristic characteristic = getCharacteristicInServices(
-                mBluetoothGatt.getServices(), SERVICE_BATTERY_LEVEL, CHARACTERISTIC_BATTERY_LEVEL);
-        if (characteristic == null) {
-            return error(new GattException("Battery Level Characteristic not found."));
-        }
-        return mBluetoothGattReceiver
-                .readCharacteristic(mBluetoothGatt, characteristic)
+        final String text = "Battery Level";
+        return readCharacteristic(SERVICE_BATTERY_LEVEL, CHARACTERISTIC_BATTERY_LEVEL, text)
                 .flatMap(new Func1<BluetoothGattCharacteristic, Observable<Integer>>() {
                     @Override
                     public Observable<Integer> call(BluetoothGattCharacteristic charac) {
                         if (charac.getValue() == null || charac.getValue().length == 0) {
-                            error(new GattException("Battery Level Characteristic not found."));
+                            error(new CharacteristicNotFoundException(text));
                         }
                         return just((int) charac.getValue()[0]);
                     }
@@ -94,23 +89,29 @@ public class BaseService {
         return readStringCharacteristic(SERVICE_DEVICE_INFO, CHARACTERISTIC_FIRMWARE_VERSION, text);
     }
 
+    Observable<BluetoothGattCharacteristic> readCharacteristic(String serviceUuid,
+                                                               String characteristicUuid,
+                                                               final String what) {
+
+        BluetoothGattCharacteristic characteristic = getCharacteristicInServices(
+                mBluetoothGatt.getServices(), serviceUuid, characteristicUuid);
+        if (characteristic == null) {
+            return error(new CharacteristicNotFoundException(what));
+        }
+        return mBluetoothGattReceiver.readCharacteristic(mBluetoothGatt, characteristic);
+    }
+
 
     private Observable<String> readStringCharacteristic(String serviceUuid,
                                                         String characteristicUuid,
                                                         final String what) {
-        BluetoothGattCharacteristic characteristic = getCharacteristicInServices(
-                mBluetoothGatt.getServices(), serviceUuid, characteristicUuid);
-        if (characteristic == null) {
-            return error(new GattException(what + " Characteristic not found."));
-        }
-        return mBluetoothGattReceiver
-                .readCharacteristic(mBluetoothGatt, characteristic)
+        return readCharacteristic(serviceUuid, characteristicUuid, what)
                 .flatMap(new Func1<BluetoothGattCharacteristic, Observable<String>>() {
                     @Override
                     public Observable<String> call(BluetoothGattCharacteristic charac) {
                         String value = charac.getStringValue(0);
                         if (value == null) {
-                            error(new GattException(what + " Characteristic not found."));
+                            return error(new CharacteristicNotFoundException(what));
                         }
                         return just(value);
                     }
