@@ -7,9 +7,9 @@ import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.os.Build;
 
-import java.util.Hashtable;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 import io.relayr.RelayrApp;
 import io.relayr.ble.BluetoothGattStatus;
@@ -28,10 +28,10 @@ public class BluetoothGattReceiver extends BluetoothGattCallback {
     private volatile Subscriber<? super BluetoothGatt> mConnectionChangesSubscriber;
     private volatile Subscriber<? super BluetoothGatt> mDisconnectedSubscriber;
     private volatile Subscriber<? super BluetoothGatt> mBluetoothGattServiceSubscriber;
-    private Map<UUID, Subscriber<? super BluetoothGattCharacteristic>>
-            mWriteCharacteristicsSubscriberMap = new Hashtable<>();
-    private Map<UUID, Subscriber<? super BluetoothGattCharacteristic>>
-            mReadCharacteristicsSubscriberMap = new Hashtable<>();
+    private volatile Map<UUID, Subscriber<? super BluetoothGattCharacteristic>>
+            mWriteCharacteristicsSubscriberMap = new ConcurrentHashMap<>();
+    private volatile Map<UUID, Subscriber<? super BluetoothGattCharacteristic>>
+            mReadCharacteristicsSubscriberMap = new ConcurrentHashMap<>();
 
     public Observable<BluetoothGatt> connect(final BluetoothDevice bluetoothDevice) {
         return Observable.create(new Observable.OnSubscribe<BluetoothGatt>() {
@@ -113,7 +113,6 @@ public class BluetoothGattReceiver extends BluetoothGattCallback {
             subscriber.onError(new WriteCharacteristicException(characteristic, status));
         }
     }
-
     public Observable<BluetoothGattCharacteristic> readCharacteristic(
                                                 final BluetoothGatt gatt,
                                                 final BluetoothGattCharacteristic characteristic) {
