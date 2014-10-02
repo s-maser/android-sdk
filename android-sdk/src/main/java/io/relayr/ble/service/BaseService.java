@@ -53,8 +53,8 @@ public class BaseService {
     }
 
     protected Observable<BluetoothGattCharacteristic> write(byte[] bytes,
-                                                          String serviceUuid,
-                                                          String characteristicUuid) {
+                                                            String serviceUuid,
+                                                            String characteristicUuid) {
         BluetoothGattCharacteristic characteristic = getCharacteristicInServices(
                 mBluetoothGatt.getServices(), serviceUuid, characteristicUuid);
         characteristic.setValue(bytes);
@@ -93,7 +93,7 @@ public class BaseService {
     public Observable<String> getFirmwareVersion() {
         BluetoothGattCharacteristic characteristic = getCharacteristicInServices(
                 mBluetoothGatt.getServices(), SERVICE_DEVICE_INFO, CHARACTERISTIC_FIRMWARE_VERSION);
-        if (characteristic.getValue() == null) {
+        if (characteristic == null) {
             return error(new GattException("Firmware Version Characteristic not found."));
         }
         return mBluetoothGattReceiver
@@ -101,10 +101,11 @@ public class BaseService {
                 .flatMap(new Func1<BluetoothGattCharacteristic, Observable<String>>() {
                     @Override
                     public Observable<String> call(BluetoothGattCharacteristic charac) {
-                        if (charac.getValue() == null || charac.getValue().length == 0) {
+                        String value = charac.getStringValue(0);
+                        if (value == null) {
                             error(new GattException("Firmware Version Characteristic not found."));
                         }
-                        return just(charac.getStringValue(0));
+                        return just(value);
                     }
                 });
     }
