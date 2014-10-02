@@ -8,7 +8,6 @@ import android.bluetooth.BluetoothGattService;
 import android.os.Build;
 import android.util.Log;
 
-import java.lang.reflect.Method;
 import java.util.List;
 
 import io.relayr.RelayrApp;
@@ -208,16 +207,7 @@ public class BleDevice {
     }
 
  	private boolean refreshDeviceCache() {
-	    try {
-	        BluetoothGatt localBluetoothGatt = gatt;
-	        Method localMethod = localBluetoothGatt.getClass().getMethod("refresh", new Class[0]);
-	        if (localMethod != null) {
-                return (Boolean) localMethod.invoke(localBluetoothGatt);
-	         }
-	    } catch (Exception localException) {
-	        Log.e(TAG, "An exception occurred while refreshing device");
-	    }
-	    return false;
+        return  DeviceCompatibilityUtils.refresh(gatt);
 	}
 
 	public Observable<String> subscribeToDeviceValueChanges() {
