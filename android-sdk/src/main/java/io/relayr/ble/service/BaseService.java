@@ -17,8 +17,7 @@ import static io.relayr.ble.service.ShortUUID.CHARACTERISTIC_MANUFACTURER;
 import static io.relayr.ble.service.ShortUUID.SERVICE_BATTERY_LEVEL;
 import static io.relayr.ble.service.ShortUUID.SERVICE_DEVICE_INFO;
 import static io.relayr.ble.service.Utils.getCharacteristicInServices;
-import static io.relayr.ble.service.Utils.getCharacteristicInServicesAsString;
-import static rx.Observable.*;
+import static rx.Observable.error;
 import static rx.Observable.just;
 
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
@@ -86,15 +85,23 @@ public class BaseService {
     }
 
     /**
-     * Return the stored value of the Firmware Version characteristic.
+     * Return an observable of the Firmware Version characteristic.
      * <p>See {@link BluetoothGatt#readCharacteristic} for details of what it's done internally.
      * @return an observable of the Firmware Version characteristic
      */
     public Observable<String> getFirmwareVersion() {
+        String text = "Firmware Version";
+        return readStringCharacteristic(SERVICE_DEVICE_INFO, CHARACTERISTIC_FIRMWARE_VERSION, text);
+    }
+
+
+    private Observable<String> readStringCharacteristic(String serviceUuid,
+                                                        String characteristicUuid,
+                                                        final String what) {
         BluetoothGattCharacteristic characteristic = getCharacteristicInServices(
-                mBluetoothGatt.getServices(), SERVICE_DEVICE_INFO, CHARACTERISTIC_FIRMWARE_VERSION);
+                mBluetoothGatt.getServices(), serviceUuid, characteristicUuid);
         if (characteristic == null) {
-            return error(new GattException("Firmware Version Characteristic not found."));
+            return error(new GattException(what + " Characteristic not found."));
         }
         return mBluetoothGattReceiver
                 .readCharacteristic(mBluetoothGatt, characteristic)
@@ -103,7 +110,7 @@ public class BaseService {
                     public Observable<String> call(BluetoothGattCharacteristic charac) {
                         String value = charac.getStringValue(0);
                         if (value == null) {
-                            error(new GattException("Firmware Version Characteristic not found."));
+                            error(new GattException(what + " Characteristic not found."));
                         }
                         return just(value);
                     }
@@ -111,23 +118,23 @@ public class BaseService {
     }
 
     /**
-     * Return the stored value of the Hardware Version characteristic.
-     * <p>See {@link BluetoothGattCharacteristic#getValue} for details.
-     * @return Cached value of the characteristic
+     * Return an observable of the Hardware Version characteristic.
+     * <p>See {@link BluetoothGatt#readCharacteristic} for details of what it's done internally.
+     * @return an observable of the Hardware Version characteristic
      */
-    public String getHardwareVersion() {
-        return getCharacteristicInServicesAsString(
-                mBluetoothGatt.getServices(), SERVICE_DEVICE_INFO, CHARACTERISTIC_HARDWARE_VERSION);
+    public Observable<String> getHardwareVersion() {
+        String text = "Hardware Version";
+        return readStringCharacteristic(SERVICE_DEVICE_INFO, CHARACTERISTIC_HARDWARE_VERSION, text);
     }
 
     /**
-     * Return the stored value of the Manufacturer characteristic.
-     * <p>See {@link BluetoothGattCharacteristic#getValue} for details.
-     * @return Cached value of the characteristic
+     * Return an observable of the Manufacturer characteristic.
+     * <p>See {@link BluetoothGatt#readCharacteristic} for details of what it's done internally.
+     * @return an observable of the Manufacturer characteristic
      */
-    public String getManufacturer() {
-        return getCharacteristicInServicesAsString(
-                mBluetoothGatt.getServices(), SERVICE_DEVICE_INFO, CHARACTERISTIC_MANUFACTURER);
+    public Observable<String> getManufacturer() {
+        String text = "Manufacturer";
+        return readStringCharacteristic(SERVICE_DEVICE_INFO, CHARACTERISTIC_MANUFACTURER, text);
     }
 
 }

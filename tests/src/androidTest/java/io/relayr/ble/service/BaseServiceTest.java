@@ -23,7 +23,6 @@ import static android.bluetooth.BluetoothGatt.GATT_SUCCESS;
 import static android.bluetooth.BluetoothProfile.STATE_CONNECTED;
 import static android.bluetooth.BluetoothProfile.STATE_DISCONNECTED;
 import static java.util.UUID.fromString;
-import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -153,7 +152,7 @@ public class BaseServiceTest {
         when(service.getUuid()).thenReturn(fromString("0000180A-0000-1000-8000-00805f9b34fb"));
 
         BluetoothGattCharacteristic characteristic = mock(BluetoothGattCharacteristic.class);
-        String expected = "Relayr";
+        String expected = "1.0.0";
         when(characteristic.getStringValue(0)).thenReturn(expected);
         when(characteristic.getUuid()).thenReturn(fromString("00002a27-0000-1000-8000-00805f9b34fb"));
 
@@ -165,8 +164,15 @@ public class BaseServiceTest {
         BluetoothGatt gatt = mock(BluetoothGatt.class);
         when(gatt.getServices()).thenReturn(services);
 
-        BaseService baseService = new BaseService(device, gatt, new BluetoothGattReceiver());
-        assertEquals(expected, baseService.getHardwareVersion());
+        BluetoothGattReceiver receiver = new BluetoothGattReceiver();
+        BaseService baseService = new BaseService(device, gatt, receiver);
+        @SuppressWarnings("unchecked")
+        Observer<? super String> observer = mock(Observer.class);
+        baseService
+                .getHardwareVersion()
+                .subscribe(observer);
+        receiver.onCharacteristicRead(gatt, characteristic, GATT_SUCCESS);
+        verify(observer).onNext(expected);
     }
 
     @Test public void getManufacturerTest() {
@@ -186,8 +192,15 @@ public class BaseServiceTest {
         BluetoothGatt gatt = mock(BluetoothGatt.class);
         when(gatt.getServices()).thenReturn(services);
 
-        BaseService baseService = new BaseService(device, gatt, new BluetoothGattReceiver());
-        assertEquals(expected, baseService.getManufacturer());
+        BluetoothGattReceiver receiver = new BluetoothGattReceiver();
+        BaseService baseService = new BaseService(device, gatt, receiver);
+        @SuppressWarnings("unchecked")
+        Observer<? super String> observer = mock(Observer.class);
+        baseService
+                .getManufacturer()
+                .subscribe(observer);
+        receiver.onCharacteristicRead(gatt, characteristic, GATT_SUCCESS);
+        verify(observer).onNext(expected);
     }
 
 }
