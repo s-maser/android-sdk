@@ -23,7 +23,7 @@ public class OnBoardingService extends BaseService {
 
     public static Observable<OnBoardingService> connect(final BluetoothDevice bluetoothDevice) {
         final BluetoothGattReceiver receiver = new BluetoothGattReceiver();
-        return doConnect(bluetoothDevice, new BluetoothGattReceiver())
+        return doConnect(bluetoothDevice, receiver)
                 .flatMap(new Func1<BluetoothGatt, Observable<OnBoardingService>>() {
                     @Override
                     public Observable<OnBoardingService> call(BluetoothGatt gatt) {

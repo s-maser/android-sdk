@@ -26,7 +26,7 @@ public class DirectConnectionService extends BaseService {
 
     public static Observable<DirectConnectionService> connect(final BluetoothDevice bluetoothDevice) {
         final BluetoothGattReceiver receiver = new BluetoothGattReceiver();
-        return doConnect(bluetoothDevice, new BluetoothGattReceiver())
+        return doConnect(bluetoothDevice, receiver)
                 .flatMap(new Func1<BluetoothGatt, Observable<DirectConnectionService>>() {
                     @Override
                     public Observable<DirectConnectionService> call(BluetoothGatt gatt) {

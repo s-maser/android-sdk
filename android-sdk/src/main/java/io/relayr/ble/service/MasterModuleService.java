@@ -13,7 +13,7 @@ public class MasterModuleService extends BaseService {
 
     public static Observable<MasterModuleService> connect(final BluetoothDevice bluetoothDevice) {
         final BluetoothGattReceiver receiver = new BluetoothGattReceiver();
-        return doConnect(bluetoothDevice, new BluetoothGattReceiver())
+        return doConnect(bluetoothDevice, receiver)
                 .flatMap(new Func1<BluetoothGatt, Observable<MasterModuleService>>() {
                     @Override
                     public Observable<MasterModuleService> call(BluetoothGatt gatt) {
