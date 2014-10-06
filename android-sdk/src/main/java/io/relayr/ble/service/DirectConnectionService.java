@@ -4,6 +4,7 @@ import android.annotation.TargetApi;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
+import android.bluetooth.BluetoothGattDescriptor;
 import android.os.Build;
 
 import java.util.UUID;
@@ -21,8 +22,10 @@ import static io.relayr.ble.service.ShortUUID.CHARACTERISTIC_SENSOR_FREQUENCY;
 import static io.relayr.ble.service.ShortUUID.CHARACTERISTIC_SENSOR_ID;
 import static io.relayr.ble.service.ShortUUID.CHARACTERISTIC_SENSOR_LED_STATE;
 import static io.relayr.ble.service.ShortUUID.CHARACTERISTIC_SENSOR_THRESHOLD;
+import static io.relayr.ble.service.ShortUUID.DESCRIPTOR_DATA_NOTIFICATIONS;
 import static io.relayr.ble.service.ShortUUID.SERVICE_DIRECT_CONNECTION;
 import static io.relayr.ble.service.Utils.getCharacteristicInServices;
+import static io.relayr.ble.service.Utils.getDescriptorInCharacteristic;
 import static rx.Observable.error;
 import static rx.Observable.just;
 
@@ -66,7 +69,10 @@ public class DirectConnectionService extends BaseService {
     public Observable<String> getReadings() {
         BluetoothGattCharacteristic characteristic = getCharacteristicInServices(
                 mBluetoothGatt.getServices(), SERVICE_DIRECT_CONNECTION, CHARACTERISTIC_SENSOR_DATA);
-        return mBluetoothGattReceiver.subscribeToCharacteristicChanges(mBluetoothGatt, characteristic)
+        BluetoothGattDescriptor descriptor = getDescriptorInCharacteristic(
+                characteristic, DESCRIPTOR_DATA_NOTIFICATIONS);
+        return mBluetoothGattReceiver
+                .subscribeToCharacteristicChanges(mBluetoothGatt, characteristic, descriptor)
                 .flatMap(new Func1<BluetoothGattCharacteristic, Observable<String>>() {
                     @Override
                     public Observable<String> call(BluetoothGattCharacteristic characteristic) {

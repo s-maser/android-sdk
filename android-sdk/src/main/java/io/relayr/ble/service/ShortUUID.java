@@ -26,4 +26,7 @@ public interface ShortUUID {
     static String CHARACTERISTIC_SENSOR_THRESHOLD = "2014";
     static String CHARACTERISTIC_SENSOR_CONFIGURATION = "2015";
     static String CHARACTERISTIC_SENSOR_DATA = "2016";
+
+    static String DESCRIPTOR_DATA_NOTIFICATIONS = "2902";
+
 }

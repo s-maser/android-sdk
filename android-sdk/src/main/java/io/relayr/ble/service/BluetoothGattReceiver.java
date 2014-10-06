@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
+import android.bluetooth.BluetoothGattDescriptor;
 import android.os.Build;
 
 import java.util.Map;
@@ -19,6 +20,7 @@ import io.relayr.ble.service.error.WriteCharacteristicException;
 import rx.Observable;
 import rx.Subscriber;
 
+import static android.bluetooth.BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE;
 import static android.bluetooth.BluetoothProfile.STATE_CONNECTED;
 import static android.bluetooth.BluetoothProfile.STATE_DISCONNECTED;
 
@@ -140,15 +142,15 @@ public class BluetoothGattReceiver extends BluetoothGattCallback {
 
     public Observable<BluetoothGattCharacteristic> subscribeToCharacteristicChanges(
             final BluetoothGatt gatt,
-            final BluetoothGattCharacteristic characteristic) {
+            final BluetoothGattCharacteristic characteristic,
+            final BluetoothGattDescriptor descriptor) {
         return Observable.create(new Observable.OnSubscribe<BluetoothGattCharacteristic>() {
             @Override
             public void call(Subscriber<? super BluetoothGattCharacteristic> subscriber) {
                 mValueChangesSubscriber = subscriber;
                 gatt.setCharacteristicNotification(characteristic, true);
-                //BluetoothGattDescriptor descriptor = characteristic.getDescriptor(RELAYR_NOTIFICATION_CHARACTERISTIC);
-                //descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-                //gatt.writeDescriptor(descriptor);
+                descriptor.setValue(ENABLE_NOTIFICATION_VALUE);
+                gatt.writeDescriptor(descriptor);
             }
         });
     }

@@ -2,6 +2,7 @@ package io.relayr.ble.service;
 
 import android.annotation.TargetApi;
 import android.bluetooth.BluetoothGattCharacteristic;
+import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.os.Build;
 
@@ -39,6 +40,17 @@ abstract class Utils {
         if (service == null) return null;
 
         return getCharacteristicForUuid(service.getCharacteristics(), characteristicUuid);
+    }
+
+    static BluetoothGattDescriptor getDescriptorInCharacteristic(
+            BluetoothGattCharacteristic characteristic,
+            String shortUuid) {
+        List<BluetoothGattDescriptor> descriptors = characteristic.getDescriptors();
+        for (BluetoothGattDescriptor descriptor: descriptors) {
+            String descriptorUuid = getShortUUID(descriptor.getUuid());
+            if (shortUuid.equals(descriptorUuid)) return  descriptor;
+        }
+        return null;
     }
 
     static String getCharacteristicInServicesAsString(List<BluetoothGattService> services,
