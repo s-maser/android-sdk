@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.os.Build;
 
+import io.relayr.ble.DeviceCompatibilityUtils;
 import rx.Observable;
 import rx.functions.Func1;
 
@@ -15,7 +16,6 @@ import static io.relayr.ble.service.ShortUUID.CHARACTERISTIC_SENSOR_ID;
 import static io.relayr.ble.service.ShortUUID.CHARACTERISTIC_SENSOR_LED_STATE;
 import static io.relayr.ble.service.ShortUUID.CHARACTERISTIC_SENSOR_THRESHOLD;
 import static io.relayr.ble.service.ShortUUID.SERVICE_DIRECT_CONNECTION;
-import static io.relayr.ble.service.Utils.getCharacteristicInServicesAsString;
 
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class DirectConnectionService extends BaseService {
@@ -27,6 +27,23 @@ public class DirectConnectionService extends BaseService {
     public static Observable<DirectConnectionService> connect(final BluetoothDevice bluetoothDevice) {
         final BluetoothGattReceiver receiver = new BluetoothGattReceiver();
         return doConnect(bluetoothDevice, receiver)
+                .flatMap(new Func1<BluetoothGatt, Observable<? extends BluetoothGatt>>() {
+                    @Override
+                    public Observable<? extends BluetoothGatt> call(final BluetoothGatt gatt) {
+                        int state = bluetoothDevice.getBondState();
+
+                        if (state == BluetoothDevice.BOND_BONDED) {
+                            return Observable.just(gatt);
+                        } else if (state == BluetoothDevice.BOND_BONDING) {
+                            return BondingReceiver.subscribeForBondStateChanges(gatt);
+                        } //else if (state == BluetoothDevice.BOND_NONE) {
+
+                        Observable<BluetoothGatt> bluetoothGattObservable =
+                                BondingReceiver.subscribeForBondStateChanges(gatt);
+                        DeviceCompatibilityUtils.createBond(bluetoothDevice);
+                        return bluetoothGattObservable;
+                    }
+                })
                 .flatMap(new Func1<BluetoothGatt, Observable<DirectConnectionService>>() {
                     @Override
                     public Observable<DirectConnectionService> call(BluetoothGatt gatt) {
