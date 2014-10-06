@@ -51,6 +51,8 @@ public class DirectConnectionService extends BaseService {
      * Reads the sensorFrequency characteristic to the associated remote device. This is the time
      * difference between two ble events are sent.
      *
+     * <p>See {@link BluetoothGatt#readCharacteristic} for details of what it's done internally.
+     *
      * @return Observable<Integer>, an observable of the sensor frequency value
      */
     public Observable<Integer> readSensorFrequency() {
@@ -60,8 +62,24 @@ public class DirectConnectionService extends BaseService {
     }
 
     /**
+     * Reads the SensorThreshold characteristic to the associated remote device. This is the
+     * magnitude or intensity that must be exceeded for a sensor to register a change.
+     *
+     * <p>See {@link BluetoothGatt#readCharacteristic} for details of what it's done internally.
+     *
+     * @return Observable<Float>, an observable of the sensor threshold value
+     */
+    /*TODO: public Observable<Float> readSensorThreshold() {
+        final String text = "Sensor Frequency";
+        return readIntegerCharacteristic(
+                SERVICE_DIRECT_CONNECTION, CHARACTERISTIC_SENSOR_THRESHOLD, text);
+    }*/
+
+    /**
      * Writes the sensorFrequency characteristic to the associated remote device. This is the time
      * difference between two ble events are sent.
+     *
+     * <p>See {@link BluetoothGatt#writeCharacteristic} for details of what it's done internally.
      *
      * @param sensorFrequency Bytes to write on the remote device
      * @return Observable<BluetoothGattCharacteristic>, an observable of what will be written in the
@@ -71,11 +89,11 @@ public class DirectConnectionService extends BaseService {
         return write(sensorFrequency, SERVICE_DIRECT_CONNECTION, CHARACTERISTIC_SENSOR_FREQUENCY);
     }
 
-    public void readSensorLedState() {}// 2013
-
     /**
      * Writes the sensorLedState characteristic to the associated remote device. It will turn the
      * LED on or off accordingly if the operation is done successfully.
+     *
+     * <p>See {@link BluetoothGatt#writeCharacteristic} for details of what it's done internally.
      *
      * @param sensorLedState Bytes to write on the remote device
      * @return Observable<BluetoothGattCharacteristic>, an observable of what will be written in the
@@ -89,6 +107,8 @@ public class DirectConnectionService extends BaseService {
      * Writes the sensorThreshold characteristic to the associated remote device. This is the
      * magnitude or intensity that must be exceeded for a sensor to register a change.
      *
+     * <p>See {@link BluetoothGatt#writeCharacteristic} for details of what it's done internally.
+     *
      * @param sensorThreshold Bytes to write on the remote device
      * @return Observable<BluetoothGattCharacteristic>, an observable of what will be written in the
      * device
@@ -99,6 +119,8 @@ public class DirectConnectionService extends BaseService {
 
     /**
      * Writes the sensorConfig characteristic to the associated remote device.
+     *
+     * <p>See {@link BluetoothGatt#writeCharacteristic} for details of what it's done internally.
      *
      * @param configuration Bytes to write on the remote device
      * @return Observable<BluetoothGattCharacteristic>, an observable of what will be written in the
