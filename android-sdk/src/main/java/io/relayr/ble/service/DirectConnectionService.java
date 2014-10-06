@@ -25,7 +25,7 @@ import static rx.Observable.just;
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class DirectConnectionService extends BaseService {
 
-    private DirectConnectionService(BluetoothDevice device, BluetoothGatt gatt, BluetoothGattReceiver receiver) {
+    DirectConnectionService(BluetoothDevice device, BluetoothGatt gatt, BluetoothGattReceiver receiver) {
         super(device, gatt, receiver);
     }
 
@@ -62,7 +62,7 @@ public class DirectConnectionService extends BaseService {
      * <p>See {@link BluetoothGatt#readCharacteristic} for details of what it's done internally.
      * @return an observable of the Sensor Id characteristic
      */
-    public Observable<UUID> readSensorId() {
+    public Observable<UUID> getSensorId() {
         final String text = "Sensor Id";
         return readCharacteristic(SERVICE_DIRECT_CONNECTION, CHARACTERISTIC_SENSOR_ID, text)
                 .flatMap(new Func1<BluetoothGattCharacteristic, Observable<UUID>>() {
@@ -87,7 +87,7 @@ public class DirectConnectionService extends BaseService {
      *
      * @return Observable<Integer>, an observable of the sensor frequency value
      */
-    public Observable<Integer> readSensorFrequency() {
+    public Observable<Integer> getSensorFrequency() {
         final String text = "Sensor Frequency";
         return readIntegerCharacteristic(
                 SERVICE_DIRECT_CONNECTION, CHARACTERISTIC_SENSOR_FREQUENCY, text);
