@@ -10,6 +10,7 @@ import io.relayr.ble.service.error.CharacteristicNotFoundException;
 import rx.Observable;
 import rx.functions.Func1;
 
+import static android.bluetooth.BluetoothGattCharacteristic.FORMAT_UINT16;
 import static io.relayr.ble.service.ShortUUID.CHARACTERISTIC_BATTERY_LEVEL;
 import static io.relayr.ble.service.ShortUUID.CHARACTERISTIC_FIRMWARE_VERSION;
 import static io.relayr.ble.service.ShortUUID.CHARACTERISTIC_HARDWARE_VERSION;
@@ -67,7 +68,16 @@ public class BaseService {
      */
     public Observable<Integer> getBatteryLevel() {
         final String text = "Battery Level";
-        return readIntegerCharacteristic(SERVICE_BATTERY_LEVEL, CHARACTERISTIC_BATTERY_LEVEL, text);
+        return readCharacteristic(SERVICE_BATTERY_LEVEL, CHARACTERISTIC_BATTERY_LEVEL, text)
+                .flatMap(new Func1<BluetoothGattCharacteristic, Observable<Integer>>() {
+                    @Override
+                    public Observable<Integer> call(BluetoothGattCharacteristic charac) {
+                        if (charac.getValue() == null || charac.getValue().length == 0) {
+                            error(new CharacteristicNotFoundException(text));
+                        }
+                        return just((int) charac.getValue()[0]);
+                    }
+                });
     }
 
     /**
@@ -102,7 +112,7 @@ public class BaseService {
                         if (charac.getValue() == null || charac.getValue().length == 0) {
                             error(new CharacteristicNotFoundException(what));
                         }
-                        return just((int) charac.getValue()[0]);
+                        return just(charac.getIntValue(FORMAT_UINT16, 0));
                     }
                 });
     }
