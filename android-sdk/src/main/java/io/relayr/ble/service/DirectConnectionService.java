@@ -49,6 +49,12 @@ public class DirectConnectionService extends BaseService {
 
     //public void readBeaconFrequency() {} // 2011
 
+    /**
+     * Reads the sensorFrequency characteristic to the associated remote device. This is the time
+     * difference between two ble events are sent.
+     *
+     * @return Observable<Integer>, an observable of the sensor frequency value
+     */
     public Observable<Integer> readSensorFrequency() {
         final String text = "Sensor Frequency";
         return readIntegerCharacteristic(
