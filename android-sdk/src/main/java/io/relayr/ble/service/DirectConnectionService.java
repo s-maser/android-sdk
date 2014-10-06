@@ -36,15 +36,13 @@ public class DirectConnectionService extends BaseService {
     }
 
     /**
-     * Return the stored value of the Battery Level characteristic. It doesn't query it again
-     * because in this mode the value cannot be changed therefore it doesn't need to be requested
-     * again.
-     * <p>See {@link android.bluetooth.BluetoothGattCharacteristic#getValue} for details.
-     * @return Cached value of the characteristic
+     * Return an observable of the Sensor Id characteristic.
+     * <p>See {@link BluetoothGatt#readCharacteristic} for details of what it's done internally.
+     * @return an observable of the Sensor Id characteristic
      */
-    public String readSensorId() {
-        return getCharacteristicInServicesAsString(
-                mBluetoothGatt.getServices(), SERVICE_DIRECT_CONNECTION, CHARACTERISTIC_SENSOR_ID);
+    public Observable<String> readSensorId() {
+        String text = "Sensor Id";
+        return readStringCharacteristic(SERVICE_DIRECT_CONNECTION, CHARACTERISTIC_SENSOR_ID, text);
     }
 
     //public void readBeaconFrequency() {} // 2011
