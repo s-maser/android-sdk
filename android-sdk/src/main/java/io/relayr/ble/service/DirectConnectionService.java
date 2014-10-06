@@ -69,6 +69,9 @@ public class DirectConnectionService extends BaseService {
     public Observable<String> getReadings() {
         BluetoothGattCharacteristic characteristic = getCharacteristicInServices(
                 mBluetoothGatt.getServices(), SERVICE_DIRECT_CONNECTION, CHARACTERISTIC_SENSOR_DATA);
+        if (characteristic == null) {
+            return error(new CharacteristicNotFoundException("Readings"));
+        }
         BluetoothGattDescriptor descriptor = getDescriptorInCharacteristic(
                 characteristic, DESCRIPTOR_DATA_NOTIFICATIONS);
         return mBluetoothGattReceiver
