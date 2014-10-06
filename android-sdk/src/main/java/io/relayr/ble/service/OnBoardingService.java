@@ -19,9 +19,8 @@ import static rx.Observable.just;
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class OnBoardingService extends BaseService {
 
-    protected OnBoardingService(BleDevice bleDevice, BluetoothDevice device, BluetoothGatt gatt,
-                                BluetoothGattReceiver receiver) {
-        super(bleDevice, device, gatt, receiver);
+    protected OnBoardingService(BleDevice device, BluetoothGatt gatt, BluetoothGattReceiver receiver) {
+        super(device, gatt, receiver);
     }
 
     public static Observable<OnBoardingService> connect(final BleDevice bleDevice,
@@ -31,7 +30,7 @@ public class OnBoardingService extends BaseService {
                 .flatMap(new Func1<BluetoothGatt, Observable<OnBoardingService>>() {
                     @Override
                     public Observable<OnBoardingService> call(BluetoothGatt gatt) {
-                        return just(new OnBoardingService(bleDevice, device, gatt, receiver));
+                        return just(new OnBoardingService(bleDevice, gatt, receiver));
                     }
                 });
     }

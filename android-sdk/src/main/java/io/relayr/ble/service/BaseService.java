@@ -1,7 +1,6 @@
 package io.relayr.ble.service;
 
 import android.annotation.TargetApi;
-import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.os.Build;
@@ -25,10 +24,9 @@ public class BaseService extends Service {
 
     protected final BleDevice mBleDevice;
 
-    protected BaseService(BleDevice bleDevice, BluetoothDevice device, BluetoothGatt gatt,
-                          BluetoothGattReceiver receiver) {
-        super(device, gatt, receiver);
-        mBleDevice = bleDevice;
+    protected BaseService(BleDevice device, BluetoothGatt gatt, BluetoothGattReceiver receiver) {
+        super(gatt, receiver);
+        mBleDevice = device;
     }
 
     public Observable<? extends BluetoothGatt> disconnect() {

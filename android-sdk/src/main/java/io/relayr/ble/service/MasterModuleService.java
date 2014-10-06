@@ -10,9 +10,9 @@ import rx.functions.Func1;
 import static rx.Observable.just;
 
 public class MasterModuleService extends BaseService {
-    protected MasterModuleService(BleDevice bleDevice, BluetoothDevice device, BluetoothGatt gatt,
+    protected MasterModuleService(BleDevice device, BluetoothGatt gatt,
                                   BluetoothGattReceiver receiver) {
-        super(bleDevice, device, gatt, receiver);
+        super(device, gatt, receiver);
     }
 
     public static Observable<MasterModuleService> connect(final BleDevice bleDevice,
@@ -22,7 +22,7 @@ public class MasterModuleService extends BaseService {
                 .flatMap(new Func1<BluetoothGatt, Observable<MasterModuleService>>() {
                     @Override
                     public Observable<MasterModuleService> call(BluetoothGatt gatt) {
-                        return just(new MasterModuleService(bleDevice, device, gatt, receiver));
+                        return just(new MasterModuleService(bleDevice, gatt, receiver));
                     }
                 });
     }

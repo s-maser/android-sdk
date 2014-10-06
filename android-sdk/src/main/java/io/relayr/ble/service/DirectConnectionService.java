@@ -32,9 +32,8 @@ import static rx.Observable.just;
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class DirectConnectionService extends BaseService {
 
-    DirectConnectionService(BleDevice bleDevice, BluetoothDevice device, BluetoothGatt gatt,
-                            BluetoothGattReceiver receiver) {
-        super(bleDevice, device, gatt, receiver);
+    DirectConnectionService(BleDevice device, BluetoothGatt gatt, BluetoothGattReceiver receiver) {
+        super(device, gatt, receiver);
     }
 
     public static Observable<DirectConnectionService> connect(final BleDevice bleDevice,
@@ -61,7 +60,7 @@ public class DirectConnectionService extends BaseService {
                 .flatMap(new Func1<BluetoothGatt, Observable<DirectConnectionService>>() {
                     @Override
                     public Observable<DirectConnectionService> call(BluetoothGatt gatt) {
-                        return just(new DirectConnectionService(bleDevice, device, gatt, receiver));
+                        return just(new DirectConnectionService(bleDevice, gatt, receiver));
                     }
                 });
     }

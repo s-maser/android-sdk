@@ -18,12 +18,10 @@ import static rx.Observable.just;
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 class Service {
 
-    protected final BluetoothDevice mBluetoothDevice;
     protected final BluetoothGatt mBluetoothGatt;
     protected final BluetoothGattReceiver mBluetoothGattReceiver;
 
-    protected Service(BluetoothDevice device, BluetoothGatt gatt, BluetoothGattReceiver receiver) {
-        mBluetoothDevice = device;
+    protected Service(BluetoothGatt gatt, BluetoothGattReceiver receiver) {
         mBluetoothGatt = gatt;
         mBluetoothGattReceiver = receiver;
     }

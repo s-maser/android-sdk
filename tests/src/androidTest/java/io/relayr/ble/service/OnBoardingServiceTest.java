@@ -1,7 +1,6 @@
 package io.relayr.ble.service;
 
 import android.annotation.TargetApi;
-import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
@@ -36,7 +35,6 @@ public class OnBoardingServiceTest {
     @Before public void initialise() {
         BleDevice bleDevice = mock(BleDevice.class);
         when(bleDevice.getType()).thenReturn(BleDeviceType.WunderbarMIC);
-        BluetoothDevice device = mock(BluetoothDevice.class);
         BluetoothGatt gatt = mock(BluetoothGatt.class);
         BluetoothGattService gattService = mock(BluetoothGattService.class);
         when(gatt.getServices()).thenReturn(Arrays.asList(gattService));
@@ -44,7 +42,7 @@ public class OnBoardingServiceTest {
         characteristic = mock(BluetoothGattCharacteristic.class);
         when(gattService.getCharacteristics()).thenReturn(Arrays.asList(characteristic));
 
-        service = new OnBoardingService(bleDevice, device, gatt, receiver);
+        service = new OnBoardingService(bleDevice, gatt, receiver);
     }
 
     @Test public void writeSensorIdTest() {

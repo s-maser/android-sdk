@@ -1,7 +1,6 @@
 package io.relayr.ble.service;
 
 import android.annotation.TargetApi;
-import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
@@ -46,7 +45,6 @@ public class DirectConnectionServiceTest {
 
     @Before public void initialise() {
         BleDevice bleDevice = mock(BleDevice.class);
-        BluetoothDevice device = mock(BluetoothDevice.class);
         when(bleDevice.getType()).thenReturn(BleDeviceType.WunderbarMIC);
 
         BluetoothGattService batteryService = mock(BluetoothGattService.class);
@@ -70,7 +68,7 @@ public class DirectConnectionServiceTest {
         gatt = mock(BluetoothGatt.class);
         when(gatt.getServices()).thenReturn(services);
         receiver = new BluetoothGattReceiver();
-        service = new DirectConnectionService(bleDevice, device, gatt, receiver);
+        service = new DirectConnectionService(bleDevice, gatt, receiver);
     }
 
     @Test public void getSensorFrequencyTest() {

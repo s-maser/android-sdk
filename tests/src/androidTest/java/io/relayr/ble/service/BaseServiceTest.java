@@ -92,7 +92,7 @@ public class BaseServiceTest {
         when(gatt.getDevice()).thenReturn(device);
         when(gatt.getServices()).thenReturn(services);
         receiver = new BluetoothGattReceiver();
-        baseService = new BaseService(bleDevice, device, gatt, receiver);
+        baseService = new BaseService(bleDevice, gatt, receiver);
     }
 
     @Test public void connectTest() {
@@ -104,7 +104,7 @@ public class BaseServiceTest {
                 .flatMap(new Func1<BluetoothGatt, Observable<BaseService>>() {
                     @Override
                     public Observable<BaseService> call(BluetoothGatt gatt) {
-                        return just(new BaseService(bleDevice, device, gatt, receiver));
+                        return just(new BaseService(bleDevice, gatt, receiver));
                     }
                 })
                 .subscribe(observer);
@@ -124,7 +124,7 @@ public class BaseServiceTest {
                 .flatMap(new Func1<BluetoothGatt, Observable<BaseService>>() {
                     @Override
                     public Observable<BaseService> call(BluetoothGatt g) {
-                        return just(new BaseService(bleDevice, device, gatt, receiver));
+                        return just(new BaseService(bleDevice, gatt, receiver));
                     }
                 })
                 .flatMap(new Func1<BaseService, Observable<? extends BluetoothGatt>>() {
