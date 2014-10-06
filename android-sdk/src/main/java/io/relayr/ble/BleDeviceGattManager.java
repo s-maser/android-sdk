@@ -108,7 +108,7 @@ class BleDeviceGattManager extends BluetoothGattCallback {
     	List<BluetoothGattCharacteristic> characteristics = service.getCharacteristics();
     	for (BluetoothGattCharacteristic characteristic:characteristics) {
     		String characteristicUUID = getShortUUID(characteristic.getUuid());
-    		if (characteristicUUID.equals(ShortUUID.CHARACTERISTIC_DATA_READ)) {
+    		if (characteristicUUID.equals(ShortUUID.CHARACTERISTIC_SENSOR_DATA)) {
     			gatt.setCharacteristicNotification(characteristic, true);
     			BluetoothGattDescriptor descriptor = characteristic.getDescriptor(RELAYR_NOTIFICATION_CHARACTERISTIC);
     			descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);

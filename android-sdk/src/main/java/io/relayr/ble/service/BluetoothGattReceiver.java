@@ -28,6 +28,7 @@ public class BluetoothGattReceiver extends BluetoothGattCallback {
     private volatile Subscriber<? super BluetoothGatt> mConnectionChangesSubscriber;
     private volatile Subscriber<? super BluetoothGatt> mDisconnectedSubscriber;
     private volatile Subscriber<? super BluetoothGatt> mBluetoothGattServiceSubscriber;
+    private volatile Subscriber<? super BluetoothGattCharacteristic> mValueChangesSubscriber;
     private volatile Map<UUID, Subscriber<? super BluetoothGattCharacteristic>>
             mWriteCharacteristicsSubscriberMap = new ConcurrentHashMap<>();
     private volatile Map<UUID, Subscriber<? super BluetoothGattCharacteristic>>
@@ -136,4 +137,25 @@ public class BluetoothGattReceiver extends BluetoothGattCallback {
             subscriber.onError(new WriteCharacteristicException(characteristic, status));
         }
     }
+
+    public Observable<BluetoothGattCharacteristic> subscribeToCharacteristicChanges(
+            final BluetoothGatt gatt,
+            final BluetoothGattCharacteristic characteristic) {
+        return Observable.create(new Observable.OnSubscribe<BluetoothGattCharacteristic>() {
+            @Override
+            public void call(Subscriber<? super BluetoothGattCharacteristic> subscriber) {
+                mValueChangesSubscriber = subscriber;
+                gatt.setCharacteristicNotification(characteristic, true);
+                //BluetoothGattDescriptor descriptor = characteristic.getDescriptor(RELAYR_NOTIFICATION_CHARACTERISTIC);
+                //descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                //gatt.writeDescriptor(descriptor);
+            }
+        });
+    }
+
+    @Override
+    public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
+        mValueChangesSubscriber.onNext(characteristic);
+    }
+
 }

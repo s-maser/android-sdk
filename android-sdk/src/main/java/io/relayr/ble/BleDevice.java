@@ -116,11 +116,11 @@ public class BleDevice {
 
     public Observable<? extends BaseService> newConnect() {
         if (mode == ON_BOARDING) {
-            return OnBoardingService.connect(bluetoothDevice).cache();
+            return OnBoardingService.connect(this, bluetoothDevice).cache();
         } else if (mode == DIRECT_CONNECTION) {
-            return DirectConnectionService.connect(bluetoothDevice).cache();
+            return DirectConnectionService.connect(this, bluetoothDevice).cache();
         } else {
-            return MasterModuleService.connect(bluetoothDevice).cache();
+            return MasterModuleService.connect(this, bluetoothDevice).cache();
         }
     }
 

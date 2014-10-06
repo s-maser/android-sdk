@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.os.Build;
 
+import io.relayr.ble.BleDevice;
 import io.relayr.ble.service.error.CharacteristicNotFoundException;
 import rx.Observable;
 import rx.functions.Func1;
@@ -22,8 +23,12 @@ import static rx.Observable.just;
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class BaseService extends Service {
 
-    protected BaseService(BluetoothDevice device, BluetoothGatt gatt, BluetoothGattReceiver receiver) {
+    protected final BleDevice mBleDevice;
+
+    protected BaseService(BleDevice bleDevice, BluetoothDevice device, BluetoothGatt gatt,
+                          BluetoothGattReceiver receiver) {
         super(device, gatt, receiver);
+        mBleDevice = bleDevice;
     }
 
     public Observable<? extends BluetoothGatt> disconnect() {

@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.os.Build;
 
+import io.relayr.ble.BleDevice;
 import rx.Observable;
 import rx.functions.Func1;
 
@@ -13,21 +14,24 @@ import static io.relayr.ble.service.ShortUUID.CHARACTERISTIC_ON_BOARDING_FLAG;
 import static io.relayr.ble.service.ShortUUID.CHARACTERISTIC_PASS_KEY;
 import static io.relayr.ble.service.ShortUUID.CHARACTERISTIC_SENSOR_ID;
 import static io.relayr.ble.service.ShortUUID.SERVICE_ON_BOARDING;
+import static rx.Observable.just;
 
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class OnBoardingService extends BaseService {
 
-    protected OnBoardingService(BluetoothDevice device, BluetoothGatt gatt, BluetoothGattReceiver receiver) {
-        super(device, gatt, receiver);
+    protected OnBoardingService(BleDevice bleDevice, BluetoothDevice device, BluetoothGatt gatt,
+                                BluetoothGattReceiver receiver) {
+        super(bleDevice, device, gatt, receiver);
     }
 
-    public static Observable<OnBoardingService> connect(final BluetoothDevice bluetoothDevice) {
+    public static Observable<OnBoardingService> connect(final BleDevice bleDevice,
+                                                        final BluetoothDevice device) {
         final BluetoothGattReceiver receiver = new BluetoothGattReceiver();
-        return doConnect(bluetoothDevice, receiver)
+        return doConnect(device, receiver)
                 .flatMap(new Func1<BluetoothGatt, Observable<OnBoardingService>>() {
                     @Override
                     public Observable<OnBoardingService> call(BluetoothGatt gatt) {
-                        return Observable.just(new OnBoardingService(bluetoothDevice, gatt, receiver));
+                        return just(new OnBoardingService(bleDevice, device, gatt, receiver));
                     }
                 });
     }

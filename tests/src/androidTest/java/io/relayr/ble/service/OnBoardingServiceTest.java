@@ -14,6 +14,8 @@ import org.robolectric.RobolectricTestRunner;
 
 import java.util.Arrays;
 
+import io.relayr.ble.BleDevice;
+import io.relayr.ble.BleDeviceType;
 import rx.Observer;
 
 import static android.bluetooth.BluetoothGatt.GATT_SUCCESS;
@@ -27,30 +29,31 @@ import static org.mockito.Mockito.when;
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class OnBoardingServiceTest {
 
-    private BluetoothDevice device;
-    private BluetoothGatt gatt;
     private BluetoothGattCharacteristic characteristic;
+    private OnBoardingService service;
+    private BluetoothGattReceiver receiver = new BluetoothGattReceiver();
 
     @Before public void initialise() {
-        device = mock(BluetoothDevice.class);
-        gatt = mock(BluetoothGatt.class);
-        BluetoothGattService service = mock(BluetoothGattService.class);
-        when(gatt.getServices()).thenReturn(Arrays.asList(service));
-        when(service.getUuid()).thenReturn(fromString("00002001-0000-1000-8000-00805f9b34fb"));
+        BleDevice bleDevice = mock(BleDevice.class);
+        when(bleDevice.getType()).thenReturn(BleDeviceType.WunderbarMIC);
+        BluetoothDevice device = mock(BluetoothDevice.class);
+        BluetoothGatt gatt = mock(BluetoothGatt.class);
+        BluetoothGattService gattService = mock(BluetoothGattService.class);
+        when(gatt.getServices()).thenReturn(Arrays.asList(gattService));
+        when(gattService.getUuid()).thenReturn(fromString("00002001-0000-1000-8000-00805f9b34fb"));
         characteristic = mock(BluetoothGattCharacteristic.class);
-        when(service.getCharacteristics()).thenReturn(Arrays.asList(characteristic));
+        when(gattService.getCharacteristics()).thenReturn(Arrays.asList(characteristic));
+
+        service = new OnBoardingService(bleDevice, device, gatt, receiver);
     }
 
     @Test public void writeSensorIdTest() {
         when(characteristic.getUuid()).thenReturn(fromString("00002010-0000-1000-8000-00805f9b34fb"));
 
-        BluetoothGattReceiver receiver = new BluetoothGattReceiver();
-
-        OnBoardingService onBoardingService = new OnBoardingService(device, gatt, receiver);
         @SuppressWarnings("unchecked")
         Observer<BluetoothGattCharacteristic> observer = mock(Observer.class);
 
-        onBoardingService
+        service
                 .writeSensorId(new byte[0])
                 .subscribe(observer);
 
@@ -62,13 +65,10 @@ public class OnBoardingServiceTest {
     @Test public void writeSensorPassKeyTest() {
         when(characteristic.getUuid()).thenReturn(fromString("00002018-0000-1000-8000-00805f9b34fb"));
 
-        BluetoothGattReceiver receiver = new BluetoothGattReceiver();
-
-        OnBoardingService onBoardingService = new OnBoardingService(device, gatt, receiver);
         @SuppressWarnings("unchecked")
         Observer<BluetoothGattCharacteristic> observer = mock(Observer.class);
 
-        onBoardingService
+        service
                 .writeSensorPassKey(new byte[0])
                 .subscribe(observer);
 
@@ -80,13 +80,10 @@ public class OnBoardingServiceTest {
     @Test public void writeOnBoardingFlagTest() {
         when(characteristic.getUuid()).thenReturn(fromString("00002019-0000-1000-8000-00805f9b34fb"));
 
-        BluetoothGattReceiver receiver = new BluetoothGattReceiver();
-
-        OnBoardingService onBoardingService = new OnBoardingService(device, gatt, receiver);
         @SuppressWarnings("unchecked")
         Observer<BluetoothGattCharacteristic> observer = mock(Observer.class);
 
-        onBoardingService
+        service
                 .writeOnBoardingFlag(new byte[0])
                 .subscribe(observer);
 

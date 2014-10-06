@@ -8,51 +8,69 @@ import android.os.Build;
 
 import java.util.UUID;
 
+import io.relayr.ble.BleDevice;
 import io.relayr.ble.DeviceCompatibilityUtils;
 import io.relayr.ble.service.error.CharacteristicNotFoundException;
 import rx.Observable;
 import rx.functions.Func1;
 
+import static io.relayr.ble.parser.BleDataParser.getFormattedValue;
 import static io.relayr.ble.service.ShortUUID.CHARACTERISTIC_SENSOR_CONFIGURATION;
+import static io.relayr.ble.service.ShortUUID.CHARACTERISTIC_SENSOR_DATA;
 import static io.relayr.ble.service.ShortUUID.CHARACTERISTIC_SENSOR_FREQUENCY;
 import static io.relayr.ble.service.ShortUUID.CHARACTERISTIC_SENSOR_ID;
 import static io.relayr.ble.service.ShortUUID.CHARACTERISTIC_SENSOR_LED_STATE;
 import static io.relayr.ble.service.ShortUUID.CHARACTERISTIC_SENSOR_THRESHOLD;
 import static io.relayr.ble.service.ShortUUID.SERVICE_DIRECT_CONNECTION;
+import static io.relayr.ble.service.Utils.getCharacteristicInServices;
 import static rx.Observable.error;
 import static rx.Observable.just;
 
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class DirectConnectionService extends BaseService {
 
-    DirectConnectionService(BluetoothDevice device, BluetoothGatt gatt, BluetoothGattReceiver receiver) {
-        super(device, gatt, receiver);
+    DirectConnectionService(BleDevice bleDevice, BluetoothDevice device, BluetoothGatt gatt,
+                            BluetoothGattReceiver receiver) {
+        super(bleDevice, device, gatt, receiver);
     }
 
-    public static Observable<DirectConnectionService> connect(final BluetoothDevice bluetoothDevice) {
+    public static Observable<DirectConnectionService> connect(final BleDevice bleDevice,
+                                                              final BluetoothDevice device) {
         final BluetoothGattReceiver receiver = new BluetoothGattReceiver();
-        return doConnect(bluetoothDevice, receiver)
+        return doConnect(device, receiver)
                 .flatMap(new Func1<BluetoothGatt, Observable<? extends BluetoothGatt>>() {
                     @Override
                     public Observable<? extends BluetoothGatt> call(final BluetoothGatt gatt) {
-                        int state = bluetoothDevice.getBondState();
+                        int state = device.getBondState();
 
                         if (state == BluetoothDevice.BOND_BONDED) {
-                            return Observable.just(gatt);
+                            return just(gatt);
                         } else if (state == BluetoothDevice.BOND_BONDING) {
                             return BondingReceiver.subscribeForBondStateChanges(gatt);
                         } //else if (state == BluetoothDevice.BOND_NONE) {
 
                         Observable<BluetoothGatt> bluetoothGattObservable =
                                 BondingReceiver.subscribeForBondStateChanges(gatt);
-                        DeviceCompatibilityUtils.createBond(bluetoothDevice);
+                        DeviceCompatibilityUtils.createBond(device);
                         return bluetoothGattObservable;
                     }
                 })
                 .flatMap(new Func1<BluetoothGatt, Observable<DirectConnectionService>>() {
                     @Override
                     public Observable<DirectConnectionService> call(BluetoothGatt gatt) {
-                        return Observable.just(new DirectConnectionService(bluetoothDevice, gatt, receiver));
+                        return just(new DirectConnectionService(bleDevice, device, gatt, receiver));
+                    }
+                });
+    }
+
+    public Observable<String> getReadings() {
+        BluetoothGattCharacteristic characteristic = getCharacteristicInServices(
+                mBluetoothGatt.getServices(), SERVICE_DIRECT_CONNECTION, CHARACTERISTIC_SENSOR_DATA);
+        return mBluetoothGattReceiver.subscribeToCharacteristicChanges(mBluetoothGatt, characteristic)
+                .flatMap(new Func1<BluetoothGattCharacteristic, Observable<String>>() {
+                    @Override
+                    public Observable<String> call(BluetoothGattCharacteristic characteristic) {
+                        return just(getFormattedValue(mBleDevice.getType(), characteristic.getValue()));
                     }
                 });
     }
@@ -102,8 +120,8 @@ public class DirectConnectionService extends BaseService {
      * @return Observable<Float>, an observable of the sensor threshold value
      */
     /*TODO: public Observable<Float> readSensorThreshold() {
-        final String text = "Sensor Frequency";
-        return readIntegerCharacteristic(
+        final String text = "Sensor Threshold";
+        return readFloatCharacteristic(
                 SERVICE_DIRECT_CONNECTION, CHARACTERISTIC_SENSOR_THRESHOLD, text);
     }*/
 

@@ -15,6 +15,7 @@ import org.robolectric.RobolectricTestRunner;
 import java.util.Arrays;
 import java.util.List;
 
+import io.relayr.ble.BleDevice;
 import io.relayr.ble.service.error.CharacteristicNotFoundException;
 import rx.Observable;
 import rx.Observer;
@@ -39,6 +40,7 @@ public class BaseServiceTest {
     private static final String EXPECTED_HARDWARE = "1.0.0";
     private static final String EXPECTED_MANUFACTURER = "Relayr";
 
+    private BleDevice bleDevice;
     private BluetoothDevice device;
     private BluetoothGattCharacteristic batteryCharacteristic;
     private BluetoothGattCharacteristic firmwareCharacteristic;
@@ -49,6 +51,7 @@ public class BaseServiceTest {
     private BaseService baseService;
 
     @Before public void initialise() {
+        bleDevice = mock(BleDevice.class);
         device = mock(BluetoothDevice.class);
 
         BluetoothGattService batteryService = mock(BluetoothGattService.class);
@@ -87,7 +90,7 @@ public class BaseServiceTest {
         gatt = mock(BluetoothGatt.class);
         when(gatt.getServices()).thenReturn(services);
         receiver = new BluetoothGattReceiver();
-        baseService = new BaseService(device, gatt, receiver);
+        baseService = new BaseService(bleDevice, device, gatt, receiver);
     }
 
     @Test public void connectTest() {
@@ -99,7 +102,7 @@ public class BaseServiceTest {
                 .flatMap(new Func1<BluetoothGatt, Observable<BaseService>>() {
                     @Override
                     public Observable<BaseService> call(BluetoothGatt gatt) {
-                        return Observable.just(new BaseService(device, gatt, receiver));
+                        return Observable.just(new BaseService(bleDevice, device, gatt, receiver));
                     }
                 })
                 .subscribe(observer);
@@ -119,7 +122,7 @@ public class BaseServiceTest {
                 .flatMap(new Func1<BluetoothGatt, Observable<BaseService>>() {
                     @Override
                     public Observable<BaseService> call(BluetoothGatt gatt) {
-                        return Observable.just(new BaseService(device, gatt, receiver));
+                        return Observable.just(new BaseService(bleDevice, device, gatt, receiver));
                     }
                 })
                 .flatMap(new Func1<BaseService, Observable<? extends BluetoothGatt>>() {

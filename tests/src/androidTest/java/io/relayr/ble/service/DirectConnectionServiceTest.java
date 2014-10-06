@@ -16,6 +16,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+import io.relayr.ble.BleDevice;
+import io.relayr.ble.BleDeviceType;
 import rx.Observer;
 
 import static android.bluetooth.BluetoothGatt.GATT_SUCCESS;
@@ -43,6 +45,10 @@ public class DirectConnectionServiceTest {
     private DirectConnectionService service;
 
     @Before public void initialise() {
+        BleDevice bleDevice = mock(BleDevice.class);
+        BluetoothDevice device = mock(BluetoothDevice.class);
+        when(bleDevice.getType()).thenReturn(BleDeviceType.WunderbarMIC);
+
         BluetoothGattService batteryService = mock(BluetoothGattService.class);
         when(batteryService.getUuid()).thenReturn(fromString("00002002-0000-1000-8000-00805f9b34fb"));
 
@@ -64,7 +70,7 @@ public class DirectConnectionServiceTest {
         gatt = mock(BluetoothGatt.class);
         when(gatt.getServices()).thenReturn(services);
         receiver = new BluetoothGattReceiver();
-        service = new DirectConnectionService(mock(BluetoothDevice.class), gatt, receiver);
+        service = new DirectConnectionService(bleDevice, device, gatt, receiver);
     }
 
     @Test public void getSensorFrequencyTest() {
