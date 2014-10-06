@@ -6,7 +6,10 @@ import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.os.Build;
 
+import java.util.UUID;
+
 import io.relayr.ble.DeviceCompatibilityUtils;
+import io.relayr.ble.service.error.CharacteristicNotFoundException;
 import rx.Observable;
 import rx.functions.Func1;
 
@@ -16,6 +19,8 @@ import static io.relayr.ble.service.ShortUUID.CHARACTERISTIC_SENSOR_ID;
 import static io.relayr.ble.service.ShortUUID.CHARACTERISTIC_SENSOR_LED_STATE;
 import static io.relayr.ble.service.ShortUUID.CHARACTERISTIC_SENSOR_THRESHOLD;
 import static io.relayr.ble.service.ShortUUID.SERVICE_DIRECT_CONNECTION;
+import static rx.Observable.error;
+import static rx.Observable.just;
 
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class DirectConnectionService extends BaseService {
@@ -57,9 +62,19 @@ public class DirectConnectionService extends BaseService {
      * <p>See {@link BluetoothGatt#readCharacteristic} for details of what it's done internally.
      * @return an observable of the Sensor Id characteristic
      */
-    public Observable<String> readSensorId() {
-        String text = "Sensor Id";
-        return readStringCharacteristic(SERVICE_DIRECT_CONNECTION, CHARACTERISTIC_SENSOR_ID, text);
+    public Observable<UUID> readSensorId() {
+        final String text = "Sensor Id";
+        return readCharacteristic(SERVICE_DIRECT_CONNECTION, CHARACTERISTIC_SENSOR_ID, text)
+                .flatMap(new Func1<BluetoothGattCharacteristic, Observable<UUID>>() {
+                    @Override
+                    public Observable<UUID> call(BluetoothGattCharacteristic characteristic) {
+                        byte[] value = characteristic.getValue();
+                        if (value == null) {
+                            return error(new CharacteristicNotFoundException(text));
+                        }
+                        return just(UUID.nameUUIDFromBytes(value));
+                    }
+                });
     }
 
     //public void readBeaconFrequency() {} // 2011
