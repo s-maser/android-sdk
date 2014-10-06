@@ -14,6 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import io.relayr.RelayrApp;
 import io.relayr.ble.BluetoothGattStatus;
+import io.relayr.ble.DeviceCompatibilityUtils;
 import io.relayr.ble.service.error.DisconnectionException;
 import io.relayr.ble.service.error.GattException;
 import io.relayr.ble.service.error.WriteCharacteristicException;
@@ -89,6 +90,9 @@ public class BluetoothGattReceiver extends BluetoothGattCallback {
             @Override
             public void call(Subscriber<? super BluetoothGatt> subscriber) {
                 mDisconnectedSubscriber = subscriber;
+                if (bluetoothGatt.getDevice().getBondState() != BluetoothDevice.BOND_NONE) {
+                    DeviceCompatibilityUtils.removeBond(bluetoothGatt.getDevice());
+                }
                 bluetoothGatt.disconnect();
                 bluetoothGatt.close();
             }

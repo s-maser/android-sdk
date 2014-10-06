@@ -30,6 +30,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static rx.Observable.*;
 
 @RunWith(RobolectricTestRunner.class)
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
@@ -88,6 +89,7 @@ public class BaseServiceTest {
         List<BluetoothGattService> services = Arrays.asList(deviceInfoService, batteryService);
 
         gatt = mock(BluetoothGatt.class);
+        when(gatt.getDevice()).thenReturn(device);
         when(gatt.getServices()).thenReturn(services);
         receiver = new BluetoothGattReceiver();
         baseService = new BaseService(bleDevice, device, gatt, receiver);
@@ -102,7 +104,7 @@ public class BaseServiceTest {
                 .flatMap(new Func1<BluetoothGatt, Observable<BaseService>>() {
                     @Override
                     public Observable<BaseService> call(BluetoothGatt gatt) {
-                        return Observable.just(new BaseService(bleDevice, device, gatt, receiver));
+                        return just(new BaseService(bleDevice, device, gatt, receiver));
                     }
                 })
                 .subscribe(observer);
@@ -121,8 +123,8 @@ public class BaseServiceTest {
                 .doConnect(device, receiver)
                 .flatMap(new Func1<BluetoothGatt, Observable<BaseService>>() {
                     @Override
-                    public Observable<BaseService> call(BluetoothGatt gatt) {
-                        return Observable.just(new BaseService(bleDevice, device, gatt, receiver));
+                    public Observable<BaseService> call(BluetoothGatt g) {
+                        return just(new BaseService(bleDevice, device, gatt, receiver));
                     }
                 })
                 .flatMap(new Func1<BaseService, Observable<? extends BluetoothGatt>>() {

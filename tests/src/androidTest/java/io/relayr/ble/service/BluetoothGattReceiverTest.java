@@ -38,6 +38,7 @@ public class BluetoothGattReceiverTest {
     @Before public void setUp() {
         bluetoothGatt = mock(BluetoothGatt.class);
         bluetoothDevice = mock(BluetoothDevice.class);
+        when(bluetoothGatt.getDevice()).thenReturn(bluetoothDevice);
     }
 
     @Test public void connect_shouldSuccessfullyConnect() {
