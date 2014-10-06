@@ -67,16 +67,7 @@ public class BaseService {
      */
     public Observable<Integer> getBatteryLevel() {
         final String text = "Battery Level";
-        return readCharacteristic(SERVICE_BATTERY_LEVEL, CHARACTERISTIC_BATTERY_LEVEL, text)
-                .flatMap(new Func1<BluetoothGattCharacteristic, Observable<Integer>>() {
-                    @Override
-                    public Observable<Integer> call(BluetoothGattCharacteristic charac) {
-                        if (charac.getValue() == null || charac.getValue().length == 0) {
-                            error(new CharacteristicNotFoundException(text));
-                        }
-                        return just((int) charac.getValue()[0]);
-                    }
-                });
+        return readIntegerCharacteristic(SERVICE_BATTERY_LEVEL, CHARACTERISTIC_BATTERY_LEVEL, text);
     }
 
     /**
@@ -101,8 +92,23 @@ public class BaseService {
         return mBluetoothGattReceiver.readCharacteristic(mBluetoothGatt, characteristic);
     }
 
+    protected Observable<Integer> readIntegerCharacteristic(String serviceUuid,
+                                                            String characteristicUuid,
+                                                            final String what) {
+        return readCharacteristic(serviceUuid, characteristicUuid, what)
+                .flatMap(new Func1<BluetoothGattCharacteristic, Observable<Integer>>() {
+                    @Override
+                    public Observable<Integer> call(BluetoothGattCharacteristic charac) {
+                        if (charac.getValue() == null || charac.getValue().length == 0) {
+                            error(new CharacteristicNotFoundException(what));
+                        }
+                        return just((int) charac.getValue()[0]);
+                    }
+                });
+    }
 
-    private Observable<String> readStringCharacteristic(String serviceUuid,
+
+    protected Observable<String> readStringCharacteristic(String serviceUuid,
                                                         String characteristicUuid,
                                                         final String what) {
         return readCharacteristic(serviceUuid, characteristicUuid, what)
