@@ -87,6 +87,7 @@ public class BluetoothGattReceiver extends BluetoothGattCallback {
             public void call(Subscriber<? super BluetoothGatt> subscriber) {
                 mDisconnectedSubscriber = subscriber;
                 bluetoothGatt.disconnect();
+                bluetoothGatt.close();
             }
         });
     }
