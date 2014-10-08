@@ -31,7 +31,7 @@ class MockWebSocket extends WebSocket {
                     @Override
                     public Observable<String> call(Reading reading) {
                         DelayerUtil.delay();
-                        return Observable.from(new Gson().toJson(reading));
+                        return Observable.just(new Gson().toJson(reading));
                     }
                 })
                 .repeat()

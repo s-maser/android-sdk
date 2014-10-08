@@ -92,7 +92,7 @@ public class LoginActivity extends Activity {
                                 @Override
                                 public Observable<User> call(User user) {
                                     DataStorage.saveUserId(user.id);
-                                    return Observable.from(user);
+                                    return Observable.just(user);
                                 }
                             })
                             .subscribeOn(Schedulers.io())
