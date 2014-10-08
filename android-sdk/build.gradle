@@ -65,7 +65,6 @@ android.libraryVariants.all { variant ->
         exclude '**/api/SubscriptionApi*'
         exclude '**/activity/*'
         exclude '**/storage/*'
-        exclude '**/utils/*'
         exclude '**/ble/parser/*'
         exclude '**/ble/BleUtils.java'
         failOnError false
