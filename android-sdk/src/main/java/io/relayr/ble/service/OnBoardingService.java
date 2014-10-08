@@ -47,7 +47,7 @@ public class OnBoardingService extends BaseService {
     }
 
     /**
-     * Writes the sensorId characteristic to the associated remote device.
+     * Writes the sensorPassKey characteristic to the associated remote device.
      *
      * @param passKey Bytes to write on the remote device
      * @return Observable<BluetoothGattCharacteristic>, an observable of what will be written in the
@@ -58,14 +58,24 @@ public class OnBoardingService extends BaseService {
     }
 
     /**
-     * Writes the sensorId characteristic to the associated remote device.
+     * Writes the sensorOnBoardingFlag characteristic to the associated remote device.
      *
-     * @param onBoardingFlag Bytes to write on the remote device
      * @return Observable<BluetoothGattCharacteristic>, an observable of what will be written in the
      * device
      */
-    public Observable<BluetoothGattCharacteristic> writeOnBoardingFlag(byte[] onBoardingFlag) {
-        return write(onBoardingFlag, SERVICE_ON_BOARDING, CHARACTERISTIC_ON_BOARDING_FLAG);
+    public Observable<BluetoothGattCharacteristic> writeOnBoardingFlagToConnectToMasterModule() {
+        return write(new byte[] {1}, SERVICE_ON_BOARDING, CHARACTERISTIC_ON_BOARDING_FLAG);
+    }
+
+    /**
+     * Writes the sensorOnBoardingFlag characteristic to the associated remote device.
+     *
+     * @return Observable<BluetoothGattCharacteristic>, an observable of what will be written in the
+     * device
+     */
+    public Observable<BluetoothGattCharacteristic> writeOnBoardingFlagForDirectConnection() {
+        return write(new byte[] {0}, SERVICE_ON_BOARDING, CHARACTERISTIC_ON_BOARDING_FLAG);
+    }
     }
 
     public void readSensorId() {}

@@ -75,14 +75,29 @@ public class OnBoardingServiceTest {
         verify(observer, times(1)).onNext(characteristic);
     }
 
-    @Test public void writeOnBoardingFlagTest() {
+    @Test public void writeOnBoardingFlagForDirectConnectionTest() {
         when(characteristic.getUuid()).thenReturn(fromString("00002019-0000-1000-8000-00805f9b34fb"));
 
         @SuppressWarnings("unchecked")
         Observer<BluetoothGattCharacteristic> observer = mock(Observer.class);
 
         service
-                .writeOnBoardingFlag(new byte[0])
+                .writeOnBoardingFlagForDirectConnection()
+                .subscribe(observer);
+
+        receiver.onCharacteristicWrite(mock(BluetoothGatt.class), characteristic, GATT_SUCCESS);
+
+        verify(observer, times(1)).onNext(characteristic);
+    }
+
+    @Test public void writeOnBoardingFlagToConnectToMasterModuleTest() {
+        when(characteristic.getUuid()).thenReturn(fromString("00002019-0000-1000-8000-00805f9b34fb"));
+
+        @SuppressWarnings("unchecked")
+        Observer<BluetoothGattCharacteristic> observer = mock(Observer.class);
+
+        service
+                .writeOnBoardingFlagToConnectToMasterModule()
                 .subscribe(observer);
 
         receiver.onCharacteristicWrite(mock(BluetoothGatt.class), characteristic, GATT_SUCCESS);
