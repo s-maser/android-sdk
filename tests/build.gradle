@@ -2,10 +2,6 @@ apply plugin: 'com.android.library'
 apply plugin: 'robolectric'
 apply plugin: 'jacoco'
 
-jacoco {
-    toolVersion = "0.7.0.201403182114"
-}
-
 android {
     compileSdkVersion 20
     buildToolsVersion "20.0.0"
