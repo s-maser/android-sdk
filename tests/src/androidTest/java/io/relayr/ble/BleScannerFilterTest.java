@@ -5,10 +5,14 @@ import android.bluetooth.BluetoothDevice;
 import android.os.Build;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.robolectric.RobolectricTestRunner;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -31,13 +35,18 @@ public class BleScannerFilterTest {
             0x72, 0x49, 0x52, 0x03, 0x19, 0x00, 0x02, 0x02, 0x01, 0x06, 0x07, 0x03, 0x00, 0x20,
             0x0A, 0x18, 0x0F, 0x18 }; // WunderbarIR
 
+    @Mock private BluetoothDevice device;
+
+    @Before public void initialise() {
+        MockitoAnnotations.initMocks(this);
+    }
+
     @Test public void isRelevant_shouldReturnFalse_becauseDeviceIsAlreadyDiscovered() {
         String address = "bla";
         BleDeviceManager manager = new BleDeviceManager();
         BleDevice bleDevice = new BleDevice(mock(BluetoothDevice.class), address, "", ON_BOARDING);
         manager.addDiscoveredDevice(bleDevice);
         BleScannerFilter filter = new BleScannerFilter(manager, null);
-        BluetoothDevice device = mock(BluetoothDevice.class);
         when(device.getAddress()).thenReturn(address);
         Assert.assertFalse(filter.isRelevant(device, ON_BOARDING));
     }
@@ -46,7 +55,6 @@ public class BleScannerFilterTest {
         String name = "bla";
         BleDeviceManager manager = new BleDeviceManager();
         BleScannerFilter filter = new BleScannerFilter(manager, null);
-        BluetoothDevice device = mock(BluetoothDevice.class);
         when(device.getName()).thenReturn(name);
         Assert.assertFalse(filter.isRelevant(device, ON_BOARDING));
     }
@@ -55,8 +63,6 @@ public class BleScannerFilterTest {
         String name = "WunderbarHTU";
         BleDeviceManager manager = new BleDeviceManager();
         BleScannerFilter filter = new BleScannerFilter(manager, null);
-
-        BluetoothDevice device = mock(BluetoothDevice.class);
         when(device.getName()).thenReturn(name);
         Assert.assertFalse(filter.isRelevant(device, ON_BOARDING));
     }
@@ -66,11 +72,9 @@ public class BleScannerFilterTest {
         BleDeviceManager manager = new BleDeviceManager();
         BleScannerFilter filter = new BleScannerFilter(manager, null);
 
-        Set<BleDeviceType> types = new HashSet<>();
-        types.add(BleDeviceType.WunderbarHTU);
+        Set<BleDeviceType> types = new HashSet<>(Arrays.asList(BleDeviceType.WunderbarHTU));
         filter.setDevicesInterestedIn(types);
 
-        BluetoothDevice device = mock(BluetoothDevice.class);
         when(device.getName()).thenReturn(name);
         Assert.assertFalse(filter.isRelevant(device, UNKNOWN));
     }
@@ -80,11 +84,9 @@ public class BleScannerFilterTest {
         BleDeviceManager manager = new BleDeviceManager();
         BleScannerFilter filter = new BleScannerFilter(manager, null);
 
-        Set<BleDeviceType> types = new HashSet<>();
-        types.add(BleDeviceType.WunderbarHTU);
+        Set<BleDeviceType> types = new HashSet<>(Arrays.asList(BleDeviceType.WunderbarHTU));
         filter.setDevicesInterestedIn(types);
 
-        BluetoothDevice device = mock(BluetoothDevice.class);
         when(device.getName()).thenReturn(name);
         Assert.assertTrue(filter.isRelevant(device, ON_BOARDING));
     }
@@ -96,11 +98,9 @@ public class BleScannerFilterTest {
         BleFilteredScanCallback callback = mock(BleFilteredScanCallback.class);
         BleScannerFilter filter = new BleScannerFilter(manager, callback);
 
-        Set<BleDeviceType> types = new HashSet<>();
-        types.add(BleDeviceType.WunderbarIR);
+        Set<BleDeviceType> types = new HashSet<>(Arrays.asList(BleDeviceType.WunderbarIR));
         filter.setDevicesInterestedIn(types);
 
-        BluetoothDevice device = mock(BluetoothDevice.class);
         when(device.getName()).thenReturn(name);
 
         filter.onLeScan(device, 22, data);
@@ -115,11 +115,9 @@ public class BleScannerFilterTest {
         BleFilteredScanCallback callback = mock(BleFilteredScanCallback.class);
         BleScannerFilter filter = new BleScannerFilter(manager, callback);
 
-        Set<BleDeviceType> types = new HashSet<>();
-        types.add(BleDeviceType.WunderbarIR);
+        Set<BleDeviceType> types = new HashSet<>(Arrays.asList(BleDeviceType.WunderbarIR));
         filter.setDevicesInterestedIn(types);
 
-        BluetoothDevice device = mock(BluetoothDevice.class);
         when(device.getName()).thenReturn(name);
 
         filter.onLeScan(device, 22, data);
@@ -136,7 +134,6 @@ public class BleScannerFilterTest {
 
         filter.setDevicesInterestedIn(null);
 
-        BluetoothDevice device = mock(BluetoothDevice.class);
         when(device.getName()).thenReturn(name);
 
         filter.onLeScan(device, 22, data);

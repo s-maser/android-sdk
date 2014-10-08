@@ -10,6 +10,8 @@ import android.os.Build;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.robolectric.RobolectricTestRunner;
 
 import java.util.Arrays;
@@ -41,24 +43,22 @@ public class BaseServiceTest {
     private static final String EXPECTED_HARDWARE = "1.0.0";
     private static final String EXPECTED_MANUFACTURER = "Relayr";
 
-    private BleDevice bleDevice;
-    private BluetoothDevice device;
-    private BluetoothGattCharacteristic batteryCharacteristic;
-    private BluetoothGattCharacteristic firmwareCharacteristic;
-    private BluetoothGattCharacteristic hardwareCharacteristic;
-    private BluetoothGattCharacteristic manufacturerCharacteristic;
-    private BluetoothGatt gatt;
-    private BluetoothGattReceiver receiver;
+    @Mock private BleDevice bleDevice;
+    @Mock private BluetoothDevice device;
+    @Mock private BluetoothGattCharacteristic batteryCharacteristic;
+    @Mock private BluetoothGattCharacteristic firmwareCharacteristic;
+    @Mock private BluetoothGattCharacteristic hardwareCharacteristic;
+    @Mock private BluetoothGattCharacteristic manufacturerCharacteristic;
+    @Mock private BluetoothGatt gatt;
+    private BluetoothGattReceiver receiver = new BluetoothGattReceiver();
     private BaseService baseService;
 
     @Before public void initialise() {
-        bleDevice = mock(BleDevice.class);
-        device = mock(BluetoothDevice.class);
+        MockitoAnnotations.initMocks(this);
 
         BluetoothGattService batteryService = mock(BluetoothGattService.class);
         when(batteryService.getUuid()).thenReturn(fromString("0000180f-0000-1000-8000-00805f9b34fb"));
 
-        batteryCharacteristic = mock(BluetoothGattCharacteristic.class);
         when(batteryCharacteristic.getValue()).thenReturn(new byte[] {EXPECTED_BATTERY});
         when(batteryCharacteristic.getUuid()).thenReturn(fromString("00002a19-0000-1000-8000-00805f9b34fb"));
 
@@ -69,16 +69,13 @@ public class BaseServiceTest {
         BluetoothGattService deviceInfoService = mock(BluetoothGattService.class);
         when(deviceInfoService.getUuid()).thenReturn(fromString("0000180A-0000-1000-8000-00805f9b34fb"));
 
-        firmwareCharacteristic = mock(BluetoothGattCharacteristic.class);
         when(firmwareCharacteristic.getStringValue(0)).thenReturn(EXPECTED_FIRMWARE);
         when(firmwareCharacteristic.getValue()).thenReturn(EXPECTED_FIRMWARE.getBytes());
         when(firmwareCharacteristic.getUuid()).thenReturn(fromString("00002A26-0000-1000-8000-00805f9b34fb"));
 
-        hardwareCharacteristic = mock(BluetoothGattCharacteristic.class);
         when(hardwareCharacteristic.getStringValue(0)).thenReturn(EXPECTED_HARDWARE);
         when(hardwareCharacteristic.getUuid()).thenReturn(fromString("00002a27-0000-1000-8000-00805f9b34fb"));
 
-        manufacturerCharacteristic = mock(BluetoothGattCharacteristic.class);
         when(manufacturerCharacteristic.getStringValue(0)).thenReturn(EXPECTED_MANUFACTURER);
         when(manufacturerCharacteristic.getUuid()).thenReturn(fromString("00002a29-0000-1000-8000-00805f9b34fb"));
 
@@ -88,10 +85,8 @@ public class BaseServiceTest {
 
         List<BluetoothGattService> services = Arrays.asList(deviceInfoService, batteryService);
 
-        gatt = mock(BluetoothGatt.class);
         when(gatt.getDevice()).thenReturn(device);
         when(gatt.getServices()).thenReturn(services);
-        receiver = new BluetoothGattReceiver();
         baseService = new BaseService(bleDevice, gatt, receiver);
     }
 

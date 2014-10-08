@@ -9,6 +9,8 @@ import android.os.Build;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.robolectric.RobolectricTestRunner;
 
 import io.relayr.ble.service.error.DisconnectionException;
@@ -32,21 +34,19 @@ import static org.mockito.Mockito.when;
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class BluetoothGattReceiverTest {
 
-    private BluetoothGatt bluetoothGatt;
-    private BluetoothDevice bluetoothDevice;
+    @Mock private BluetoothGatt bluetoothGatt;
+    @Mock private BluetoothDevice bluetoothDevice;
+    private final BluetoothGattReceiver receiver = new BluetoothGattReceiver();
 
     @Before public void setUp() {
-        bluetoothGatt = mock(BluetoothGatt.class);
-        bluetoothDevice = mock(BluetoothDevice.class);
+        MockitoAnnotations.initMocks(this);
         when(bluetoothGatt.getDevice()).thenReturn(bluetoothDevice);
     }
 
     @Test public void connect_shouldSuccessfullyConnect() {
-
         @SuppressWarnings("unchecked")
         Observer<BluetoothGatt> observer = mock(Observer.class);
 
-        final BluetoothGattReceiver receiver = new BluetoothGattReceiver();
         receiver.connect(bluetoothDevice)
                 .subscribe(observer);
 
@@ -56,11 +56,9 @@ public class BluetoothGattReceiverTest {
     }
 
     @Test public void connect_shouldSuccessfullyConnectAndThenThrowADisconnectError() {
-
         @SuppressWarnings("unchecked")
         Observer<BluetoothGatt> observer = mock(Observer.class);
 
-        final BluetoothGattReceiver receiver = new BluetoothGattReceiver();
         receiver.connect(bluetoothDevice)
                 .subscribe(observer);
 
@@ -72,11 +70,9 @@ public class BluetoothGattReceiverTest {
     }
 
     @Test public void discoverServices_shouldCallOnNext() {
-
         @SuppressWarnings("unchecked")
         Observer<BluetoothGatt> observer = mock(Observer.class);
 
-        final BluetoothGattReceiver receiver = new BluetoothGattReceiver();
         receiver.connect(bluetoothDevice)
                 .flatMap(new Func1<BluetoothGatt, Observable<BluetoothGatt>>() {
                     @Override
@@ -96,7 +92,6 @@ public class BluetoothGattReceiverTest {
         @SuppressWarnings("unchecked")
         Observer<BluetoothGatt> observer = mock(Observer.class);
 
-        final BluetoothGattReceiver receiver = new BluetoothGattReceiver();
         receiver.connect(bluetoothDevice)
                 .flatMap(new Func1<BluetoothGatt, Observable<BluetoothGatt>>() {
                     @Override
@@ -114,7 +109,6 @@ public class BluetoothGattReceiverTest {
     }
 
     @Test public void writeCharacteristic_shouldWork() {
-        BluetoothGattReceiver receiver = new BluetoothGattReceiver();
         @SuppressWarnings("unchecked")
         Observer<BluetoothGattCharacteristic> observer = mock(Observer.class);
         BluetoothGattCharacteristic characteristic = mock(BluetoothGattCharacteristic.class);
@@ -129,7 +123,6 @@ public class BluetoothGattReceiverTest {
     }
 
     @Test public void writeCharacteristic_shouldThrowAnError() {
-        BluetoothGattReceiver receiver = new BluetoothGattReceiver();
         @SuppressWarnings("unchecked")
         Observer<BluetoothGattCharacteristic> observer = mock(Observer.class);
         BluetoothGattCharacteristic characteristic = mock(BluetoothGattCharacteristic.class);

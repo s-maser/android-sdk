@@ -9,6 +9,8 @@ import android.os.Build;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.robolectric.RobolectricTestRunner;
 
 import java.util.Arrays;
@@ -37,25 +39,24 @@ public class DirectConnectionServiceTest {
     private static final UUID EXPECTED_SENSOR_ID =
             UUID.nameUUIDFromBytes(EXPECTED_SENSOR_ID_AS_BYTE_ARRAY);
 
-    private BluetoothGattCharacteristic frequencyCharacteristic;
-    private BluetoothGattCharacteristic sensorIdCharacteristic;
-    private BluetoothGatt gatt;
-    private BluetoothGattReceiver receiver;
+    @Mock private BluetoothGattCharacteristic frequencyCharacteristic;
+    @Mock private BluetoothGattCharacteristic sensorIdCharacteristic;
+    @Mock private BluetoothGatt gatt;
+    private BluetoothGattReceiver receiver = new BluetoothGattReceiver();
     private DirectConnectionService service;
 
     @Before public void initialise() {
+        MockitoAnnotations.initMocks(this);
         BleDevice bleDevice = mock(BleDevice.class);
         when(bleDevice.getType()).thenReturn(BleDeviceType.WunderbarMIC);
 
         BluetoothGattService batteryService = mock(BluetoothGattService.class);
         when(batteryService.getUuid()).thenReturn(fromString("00002002-0000-1000-8000-00805f9b34fb"));
 
-        frequencyCharacteristic = mock(BluetoothGattCharacteristic.class);
         when(frequencyCharacteristic.getIntValue(FORMAT_UINT16, 0)).thenReturn(EXPECTED_FREQUENCY);
         when(frequencyCharacteristic.getValue()).thenReturn(new byte[]{0x38, 0x03, 0x00, 0x00});
         when(frequencyCharacteristic.getUuid()).thenReturn(fromString("00002012-0000-1000-8000-00805f9b34fb"));
 
-        sensorIdCharacteristic = mock(BluetoothGattCharacteristic.class);
         when(sensorIdCharacteristic.getValue()).thenReturn(EXPECTED_SENSOR_ID_AS_BYTE_ARRAY);
         when(sensorIdCharacteristic.getUuid()).thenReturn(fromString("00002010-0000-1000-8000-00805f9b34fb"));
 
@@ -65,9 +66,7 @@ public class DirectConnectionServiceTest {
 
         List<BluetoothGattService> services = Arrays.asList(batteryService);
 
-        gatt = mock(BluetoothGatt.class);
         when(gatt.getServices()).thenReturn(services);
-        receiver = new BluetoothGattReceiver();
         service = new DirectConnectionService(bleDevice, gatt, receiver);
     }
 
