@@ -2,10 +2,11 @@ package io.relayr.websocket;
 
 import com.google.gson.Gson;
 
+import java.util.concurrent.TimeUnit;
+
 import io.relayr.api.MockBackend;
 import io.relayr.model.Reading;
 import io.relayr.model.WebSocketConfig;
-import io.relayr.utils.DelayerUtil;
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
@@ -27,10 +28,10 @@ class MockWebSocket extends WebSocket {
     public void subscribe(String channel, final WebSocketCallback webSocketCallback) {
 
         Observable.from(mMockBackend.getWebSocketReadings())
+                .delay(1, TimeUnit.SECONDS)
                 .flatMap(new Func1<Reading, Observable<? extends String>>() {
                     @Override
                     public Observable<String> call(Reading reading) {
-                        DelayerUtil.delay();
                         return Observable.just(new Gson().toJson(reading));
                     }
                 })
