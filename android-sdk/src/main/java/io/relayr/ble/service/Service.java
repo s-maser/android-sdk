@@ -76,6 +76,21 @@ class Service {
                 });
     }
 
+    protected Observable<Integer> readByteAsAnIntegerCharacteristic(String serviceUuid,
+                                                                    String characteristicUuid,
+                                                                    final String what) {
+        return readCharacteristic(serviceUuid, characteristicUuid, what)
+                .flatMap(new Func1<BluetoothGattCharacteristic, Observable<Integer>>() {
+                    @Override
+                    public Observable<Integer> call(BluetoothGattCharacteristic charac) {
+                        if (charac.getValue() == null || charac.getValue().length == 0) {
+                            error(new CharacteristicNotFoundException(what));
+                        }
+                        return just((int) charac.getValue()[0]);
+                    }
+                });
+    }
+
 
     protected Observable<String> readStringCharacteristic(String serviceUuid,
                                                           String characteristicUuid,

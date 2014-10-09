@@ -121,4 +121,33 @@ public class OnBoardingServiceTest {
         verify(observer).onNext(TestValues.EXPECTED_SENSOR_ID);
     }
 
+    @Test public void getOnBoardingFlagTest() {
+        when(characteristic.getUuid()).thenReturn(fromString("00002019-0000-1000-8000-00805f9b34fb"));
+        when(characteristic.getValue()).thenReturn(new byte[] {0x01});
+
+        @SuppressWarnings("unchecked")
+        Observer<? super Integer> observer = mock(Observer.class);
+        service
+                .getOnBoardingFlag()
+                .subscribe(observer);
+
+        receiver.onCharacteristicRead(mock(BluetoothGatt.class), characteristic, GATT_SUCCESS);
+        verify(observer).onNext(1);
+    }
+
+    @Test public void getSensorPassKeyTest() {
+        String expected = "819683";
+        when(characteristic.getUuid()).thenReturn(fromString("00002018-0000-1000-8000-00805f9b34fb"));
+        when(characteristic.getStringValue(0)).thenReturn(expected);
+
+        @SuppressWarnings("unchecked")
+        Observer<? super String> observer = mock(Observer.class);
+        service
+                .getSensorPassKey()
+                .subscribe(observer);
+
+        receiver.onCharacteristicRead(mock(BluetoothGatt.class), characteristic, GATT_SUCCESS);
+        verify(observer).onNext(expected);
+    }
+
 }
