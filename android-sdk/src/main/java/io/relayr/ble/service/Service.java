@@ -6,6 +6,8 @@ import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.os.Build;
 
+import java.util.UUID;
+
 import io.relayr.ble.service.error.CharacteristicNotFoundException;
 import rx.Observable;
 import rx.functions.Func1;
@@ -91,5 +93,19 @@ class Service {
                 });
     }
 
+    protected Observable<UUID> readUuidCharacteristic(String service, String characteristic,
+                                                      final String what) {
+        return readCharacteristic(service, characteristic, what)
+                .flatMap(new Func1<BluetoothGattCharacteristic, Observable<UUID>>() {
+                    @Override
+                    public Observable<UUID> call(BluetoothGattCharacteristic characteristic) {
+                        byte[] value = characteristic.getValue();
+                        if (value == null) {
+                            return error(new CharacteristicNotFoundException(what));
+                        }
+                        return just(UUID.nameUUIDFromBytes(value));
+                    }
+                });
+    }
 
 }

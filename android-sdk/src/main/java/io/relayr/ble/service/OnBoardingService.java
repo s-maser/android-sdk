@@ -6,6 +6,8 @@ import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.os.Build;
 
+import java.util.UUID;
+
 import io.relayr.ble.BleDevice;
 import rx.Observable;
 import rx.functions.Func1;
@@ -76,9 +78,16 @@ public class OnBoardingService extends BaseService {
     public Observable<BluetoothGattCharacteristic> writeOnBoardingFlagForDirectConnection() {
         return write(new byte[] {0}, SERVICE_ON_BOARDING, CHARACTERISTIC_ON_BOARDING_FLAG);
     }
+
+    /**
+     * Return an observable of the Sensor Id characteristic.
+     * <p>See {@link BluetoothGatt#readCharacteristic} for details of what it's done internally.
+     * @return an observable of the Sensor Id characteristic
+     */
+    public Observable<UUID> getSensorId() {
+        return readUuidCharacteristic(SERVICE_ON_BOARDING, CHARACTERISTIC_SENSOR_ID, "Sensor Id");
     }
 
-    public void readSensorId() {}
     public void readSensorPassKey() {}
     public void readOnBoardingFlag() {}
 

@@ -90,17 +90,7 @@ public class DirectConnectionService extends BaseService {
      */
     public Observable<UUID> getSensorId() {
         final String text = "Sensor Id";
-        return readCharacteristic(SERVICE_DIRECT_CONNECTION, CHARACTERISTIC_SENSOR_ID, text)
-                .flatMap(new Func1<BluetoothGattCharacteristic, Observable<UUID>>() {
-                    @Override
-                    public Observable<UUID> call(BluetoothGattCharacteristic characteristic) {
-                        byte[] value = characteristic.getValue();
-                        if (value == null) {
-                            return error(new CharacteristicNotFoundException(text));
-                        }
-                        return just(UUID.nameUUIDFromBytes(value));
-                    }
-                });
+        return readUuidCharacteristic(SERVICE_DIRECT_CONNECTION, CHARACTERISTIC_SENSOR_ID, text);
     }
 
     //public void readBeaconFrequency() {} // 2011

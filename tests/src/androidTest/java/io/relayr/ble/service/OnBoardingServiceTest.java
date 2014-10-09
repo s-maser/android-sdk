@@ -12,12 +12,14 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 
 import java.util.Arrays;
+import java.util.UUID;
 
 import io.relayr.ble.BleDevice;
 import io.relayr.ble.BleDeviceType;
 import rx.Observer;
 
 import static android.bluetooth.BluetoothGatt.GATT_SUCCESS;
+import static io.relayr.ble.service.TestValues.EXPECTED_SENSOR_ID_AS_BYTE_ARRAY;
 import static java.util.UUID.fromString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -103,6 +105,20 @@ public class OnBoardingServiceTest {
         receiver.onCharacteristicWrite(mock(BluetoothGatt.class), characteristic, GATT_SUCCESS);
 
         verify(observer, times(1)).onNext(characteristic);
+    }
+
+    @Test public void getSensorIdTest() {
+        when(characteristic.getUuid()).thenReturn(fromString("00002010-0000-1000-8000-00805f9b34fb"));
+        when(characteristic.getValue()).thenReturn(EXPECTED_SENSOR_ID_AS_BYTE_ARRAY);
+
+        @SuppressWarnings("unchecked")
+        Observer<? super UUID> observer = mock(Observer.class);
+        service
+                .getSensorId()
+                .subscribe(observer);
+
+        receiver.onCharacteristicRead(mock(BluetoothGatt.class), characteristic, GATT_SUCCESS);
+        verify(observer).onNext(TestValues.EXPECTED_SENSOR_ID);
     }
 
 }
