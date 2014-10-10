@@ -15,6 +15,11 @@ public class WriteCharacteristicException extends Exception {
     }
 
     @Override
+    public String getMessage() {
+        return toString();
+    }
+
+    @Override
     public String toString() {
         return BluetoothGattStatus.toString(status);
     }
