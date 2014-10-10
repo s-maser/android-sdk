@@ -4,6 +4,8 @@ import android.bluetooth.BluetoothGatt;
 
 public abstract class BluetoothGattStatus {
 
+    public static final int GATT_FAILURE_BINDING_REQUIRED = 133;
+
     public static String toString(int status) {
         switch (status) {
             case BluetoothGatt.GATT_FAILURE: {
@@ -33,6 +35,9 @@ public abstract class BluetoothGattStatus {
             case BluetoothGatt.GATT_WRITE_NOT_PERMITTED: {
                 return "GATT write operation is not permitted";
             }
+            case GATT_FAILURE_BINDING_REQUIRED: {
+                return "GATT failure: pairing required";
+            }
             default: return "Not identified error";
         }
     }
@@ -47,6 +52,7 @@ public abstract class BluetoothGattStatus {
             case BluetoothGatt.GATT_READ_NOT_PERMITTED:
             case BluetoothGatt.GATT_REQUEST_NOT_SUPPORTED:
             case BluetoothGatt.GATT_WRITE_NOT_PERMITTED:
+            case GATT_FAILURE_BINDING_REQUIRED:
                 return true;
             case BluetoothGatt.GATT_SUCCESS:
             default: return false;
