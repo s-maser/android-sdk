@@ -83,6 +83,24 @@ public class DirectConnectionService extends BaseService {
                 });
     }
 
+    public Observable<String> stopGettingReadings() {
+        BluetoothGattCharacteristic characteristic = getCharacteristicInServices(
+                mBluetoothGatt.getServices(), SERVICE_DIRECT_CONNECTION, CHARACTERISTIC_SENSOR_DATA);
+        if (characteristic == null) {
+            return error(new CharacteristicNotFoundException("Readings"));
+        }
+        BluetoothGattDescriptor descriptor = getDescriptorInCharacteristic(
+                characteristic, DESCRIPTOR_DATA_NOTIFICATIONS);
+        return mBluetoothGattReceiver
+                .unsubscribeToCharacteristicChanges(mBluetoothGatt, characteristic, descriptor)
+                .flatMap(new Func1<BluetoothGattCharacteristic, Observable<String>>() {
+                    @Override
+                    public Observable<String> call(BluetoothGattCharacteristic characteristic) {
+                        return just(getFormattedValue(mBleDevice.getType(), characteristic.getValue()));
+                    }
+                });
+    }
+
     /**
      * Return an observable of the Sensor Id characteristic.
      * <p>See {@link BluetoothGatt#readCharacteristic} for details of what it's done internally.

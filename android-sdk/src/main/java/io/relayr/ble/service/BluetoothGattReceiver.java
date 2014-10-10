@@ -21,6 +21,7 @@ import io.relayr.ble.service.error.WriteCharacteristicException;
 import rx.Observable;
 import rx.Subscriber;
 
+import static android.bluetooth.BluetoothGattDescriptor.DISABLE_NOTIFICATION_VALUE;
 import static android.bluetooth.BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE;
 import static android.bluetooth.BluetoothProfile.STATE_CONNECTED;
 import static android.bluetooth.BluetoothProfile.STATE_DISCONNECTED;
@@ -32,6 +33,7 @@ public class BluetoothGattReceiver extends BluetoothGattCallback {
     private volatile Subscriber<? super BluetoothGatt> mDisconnectedSubscriber;
     private volatile Subscriber<? super BluetoothGatt> mBluetoothGattServiceSubscriber;
     private volatile Subscriber<? super BluetoothGattCharacteristic> mValueChangesSubscriber;
+    private volatile Subscriber<? super BluetoothGattCharacteristic> mValueChangesUnSubscriber;
     private volatile Map<UUID, Subscriber<? super BluetoothGattCharacteristic>>
             mWriteCharacteristicsSubscriberMap = new ConcurrentHashMap<>();
     private volatile Map<UUID, Subscriber<? super BluetoothGattCharacteristic>>
@@ -154,6 +156,21 @@ public class BluetoothGattReceiver extends BluetoothGattCallback {
                 mValueChangesSubscriber = subscriber;
                 gatt.setCharacteristicNotification(characteristic, true);
                 descriptor.setValue(ENABLE_NOTIFICATION_VALUE);
+                gatt.writeDescriptor(descriptor);
+            }
+        });
+    }
+
+    public Observable<BluetoothGattCharacteristic> unsubscribeToCharacteristicChanges(
+            final BluetoothGatt gatt,
+            final BluetoothGattCharacteristic characteristic,
+            final BluetoothGattDescriptor descriptor) {
+        return Observable.create(new Observable.OnSubscribe<BluetoothGattCharacteristic>() {
+            @Override
+            public void call(Subscriber<? super BluetoothGattCharacteristic> subscriber) {
+                mValueChangesUnSubscriber = subscriber;
+                gatt.setCharacteristicNotification(characteristic, false);
+                descriptor.setValue(DISABLE_NOTIFICATION_VALUE);
                 gatt.writeDescriptor(descriptor);
             }
         });
