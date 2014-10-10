@@ -12,6 +12,7 @@ import io.relayr.ble.service.error.CharacteristicNotFoundException;
 import rx.Observable;
 import rx.functions.Func1;
 
+import static android.bluetooth.BluetoothGattCharacteristic.FORMAT_SFLOAT;
 import static android.bluetooth.BluetoothGattCharacteristic.FORMAT_UINT16;
 import static io.relayr.ble.service.Utils.getCharacteristicInServices;
 import static rx.Observable.error;
@@ -59,6 +60,21 @@ class Service {
             return error(new CharacteristicNotFoundException(what));
         }
         return mBluetoothGattReceiver.readCharacteristic(mBluetoothGatt, characteristic);
+    }
+
+    protected Observable<Float> readFloatCharacteristic(String serviceUuid,
+                                                        String characteristicUuid,
+                                                        final String what) {
+        return readCharacteristic(serviceUuid, characteristicUuid, what)
+                .flatMap(new Func1<BluetoothGattCharacteristic, Observable<Float>>() {
+                    @Override
+                    public Observable<Float> call(BluetoothGattCharacteristic charac) {
+                        if (charac.getValue() == null || charac.getValue().length == 0) {
+                            error(new CharacteristicNotFoundException(what));
+                        }
+                        return just(charac.getFloatValue(FORMAT_SFLOAT, 0));
+                    }
+                });
     }
 
     protected Observable<Integer> readIntegerCharacteristic(String serviceUuid,

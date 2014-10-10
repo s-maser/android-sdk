@@ -135,11 +135,11 @@ public class DirectConnectionService extends BaseService {
      *
      * @return Observable<Float>, an observable of the sensor threshold value
      */
-    /*TODO: public Observable<Float> readSensorThreshold() {
+    public Observable<Float> getSensorThreshold() {
         final String text = "Sensor Threshold";
         return readFloatCharacteristic(
                 SERVICE_DIRECT_CONNECTION, CHARACTERISTIC_SENSOR_THRESHOLD, text);
-    }*/
+    }
 
     /**
      * Writes the sensorFrequency characteristic to the associated remote device. This is the time

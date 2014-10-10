@@ -22,6 +22,7 @@ import io.relayr.ble.BleDeviceType;
 import rx.Observer;
 
 import static android.bluetooth.BluetoothGatt.GATT_SUCCESS;
+import static android.bluetooth.BluetoothGattCharacteristic.FORMAT_SFLOAT;
 import static android.bluetooth.BluetoothGattCharacteristic.FORMAT_UINT16;
 import static io.relayr.ble.service.TestValues.*;
 import static java.util.UUID.fromString;
@@ -34,8 +35,10 @@ import static org.mockito.Mockito.when;
 public class DirectConnectionServiceTest {
 
     private static final int EXPECTED_FREQUENCY = 1000; // in milliseconds
+    private static final float EXPECTED_THRESHOLD = 3.3f;
 
     @Mock private BluetoothGattCharacteristic frequencyCharacteristic;
+    @Mock private BluetoothGattCharacteristic thresholdCharacteristic;
     @Mock private BluetoothGattCharacteristic sensorIdCharacteristic;
     @Mock private BluetoothGatt gatt;
     private BluetoothGattReceiver receiver = new BluetoothGattReceiver();
@@ -53,11 +56,15 @@ public class DirectConnectionServiceTest {
         when(frequencyCharacteristic.getValue()).thenReturn(new byte[]{0x38, 0x03, 0x00, 0x00});
         when(frequencyCharacteristic.getUuid()).thenReturn(fromString("00002012-0000-1000-8000-00805f9b34fb"));
 
+        when(thresholdCharacteristic.getFloatValue(FORMAT_SFLOAT, 0)).thenReturn(EXPECTED_THRESHOLD);
+        when(thresholdCharacteristic.getValue()).thenReturn(("" + FORMAT_SFLOAT).getBytes());
+        when(thresholdCharacteristic.getUuid()).thenReturn(fromString("00002014-0000-1000-8000-00805f9b34fb"));
+
         when(sensorIdCharacteristic.getValue()).thenReturn(EXPECTED_SENSOR_ID_AS_BYTE_ARRAY);
         when(sensorIdCharacteristic.getUuid()).thenReturn(fromString("00002010-0000-1000-8000-00805f9b34fb"));
 
         List<BluetoothGattCharacteristic> batteryCharacteristics =
-                Arrays.asList(frequencyCharacteristic, sensorIdCharacteristic);
+                Arrays.asList(frequencyCharacteristic, sensorIdCharacteristic, thresholdCharacteristic);
         when(batteryService.getCharacteristics()).thenReturn(batteryCharacteristics);
 
         List<BluetoothGattService> services = Arrays.asList(batteryService);
@@ -73,6 +80,15 @@ public class DirectConnectionServiceTest {
                .subscribe(observer);
         receiver.onCharacteristicRead(gatt, frequencyCharacteristic, GATT_SUCCESS);
         verify(observer).onNext(EXPECTED_FREQUENCY);
+    }
+
+    @Test public void getSensorThresholdTest() {
+        @SuppressWarnings("unchecked")
+        Observer<? super Float> observer = mock(Observer.class);
+        service.getSensorThreshold()
+                .subscribe(observer);
+        receiver.onCharacteristicRead(gatt, thresholdCharacteristic, GATT_SUCCESS);
+        verify(observer).onNext(EXPECTED_THRESHOLD);
     }
 
     @Test public void getSensorIdTest() {
