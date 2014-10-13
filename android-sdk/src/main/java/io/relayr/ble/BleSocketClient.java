@@ -5,6 +5,8 @@ import java.util.List;
 
 import io.relayr.RelayrSdk;
 import io.relayr.SocketClient;
+import io.relayr.ble.service.BaseService;
+import io.relayr.ble.service.DirectConnectionService;
 import io.relayr.model.TransmitterDevice;
 import rx.Observable;
 import rx.Subscriber;
@@ -35,10 +37,17 @@ public class BleSocketClient implements SocketClient {
                         });
                     }
                 })
-                .flatMap(new Func1<BleDevice, Observable<String>>() {
+                .flatMap(new Func1<BleDevice, Observable<? extends BaseService>>() {
                     @Override
-                    public Observable<String> call(BleDevice bleDevice) {
-                        return bleDevice.subscribeToDeviceValueChanges();
+                    public Observable<? extends BaseService> call(BleDevice bleDevice) {
+                        return bleDevice.connect();
+                    }
+                })
+                .flatMap(new Func1<BaseService, Observable<String>>() {
+                    @Override
+                    public Observable<String> call(BaseService baseService) {
+                        DirectConnectionService service = (DirectConnectionService) baseService;
+                        return service.getReadings();
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())

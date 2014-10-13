@@ -14,7 +14,6 @@ class BleDeviceManager {
 
     void init(Subscriber<? super List<BleDevice>> devicesSubscriber) {
         mDevicesSubscriber = devicesSubscriber;
-        refreshConnectedDevices();
     }
 
     void addDiscoveredDevice(BleDevice device) {
@@ -31,22 +30,11 @@ class BleDeviceManager {
     }
 
     void clear() {
-        for (BleDevice device: discoveredDevices.values()) {
-            if (device.isConnected()) device.disconnect();
-        }
         discoveredDevices.clear();
     }
 
     List<BleDevice> getDiscoveredDevices() {
         return new ArrayList<>(discoveredDevices.values());
-    }
-
-    private void refreshConnectedDevices() {
-        for (BleDevice device: discoveredDevices.values()) {
-            if (device.isConnected()) {
-                device.forceCacheRefresh();
-            }
-        }
     }
 
     void removeDevice(BleDevice device) {
