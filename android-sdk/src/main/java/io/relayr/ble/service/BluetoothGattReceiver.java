@@ -52,19 +52,22 @@ public class BluetoothGattReceiver extends BluetoothGattCallback {
     @Override
     public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
 
-        if (status != BluetoothGatt.GATT_SUCCESS || mConnectionChangesSubscriber == null) return;
+        if (status != BluetoothGatt.GATT_SUCCESS) return;
 
         if (newState == STATE_CONNECTED) { // on connected
-            mConnectionChangesSubscriber.onNext(gatt);
+            if (mConnectionChangesSubscriber != null) mConnectionChangesSubscriber.onNext(gatt);
         } else if (newState == STATE_DISCONNECTED) {
+            gatt.close();
             if (mDisconnectedSubscriber != null) { // disconnected voluntarily
                 mDisconnectedSubscriber.onNext(gatt);
                 mDisconnectedSubscriber.onCompleted();
             } else { // disconnected involuntarily because an error occurred
-                mConnectionChangesSubscriber.onError(new DisconnectionException(status + ""));
+                if (mConnectionChangesSubscriber != null)
+                    mConnectionChangesSubscriber.onError(new DisconnectionException(status + ""));
             }
         } else if (BluetoothGattStatus.isFailureStatus(status)) {
-            mConnectionChangesSubscriber.onError(new GattException(status + ""));
+            if (mConnectionChangesSubscriber != null)
+                mConnectionChangesSubscriber.onError(new GattException(status + ""));
         }
     }
 
@@ -96,7 +99,6 @@ public class BluetoothGattReceiver extends BluetoothGattCallback {
                     DeviceCompatibilityUtils.removeBond(bluetoothGatt.getDevice());
                 }
                 bluetoothGatt.disconnect();
-                bluetoothGatt.close();
             }
         });
     }
