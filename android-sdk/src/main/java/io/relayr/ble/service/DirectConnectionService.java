@@ -133,6 +133,7 @@ public class DirectConnectionService extends BaseService {
      *
      * <p>See {@link BluetoothGatt#readCharacteristic} for details of what it's done internally.
      *
+     * TODO: FIX - NOT WORKING AS EXPECTED
      * @return Observable<Float>, an observable of the sensor threshold value
      */
     public Observable<Float> getSensorThreshold() {
