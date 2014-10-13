@@ -112,7 +112,7 @@ public class BaseServiceTest {
 
     @Test public void disconnectTest() {
         @SuppressWarnings("unchecked")
-        Observer<BluetoothGatt> observer = mock(Observer.class);
+        Observer<BleDevice> observer = mock(Observer.class);
 
         BaseService
                 .doConnect(device, receiver)
@@ -122,9 +122,9 @@ public class BaseServiceTest {
                         return just(new BaseService(bleDevice, gatt, receiver));
                     }
                 })
-                .flatMap(new Func1<BaseService, Observable<? extends BluetoothGatt>>() {
+                .flatMap(new Func1<BaseService, Observable<BleDevice>>() {
                     @Override
-                    public Observable<? extends BluetoothGatt> call(BaseService baseService) {
+                    public Observable<BleDevice> call(BaseService baseService) {
                         return baseService.disconnect();
                     }
 
@@ -135,7 +135,7 @@ public class BaseServiceTest {
         receiver.onServicesDiscovered(mock(BluetoothGatt.class), GATT_SUCCESS);
         receiver.onConnectionStateChange(mock(BluetoothGatt.class), GATT_SUCCESS, STATE_DISCONNECTED);
 
-        verify(observer, times(1)).onNext(any(BluetoothGatt.class));
+        verify(observer, times(1)).onNext(bleDevice);
     }
 
     @Test public void readCharacteristic_shouldThrow_CharacteristicNotFoundException() {

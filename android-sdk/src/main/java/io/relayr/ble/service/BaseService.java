@@ -6,6 +6,7 @@ import android.os.Build;
 
 import io.relayr.ble.BleDevice;
 import rx.Observable;
+import rx.functions.Func1;
 
 import static io.relayr.ble.service.ShortUUID.CHARACTERISTIC_BATTERY_LEVEL;
 import static io.relayr.ble.service.ShortUUID.CHARACTERISTIC_FIRMWARE_VERSION;
@@ -24,8 +25,15 @@ public class BaseService extends Service {
         mBleDevice = device;
     }
 
-    public Observable<? extends BluetoothGatt> disconnect() {
-        return mBluetoothGattReceiver.disconnect(mBluetoothGatt);
+    public Observable<BleDevice> disconnect() {
+        return mBluetoothGattReceiver
+                .disconnect(mBluetoothGatt)
+                .map(new Func1<BluetoothGatt, BleDevice>() {
+                    @Override
+                    public BleDevice call(BluetoothGatt gatt) {
+                        return mBleDevice;
+                    }
+                });
     }
 
     /**
