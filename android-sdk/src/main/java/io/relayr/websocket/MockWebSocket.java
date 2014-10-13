@@ -15,8 +15,6 @@ import rx.schedulers.Schedulers;
 
 class MockWebSocket extends WebSocket {
 
-    private static final String TAG = MockWebSocket.class.getSimpleName();
-
     private final MockBackend mMockBackend;
 
     MockWebSocket(WebSocketConfig webSocketConfig, MockBackend mockBackend) {
@@ -29,10 +27,10 @@ class MockWebSocket extends WebSocket {
 
         Observable.from(mMockBackend.getWebSocketReadings())
                 .delay(1, TimeUnit.SECONDS)
-                .flatMap(new Func1<Reading, Observable<? extends String>>() {
+                .map(new Func1<Reading, String>() {
                     @Override
-                    public Observable<String> call(Reading reading) {
-                        return Observable.just(new Gson().toJson(reading));
+                    public String call(Reading reading) {
+                        return new Gson().toJson(reading);
                     }
                 })
                 .repeat()

@@ -7,8 +7,6 @@ import io.relayr.ble.BleDevice;
 import rx.Observable;
 import rx.functions.Func1;
 
-import static rx.Observable.just;
-
 public class MasterModuleService extends BaseService {
     protected MasterModuleService(BleDevice device, BluetoothGatt gatt,
                                   BluetoothGattReceiver receiver) {
@@ -19,10 +17,10 @@ public class MasterModuleService extends BaseService {
                                                           final BluetoothDevice device) {
         final BluetoothGattReceiver receiver = new BluetoothGattReceiver();
         return doConnect(device, receiver)
-                .flatMap(new Func1<BluetoothGatt, Observable<MasterModuleService>>() {
+                .map(new Func1<BluetoothGatt, MasterModuleService>() {
                     @Override
-                    public Observable<MasterModuleService> call(BluetoothGatt gatt) {
-                        return just(new MasterModuleService(bleDevice, gatt, receiver));
+                    public MasterModuleService call(BluetoothGatt gatt) {
+                        return new MasterModuleService(bleDevice, gatt, receiver);
                     }
                 });
     }

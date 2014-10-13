@@ -16,7 +16,6 @@ import static io.relayr.ble.service.ShortUUID.CHARACTERISTIC_ON_BOARDING_FLAG;
 import static io.relayr.ble.service.ShortUUID.CHARACTERISTIC_PASS_KEY;
 import static io.relayr.ble.service.ShortUUID.CHARACTERISTIC_SENSOR_ID;
 import static io.relayr.ble.service.ShortUUID.SERVICE_ON_BOARDING;
-import static rx.Observable.just;
 
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class OnBoardingService extends BaseService {
@@ -29,10 +28,10 @@ public class OnBoardingService extends BaseService {
                                                         final BluetoothDevice device) {
         final BluetoothGattReceiver receiver = new BluetoothGattReceiver();
         return doConnect(device, receiver)
-                .flatMap(new Func1<BluetoothGatt, Observable<OnBoardingService>>() {
+                .map(new Func1<BluetoothGatt, OnBoardingService>() {
                     @Override
-                    public Observable<OnBoardingService> call(BluetoothGatt gatt) {
-                        return just(new OnBoardingService(bleDevice, gatt, receiver));
+                    public OnBoardingService call(BluetoothGatt gatt) {
+                        return new OnBoardingService(bleDevice, gatt, receiver);
                     }
                 });
     }

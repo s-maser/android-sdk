@@ -57,10 +57,10 @@ public class DirectConnectionService extends BaseService {
                         return bluetoothGattObservable;
                     }
                 })
-                .flatMap(new Func1<BluetoothGatt, Observable<DirectConnectionService>>() {
+                .map(new Func1<BluetoothGatt, DirectConnectionService>() {
                     @Override
-                    public Observable<DirectConnectionService> call(BluetoothGatt gatt) {
-                        return just(new DirectConnectionService(bleDevice, gatt, receiver));
+                    public DirectConnectionService call(BluetoothGatt gatt) {
+                        return new DirectConnectionService(bleDevice, gatt, receiver);
                     }
                 });
     }
