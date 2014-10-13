@@ -32,7 +32,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static rx.Observable.*;
 
 @RunWith(RobolectricTestRunner.class)
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
@@ -96,10 +95,10 @@ public class BaseServiceTest {
 
         BaseService
                 .doConnect(device, receiver)
-                .flatMap(new Func1<BluetoothGatt, Observable<BaseService>>() {
+                .map(new Func1<BluetoothGatt, BaseService>() {
                     @Override
-                    public Observable<BaseService> call(BluetoothGatt gatt) {
-                        return just(new BaseService(bleDevice, gatt, receiver));
+                    public BaseService call(BluetoothGatt gatt) {
+                        return new BaseService(bleDevice, gatt, receiver);
                     }
                 })
                 .subscribe(observer);
@@ -116,10 +115,10 @@ public class BaseServiceTest {
 
         BaseService
                 .doConnect(device, receiver)
-                .flatMap(new Func1<BluetoothGatt, Observable<BaseService>>() {
+                .map(new Func1<BluetoothGatt, BaseService>() {
                     @Override
-                    public Observable<BaseService> call(BluetoothGatt g) {
-                        return just(new BaseService(bleDevice, gatt, receiver));
+                    public BaseService call(BluetoothGatt g) {
+                        return new BaseService(bleDevice, gatt, receiver);
                     }
                 })
                 .flatMap(new Func1<BaseService, Observable<BleDevice>>() {
