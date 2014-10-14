@@ -39,9 +39,9 @@ public class OnBoardingService extends BaseService {
     /**
      * Writes the sensorId characteristic to the associated remote device.
      *
-     * @param sensorId Bytes to write on the remote device
-     * @return Observable<BluetoothGattCharacteristic>, an observable of what will be written in the
-     * device
+     * @param sensorId A number represented in Bytes to be written the remote device
+     * @return Observable<BluetoothGattCharacteristic>, an observable of what is
+     * to be written to the device
      */
     public Observable<BluetoothGattCharacteristic> writeSensorId(byte[] sensorId) {
         return write(sensorId, SERVICE_ON_BOARDING, CHARACTERISTIC_SENSOR_ID);
@@ -50,9 +50,9 @@ public class OnBoardingService extends BaseService {
     /**
      * Writes the sensorPassKey characteristic to the associated remote device.
      *
-     * @param passKey Bytes to write on the remote device
-     * @return Observable<BluetoothGattCharacteristic>, an observable of what will be written in the
-     * device
+     * @param passKey A number represented in Bytes to be written the remote device
+     * @return Observable<BluetoothGattCharacteristic>, an observable of what
+     * is to be written to the device
      */
     public Observable<BluetoothGattCharacteristic> writeSensorPassKey(byte[] passKey) {
         return write(passKey, SERVICE_ON_BOARDING, CHARACTERISTIC_PASS_KEY);
@@ -61,8 +61,8 @@ public class OnBoardingService extends BaseService {
     /**
      * Writes the sensorOnBoardingFlag characteristic to the associated remote device.
      *
-     * @return Observable<BluetoothGattCharacteristic>, an observable of what will be written in the
-     * device
+     * @return Observable<BluetoothGattCharacteristic>, an observable of what is to
+     * be written to the device
      */
     public Observable<BluetoothGattCharacteristic> writeOnBoardingFlagToConnectToMasterModule() {
         return write(new byte[] {1}, SERVICE_ON_BOARDING, CHARACTERISTIC_ON_BOARDING_FLAG);
@@ -71,16 +71,17 @@ public class OnBoardingService extends BaseService {
     /**
      * Writes the sensorOnBoardingFlag characteristic to the associated remote device.
      *
-     * @return Observable<BluetoothGattCharacteristic>, an observable of what will be written in the
-     * device
+     * @return Observable<BluetoothGattCharacteristic>, an observable of
+     * what is to be written to the device
      */
     public Observable<BluetoothGattCharacteristic> writeOnBoardingFlagForDirectConnection() {
         return write(new byte[]{0}, SERVICE_ON_BOARDING, CHARACTERISTIC_ON_BOARDING_FLAG);
     }
 
     /**
-     * Return an observable of the Sensor Id characteristic.
-     * <p>See {@link BluetoothGatt#readCharacteristic} for details of what it's done internally.
+     * Returns an observable of the Sensor Id characteristic.
+     * <p>See {@link BluetoothGatt#readCharacteristic} for details about the actions performed in
+     * the background
      * @return an observable of the Sensor Id characteristic
      */
     public Observable<UUID> getSensorId() {
@@ -88,8 +89,9 @@ public class OnBoardingService extends BaseService {
     }
 
     /**
-     * Return an observable of the Sensor Pass Key characteristic.
-     * <p>See {@link BluetoothGatt#readCharacteristic} for details of what it's done internally.
+     * Returns an observable of the Sensor Pass Key characteristic.
+     * <p>See {@link BluetoothGatt#readCharacteristic} for details about the actions
+     * performed in the background.
      * @return an observable of the Sensor Pass Key characteristic
      */
     public Observable<String> getSensorPassKey() {
@@ -97,9 +99,11 @@ public class OnBoardingService extends BaseService {
     }
 
     /**
-     * Return an observable of the OnBoarding Flag characteristic. 1 Means Connected To Master
-     * Module and 0 means direct connecting.
-     * <p>See {@link BluetoothGatt#readCharacteristic} for details of what it's done internally.
+     * Returns an observable of the OnBoarding Flag characteristic. 1 indicates that
+     * the device is connected to the Master Module
+     * 0 indicates direct connection.
+     * <p>See {@link BluetoothGatt#readCharacteristic} for details about the actions performed
+     * in the background.
      * @return an observable of the OnBoarding Flag characteristic
      */
     public Observable<Integer> getOnBoardingFlag() {
