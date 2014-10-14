@@ -11,7 +11,10 @@ import static io.relayr.ble.service.ShortUUID.SERVICE_ON_BOARDING;
  * DIRECT_CONNECTION - Connected via BLE to a transmitter or an App.
  * CONNECTED_TO_MASTER_MODULE - Connected to the WunderBar Master Module
  * UNKNOWN
- * The Device would publish a different based on the mode it is in.
+ * The Device would publish a different service, based on the mode it is in.
+ * @See {@link io.relayr.ble.DirectConnectionService}
+ * @See {@link io.relayr.ble.OnBoardingService}
+ * @See {@link io.relayr.ble.MasterModuleService}
  */
 public enum BleDeviceMode {
     ON_BOARDING,
