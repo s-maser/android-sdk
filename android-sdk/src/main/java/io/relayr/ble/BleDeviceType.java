@@ -2,6 +2,12 @@ package io.relayr.ble;
 
 import io.relayr.model.DeviceModel;
 
+/**
+ * A class representing the type of a relayr BLE Device.
+ * Currently the available device types are the different type or sensors which are part of the
+ * WunderBar: WunderbarHTU, WunderbarGYRO, WunderbarLIGHT, WunderbarMIC, WunderbarBRIDG,
+ * WunderbarIR, WunderbarApp, Unknown
+ */
 public enum BleDeviceType {
 	WunderbarHTU,
 	WunderbarGYRO,

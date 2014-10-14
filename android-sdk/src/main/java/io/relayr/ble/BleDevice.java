@@ -61,7 +61,7 @@ public class BleDevice {
     /**
      * The type of the Device
      * Possibe values are: WunderbarHTU, WunderbarGYRO, WunderbarLIGHT, WunderbarMIC, WunderbarBRIDG,
-     * WunderbarIR, WunderbarApp, Unknown;
+     * WunderbarIR, WunderbarApp, Unknown
      * @return type of type {@link io.relayr.ble.BleDeviceType}.
      */
 	public BleDeviceType getType() {
