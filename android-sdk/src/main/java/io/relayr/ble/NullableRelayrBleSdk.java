@@ -3,11 +3,8 @@ package io.relayr.ble;
 import java.util.Collection;
 import java.util.List;
 
-import io.relayr.SocketClient;
-import io.relayr.model.TransmitterDevice;
 import rx.Observable;
 import rx.Subscriber;
-import rx.Subscription;
 
 class NullableRelayrBleSdk extends RelayrBleSdk {
 
@@ -24,7 +21,7 @@ class NullableRelayrBleSdk extends RelayrBleSdk {
 
     public boolean isScanning() { return false; }
 
-    @Override
+    /*@Override
     public SocketClient getBleSocketClient() {
         return new SocketClient() {
             @Override
@@ -47,6 +44,6 @@ class NullableRelayrBleSdk extends RelayrBleSdk {
 
             }
         };
-    }
+    }*/
 
 }

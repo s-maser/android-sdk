@@ -7,7 +7,6 @@ import android.os.Build;
 import java.util.Collection;
 import java.util.List;
 
-import io.relayr.SocketClient;
 import rx.Observable;
 import rx.Subscriber;
 
@@ -35,10 +34,10 @@ class RelayrBleSdkImpl extends RelayrBleSdk implements BleScannerFilter.BleFilte
         });
     }
 
-    @Override
+    /*@Override
     public SocketClient getBleSocketClient() {
         return new BleSocketClient();
-    }
+    }*/
 
     public void stop() {
         mBleDeviceScanner.stop();

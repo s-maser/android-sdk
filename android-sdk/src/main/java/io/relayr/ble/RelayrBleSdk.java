@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.List;
 
 import io.relayr.RelayrSdk;
-import io.relayr.SocketClient;
 import rx.Observable;
 
 /**
@@ -51,6 +50,6 @@ public abstract class RelayrBleSdk {
      * Used as an access point to the class {@link io.relayr.ble.BleSocketClient}
      * @return the handler of the BleSocket client
      */
-    public abstract SocketClient getBleSocketClient();
+    //public abstract SocketClient getBleSocketClient();
 
 }
