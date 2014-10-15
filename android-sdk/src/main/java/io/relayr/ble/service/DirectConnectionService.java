@@ -140,13 +140,13 @@ public class DirectConnectionService extends BaseService {
      * <p>See {@link BluetoothGatt#readCharacteristic} for details as to the actions performed in
      * the background
      *
-     * TODO: FIX - NOT WORKING AS EXPECTED
-     * @return Observable<Float>, an observable of the sensor threshold value
+     * @return Observable<BluetoothGattCharacteristic>, an observable of the sensor characteristic.
+     * In order to get the value from the characteristic call
+     * {@link android.bluetooth.BluetoothGattCharacteristic#getValue()}
      */
-    public Observable<Float> getSensorThreshold() {
+    public Observable<BluetoothGattCharacteristic> getSensorThreshold() {
         final String text = "Sensor Threshold";
-        return readFloatCharacteristic(
-                SERVICE_DIRECT_CONNECTION, CHARACTERISTIC_SENSOR_THRESHOLD, text);
+        return readCharacteristic(SERVICE_DIRECT_CONNECTION, CHARACTERISTIC_SENSOR_THRESHOLD, text);
     }
 
     /**
