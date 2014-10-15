@@ -13,6 +13,9 @@ import rx.Observable;
 import static io.relayr.ble.BleDeviceMode.DIRECT_CONNECTION;
 import static io.relayr.ble.BleDeviceMode.ON_BOARDING;
 
+/**
+ * A class representing a relayr BLE Device
+ */
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class BleDevice {
 
@@ -30,18 +33,37 @@ public class BleDevice {
         this.name = name;
 	}
 
+    /**
+     * The name of the Device
+     * @return a string containing the name of the device.
+     */
     public String getName() {
 		return name;
 	}
 
+    /**
+     * The Id of the Device
+     * @return a string containing the Id of the device.
+     */
 	public String getAddress() {
 		return address;
 	}
 
+    /**
+     * The mode in which a Device is in
+     * This can be either ON_BOARDING, CONNECTED_TO_MASTER_MODULE, DIRECT_CONNECTION or UNKNOWN
+     * @return mode of type {@link io.relayr.ble.BleDeviceMode}
+     */
 	public BleDeviceMode getMode() {
 		return mode;
 	}
 
+    /**
+     * The type of the Device
+     * Possibe values are: WunderbarHTU, WunderbarGYRO, WunderbarLIGHT, WunderbarMIC, WunderbarBRIDG,
+     * WunderbarIR, WunderbarApp, Unknown
+     * @return type of type {@link io.relayr.ble.BleDeviceType}.
+     */
 	public BleDeviceType getType() {
 		return type;
 	}

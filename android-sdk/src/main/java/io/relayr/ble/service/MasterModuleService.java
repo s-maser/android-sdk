@@ -7,6 +7,10 @@ import io.relayr.ble.BleDevice;
 import rx.Observable;
 import rx.functions.Func1;
 
+/**
+ * A class representing the service associated with the CONNECTED_TO_MASTER_MODULE mode
+ * @See {@link io.relayr.ble.BleDeviceMode}
+ */
 public class MasterModuleService extends BaseService {
     protected MasterModuleService(BleDevice device, BluetoothGatt gatt,
                                   BluetoothGattReceiver receiver) {

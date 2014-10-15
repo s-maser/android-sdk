@@ -15,6 +15,9 @@ import static io.relayr.ble.service.ShortUUID.CHARACTERISTIC_MANUFACTURER;
 import static io.relayr.ble.service.ShortUUID.SERVICE_BATTERY_LEVEL;
 import static io.relayr.ble.service.ShortUUID.SERVICE_DEVICE_INFO;
 
+/**
+ * A class representing the basic characteristics of the BLE service a Device should have
+ */
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class BaseService extends Service {
 
@@ -37,8 +40,9 @@ public class BaseService extends Service {
     }
 
     /**
-     * Return an observable of the Battery Level characteristic.
-     * <p>See {@link BluetoothGatt#readCharacteristic} for details of what it's done internally.
+     * Returns an observable of the Battery Level characteristic.
+     * <p>See {@link BluetoothGatt#readCharacteristic} for details as to the actions performed in
+     * the background.
      * @return an observable of the Battery Level characteristic
      */
     public Observable<Integer> getBatteryLevel() {
@@ -47,8 +51,9 @@ public class BaseService extends Service {
     }
 
     /**
-     * Return an observable of the Firmware Version characteristic.
-     * <p>See {@link BluetoothGatt#readCharacteristic} for details of what it's done internally.
+     * Returns an observable of the Firmware Version characteristic.
+     * <p>See {@link BluetoothGatt#readCharacteristic} for details as to the actions performed in
+     * the background.
      * @return an observable of the Firmware Version characteristic
      */
     public Observable<String> getFirmwareVersion() {
@@ -57,8 +62,9 @@ public class BaseService extends Service {
     }
 
     /**
-     * Return an observable of the Hardware Version characteristic.
-     * <p>See {@link BluetoothGatt#readCharacteristic} for details of what it's done internally.
+     * Returns an observable of the Hardware Version characteristic.
+     * <p>See {@link BluetoothGatt#readCharacteristic} for details as to the actions performed in
+     * the background.
      * @return an observable of the Hardware Version characteristic
      */
     public Observable<String> getHardwareVersion() {
@@ -67,8 +73,9 @@ public class BaseService extends Service {
     }
 
     /**
-     * Return an observable of the Manufacturer characteristic.
-     * <p>See {@link BluetoothGatt#readCharacteristic} for details of what it's done internally.
+     * Returns an observable of the Manufacturer characteristic.
+     * <p>See {@link BluetoothGatt#readCharacteristic} for details as to the actions performed in
+     * the background.
      * @return an observable of the Manufacturer characteristic
      */
     public Observable<String> getManufacturer() {

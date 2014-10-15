@@ -5,7 +5,17 @@ import java.util.List;
 import static io.relayr.ble.service.ShortUUID.SERVICE_CONNECTED_TO_MASTER_MODULE;
 import static io.relayr.ble.service.ShortUUID.SERVICE_DIRECT_CONNECTION;
 import static io.relayr.ble.service.ShortUUID.SERVICE_ON_BOARDING;
-
+/**
+ * A relayr Device may be in one of the following modes:
+ * ON_BOARDING - In onboarding mode, when first being configured and registered on the relayr cloud
+ * DIRECT_CONNECTION - Connected via BLE to a transmitter or an App.
+ * CONNECTED_TO_MASTER_MODULE - Connected to the WunderBar Master Module
+ * UNKNOWN
+ * The Device would publish a different service, based on the mode it is in.
+ * @See {@link io.relayr.ble.DirectConnectionService}
+ * @See {@link io.relayr.ble.OnBoardingService}
+ * @See {@link io.relayr.ble.MasterModuleService}
+ */
 public enum BleDeviceMode {
     ON_BOARDING,
     DIRECT_CONNECTION,
