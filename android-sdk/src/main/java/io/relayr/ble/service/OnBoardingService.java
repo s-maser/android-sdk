@@ -17,6 +17,9 @@ import static io.relayr.ble.service.ShortUUID.CHARACTERISTIC_PASS_KEY;
 import static io.relayr.ble.service.ShortUUID.CHARACTERISTIC_SENSOR_ID;
 import static io.relayr.ble.service.ShortUUID.SERVICE_ON_BOARDING;
 
+/**
+ * A class representing the On Boarding Connection BLE Service.
+ */
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class OnBoardingService extends BaseService {
 
