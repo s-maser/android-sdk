@@ -13,10 +13,8 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import io.relayr.RelayrApp;
-import io.relayr.ble.BluetoothGattStatus;
 import io.relayr.ble.DeviceCompatibilityUtils;
 import io.relayr.ble.service.error.DisconnectionException;
-import io.relayr.ble.service.error.GattException;
 import io.relayr.ble.service.error.WriteCharacteristicException;
 import rx.Observable;
 import rx.Subscriber;
@@ -65,10 +63,10 @@ public class BluetoothGattReceiver extends BluetoothGattCallback {
                 if (mConnectionChangesSubscriber != null)
                     mConnectionChangesSubscriber.onError(new DisconnectionException(status + ""));
             }
-        } else if (BluetoothGattStatus.isFailureStatus(status)) {
-            if (mConnectionChangesSubscriber != null)
+        } /*else if (BluetoothGattStatus.isFailureStatus(status)) {
+            if (mConnectionChangesSubscriber != null)  // TODO: unreachable -propagate error earlier
                 mConnectionChangesSubscriber.onError(new GattException(status + ""));
-        }
+        }*/
     }
 
     public Observable<BluetoothGatt> discoverDevices(final BluetoothGatt bluetoothGatt) {
