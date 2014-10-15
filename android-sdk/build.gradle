@@ -67,6 +67,12 @@ android.libraryVariants.all { variant ->
         exclude '**/storage/*'
         exclude '**/ble/parser/*'
         exclude '**/ble/BleUtils.java'
+        exclude '**/ble/BleSocketClient.java'
+        exclude '**/ble/BluetoothGattStatus.java'
+        exclude '**/ble/DeviceCompatibilityUtils.java'
+        exclude '**/ble/service/error/*'
+        exclude '**/ble/service/BluetoothGattReceiver.java'
+        exclude '**/ble/service/ShortUUID.java'
         failOnError false
     }
 
