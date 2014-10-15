@@ -26,6 +26,7 @@ import static android.bluetooth.BluetoothGattCharacteristic.FORMAT_SFLOAT;
 import static android.bluetooth.BluetoothGattCharacteristic.FORMAT_UINT16;
 import static io.relayr.ble.service.TestValues.*;
 import static java.util.UUID.fromString;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -84,11 +85,11 @@ public class DirectConnectionServiceTest {
 
     @Test public void getSensorThresholdTest() {
         @SuppressWarnings("unchecked")
-        Observer<? super Float> observer = mock(Observer.class);
+        Observer<? super BluetoothGattCharacteristic> observer = mock(Observer.class);
         service.getSensorThreshold()
                 .subscribe(observer);
         receiver.onCharacteristicRead(gatt, thresholdCharacteristic, GATT_SUCCESS);
-        verify(observer).onNext(EXPECTED_THRESHOLD);
+        verify(observer).onNext(any(BluetoothGattCharacteristic.class));
     }
 
     @Test public void getSensorIdTest() {
