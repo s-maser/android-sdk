@@ -166,17 +166,16 @@ public class DirectConnectionService extends BaseService {
 
     /**
      * Writes the sensorLedState characteristic to the associated remote device. It will turn the
-     * LED on or off accordingly, if the operation is carried out successfully.
+     * LED on if the operation is carried out successfully.
      *
      * <p>See {@link BluetoothGatt#writeCharacteristic} for details as to the actions performed in
      * the background.
      *
-     * @param sensorLedState A number represented in Bytes to be written the remote device
      * @return Observable<BluetoothGattCharacteristic>, an observable of what will be written to the
      * device
      */
-    public Observable<BluetoothGattCharacteristic> writeSensorLedState(byte[] sensorLedState) {
-        return write(sensorLedState, SERVICE_DIRECT_CONNECTION, CHARACTERISTIC_SENSOR_LED_STATE);
+    public Observable<BluetoothGattCharacteristic> turnLedOn() {
+        return write(new byte[] {0x01}, SERVICE_DIRECT_CONNECTION, CHARACTERISTIC_SENSOR_LED_STATE);
     }
 
     /**
