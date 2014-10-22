@@ -41,7 +41,7 @@ public class BleModule {
 
     @Provides @Singleton BleUtils provideBleUtils(PackageManager manager) {
         return android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2 ?
-                new MockBleUtils(null, manager): new MockBleUtils(getBluetoothAdapter(), manager);
+                new BleUtils(null, manager): new BleUtils(getBluetoothAdapter(), manager);
     }
 
     @Provides RelayrBleSdk provideRelayrBleSdk() {
