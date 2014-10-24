@@ -87,7 +87,7 @@ public class DirectConnectionService extends BaseService {
                 });
     }
 
-    public Observable<String> stopGettingReadings() {
+    public Observable<BluetoothGattCharacteristic> stopGettingReadings() {
         BluetoothGattCharacteristic characteristic = getCharacteristicInServices(
                 mBluetoothGatt.getServices(), SERVICE_DIRECT_CONNECTION, CHARACTERISTIC_SENSOR_DATA);
         if (characteristic == null) {
@@ -96,13 +96,7 @@ public class DirectConnectionService extends BaseService {
         BluetoothGattDescriptor descriptor = getDescriptorInCharacteristic(
                 characteristic, DESCRIPTOR_DATA_NOTIFICATIONS);
         return mBluetoothGattReceiver
-                .unsubscribeToCharacteristicChanges(mBluetoothGatt, characteristic, descriptor)
-                .flatMap(new Func1<BluetoothGattCharacteristic, Observable<String>>() {
-                    @Override
-                    public Observable<String> call(BluetoothGattCharacteristic characteristic) {
-                        return just(getFormattedValue(mBleDevice.getType(), characteristic.getValue()));
-                    }
-                });
+                .unsubscribeToCharacteristicChanges(mBluetoothGatt, characteristic, descriptor);
     }
 
     /**
