@@ -79,10 +79,10 @@ public class DirectConnectionService extends BaseService {
                 characteristic, DESCRIPTOR_DATA_NOTIFICATIONS);
         return mBluetoothGattReceiver
                 .subscribeToCharacteristicChanges(mBluetoothGatt, characteristic, descriptor)
-                .flatMap(new Func1<BluetoothGattCharacteristic, Observable<String>>() {
+                .map(new Func1<BluetoothGattCharacteristic, String>() {
                     @Override
-                    public Observable<String> call(BluetoothGattCharacteristic characteristic) {
-                        return just(getFormattedValue(mBleDevice.getType(), characteristic.getValue()));
+                    public String call(BluetoothGattCharacteristic characteristic) {
+                        return getFormattedValue(mBleDevice.getType(), characteristic.getValue());
                     }
                 });
     }
