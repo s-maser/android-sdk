@@ -46,6 +46,9 @@ class Service {
                                                             String characteristicUuid) {
         BluetoothGattCharacteristic characteristic = getCharacteristicInServices(
                 mBluetoothGatt.getServices(), serviceUuid, characteristicUuid);
+        if (characteristic == null) {
+            return error(new CharacteristicNotFoundException(characteristicUuid));
+        }
         characteristic.setValue(bytes);
         return mBluetoothGattReceiver.writeCharacteristic(mBluetoothGatt, characteristic);
     }
