@@ -177,6 +177,14 @@ public class BluetoothGattReceiver extends BluetoothGattCallback {
     }
 
     @Override
+    public void onDescriptorWrite(BluetoothGatt gatt, BluetoothGattDescriptor descriptor, int status) {
+        super.onDescriptorWrite(gatt, descriptor, status);
+        if (mValueChangesUnSubscriber != null) {
+            mValueChangesUnSubscriber.onNext(descriptor.getCharacteristic());
+        }
+    }
+
+    @Override
     public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
         mValueChangesSubscriber.onNext(characteristic);
     }
