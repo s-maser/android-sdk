@@ -73,7 +73,7 @@ public class DirectConnectionService extends BaseService {
         BluetoothGattCharacteristic characteristic = getCharacteristicInServices(
                 mBluetoothGatt.getServices(), SERVICE_DIRECT_CONNECTION, CHARACTERISTIC_SENSOR_DATA);
         if (characteristic == null) {
-            return error(new CharacteristicNotFoundException("Readings"));
+            return error(new CharacteristicNotFoundException(CHARACTERISTIC_SENSOR_DATA));
         }
         BluetoothGattDescriptor descriptor = getDescriptorInCharacteristic(
                 characteristic, DESCRIPTOR_DATA_NOTIFICATIONS);
@@ -91,7 +91,7 @@ public class DirectConnectionService extends BaseService {
         BluetoothGattCharacteristic characteristic = getCharacteristicInServices(
                 mBluetoothGatt.getServices(), SERVICE_DIRECT_CONNECTION, CHARACTERISTIC_SENSOR_DATA);
         if (characteristic == null) {
-            return error(new CharacteristicNotFoundException("Readings"));
+            return error(new CharacteristicNotFoundException(CHARACTERISTIC_SENSOR_DATA));
         }
         BluetoothGattDescriptor descriptor = getDescriptorInCharacteristic(
                 characteristic, DESCRIPTOR_DATA_NOTIFICATIONS);
