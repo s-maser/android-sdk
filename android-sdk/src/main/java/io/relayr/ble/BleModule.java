@@ -46,7 +46,7 @@ public class BleModule {
 
     @Provides RelayrBleSdk provideRelayrBleSdk() {
         return RelayrSdk.isBleSupported() && RelayrSdk.isBleAvailable() ?
-                new RelayrBleSdkImpl(getBluetoothAdapter()) :
+                new RelayrBleSdkImpl(getBluetoothAdapter(), new BleDeviceManager()) :
                 new NullableRelayrBleSdk();
     }
 

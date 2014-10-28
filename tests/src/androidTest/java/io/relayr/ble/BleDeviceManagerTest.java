@@ -12,7 +12,9 @@ import java.util.List;
 import rx.Subscriber;
 
 import static io.relayr.ble.BleDeviceMode.ON_BOARDING;
+import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -42,11 +44,36 @@ public class BleDeviceManagerTest {
         @SuppressWarnings("unchecked")
         Subscriber<? super List<BleDevice>> devicesSubscriber = mock(Subscriber.class);
         BleDeviceManager deviceManager = new BleDeviceManager();
-        deviceManager.init(devicesSubscriber);
+        deviceManager.addSubscriber(System.currentTimeMillis(), devicesSubscriber);
 
         deviceManager.addDiscoveredDevice(device);
 
         verify(devicesSubscriber, times(1)).onNext(deviceManager.getDiscoveredDevices());
+    }
+
+    @Test public void addDiscoveredDevice_forTheSecondTime_shouldCallOnNext() {
+        @SuppressWarnings("unchecked")
+        Subscriber<? super List<BleDevice>> devicesSubscriber = mock(Subscriber.class);
+        BleDeviceManager deviceManager = new BleDeviceManager();
+        deviceManager.addSubscriber(System.currentTimeMillis(), devicesSubscriber);
+
+        deviceManager.addDiscoveredDevice(device);
+        deviceManager.addDiscoveredDevice(device);
+
+        verify(devicesSubscriber, times(2)).onNext(deviceManager.getDiscoveredDevices());
+    }
+
+    @Test public void after_removeSubscriber_isCalled_theSubscriberShouldNotBeNotified() {
+        @SuppressWarnings("unchecked")
+        Subscriber<? super List<BleDevice>> devicesSubscriber = mock(Subscriber.class);
+        BleDeviceManager deviceManager = new BleDeviceManager();
+        long time = System.currentTimeMillis();
+
+        deviceManager.addSubscriber(time, devicesSubscriber);
+        deviceManager.removeSubscriber(time);
+
+        deviceManager.addDiscoveredDevice(device);
+        verify(devicesSubscriber, never()).onNext(anyListOf(BleDevice.class));
     }
 
     @Test public void clearTest() {
