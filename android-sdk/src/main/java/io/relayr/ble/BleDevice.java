@@ -20,17 +20,22 @@ import static io.relayr.ble.BleDeviceMode.ON_BOARDING;
 public class BleDevice {
 
 	private final BleDeviceMode mode;
-	private final BluetoothDevice bluetoothDevice;
 	private final BleDeviceType type;
     private final String address;
     private final String name;
+    private final Observable<? extends BaseService> serviceObservable;
 
     BleDevice(BluetoothDevice bluetoothDevice, String address, String name, BleDeviceMode mode) {
-		this.bluetoothDevice = bluetoothDevice;
 		this.mode = mode;
 		this.type = BleDeviceType.getDeviceType(bluetoothDevice.getName());
         this.address = address;
         this.name = name;
+        serviceObservable =
+                mode == ON_BOARDING ?
+                        OnBoardingService.connect(this, bluetoothDevice).cache() :
+                mode == DIRECT_CONNECTION ?
+                        DirectConnectionService.connect(this, bluetoothDevice).cache() :
+                        MasterModuleService.connect(this, bluetoothDevice).cache();
 	}
 
     /**
@@ -60,8 +65,8 @@ public class BleDevice {
 
     /**
      * The type of the Device
-     * Possibe values are: WunderbarHTU, WunderbarGYRO, WunderbarLIGHT, WunderbarMIC, WunderbarBRIDG,
-     * WunderbarIR, WunderbarApp, Unknown
+     * Possible values are: WunderbarHTU, WunderbarGYRO, WunderbarLIGHT, WunderbarMIC,
+     * WunderbarBRIDG, WunderbarIR, WunderbarApp, Unknown
      * @return type of type {@link io.relayr.ble.BleDeviceType}.
      */
 	public BleDeviceType getType() {
@@ -69,13 +74,7 @@ public class BleDevice {
 	}
 
     public Observable<? extends BaseService> connect() {
-        if (mode == ON_BOARDING) {
-            return OnBoardingService.connect(this, bluetoothDevice).cache();
-        } else if (mode == DIRECT_CONNECTION) {
-            return DirectConnectionService.connect(this, bluetoothDevice).cache();
-        } else {
-            return MasterModuleService.connect(this, bluetoothDevice).cache();
-        }
+        return serviceObservable;
     }
 
 	@Override
