@@ -55,6 +55,9 @@ class RelayrBleSdkImpl extends RelayrBleSdk implements BleScannerFilter.BleFilte
             @Override
             public void call() {
                 mDeviceManager.removeSubscriber(key);
+                if (!mDeviceManager.isThereAnySubscriber()) {
+                    mBleDeviceScanner.stop();
+                }
             }
         });
     }
@@ -64,9 +67,9 @@ class RelayrBleSdkImpl extends RelayrBleSdk implements BleScannerFilter.BleFilte
         return new BleSocketClient();
     }*/
 
+    @Override
     public void stop() {
         mBleDeviceScanner.stop();
-        mDeviceManager.clear();
     }
 
     @Override
