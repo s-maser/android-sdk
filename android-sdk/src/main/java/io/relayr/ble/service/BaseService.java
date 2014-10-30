@@ -28,6 +28,10 @@ public class BaseService extends Service {
         mBleDevice = device;
     }
 
+    public BleDevice getBleDevice() {
+        return mBleDevice;
+    }
+
     /**
      * Disconnects and closes the gatt. It should not be called directly use
      * {@link io.relayr.ble.BleDevice#disconnect()} instead.
