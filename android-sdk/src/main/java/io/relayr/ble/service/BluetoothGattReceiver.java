@@ -55,8 +55,8 @@ public class BluetoothGattReceiver extends BluetoothGattCallback {
         if (newState == STATE_CONNECTED) { // on connected
             if (mConnectionChangesSubscriber != null) mConnectionChangesSubscriber.onNext(gatt);
         } else if (newState == STATE_DISCONNECTED) {
-            gatt.close();
             if (mDisconnectedSubscriber != null) { // disconnected voluntarily
+                gatt.close(); // should stay here since you might want to reconnect if involuntarily
                 mDisconnectedSubscriber.onNext(gatt);
                 mDisconnectedSubscriber.onCompleted();
             } else { // disconnected involuntarily because an error occurred
