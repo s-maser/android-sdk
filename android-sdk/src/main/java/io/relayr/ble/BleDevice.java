@@ -9,6 +9,7 @@ import io.relayr.ble.service.DirectConnectionService;
 import io.relayr.ble.service.MasterModuleService;
 import io.relayr.ble.service.OnBoardingService;
 import rx.Observable;
+import rx.functions.Func1;
 
 import static io.relayr.ble.BleDeviceMode.DIRECT_CONNECTION;
 import static io.relayr.ble.BleDeviceMode.ON_BOARDING;
@@ -24,12 +25,14 @@ public class BleDevice {
     private final String address;
     private final String name;
     private final Observable<? extends BaseService> serviceObservable;
+    private final BleDeviceManager mDeviceManager;
 
-    BleDevice(BluetoothDevice bluetoothDevice, String address, String name, BleDeviceMode mode) {
+    BleDevice(BluetoothDevice bluetoothDevice, String name, BleDeviceMode mode, BleDeviceManager manager) {
 		this.mode = mode;
 		this.type = BleDeviceType.getDeviceType(bluetoothDevice.getName());
-        this.address = address;
+        this.address = bluetoothDevice.getAddress();
         this.name = name;
+        mDeviceManager = manager;
         serviceObservable =
                 mode == ON_BOARDING ?
                         OnBoardingService.connect(this, bluetoothDevice).cache() :
@@ -75,6 +78,17 @@ public class BleDevice {
 
     public Observable<? extends BaseService> connect() {
         return serviceObservable;
+    }
+
+    public Observable<BleDevice> disconnect() {
+        mDeviceManager.removeDevice(BleDevice.this);
+        return serviceObservable
+                .flatMap(new Func1<BaseService, Observable<BleDevice>>() {
+                    @Override
+                    public Observable<BleDevice> call(BaseService service) {
+                        return service.disconnect();
+                    }
+                });
     }
 
 	@Override

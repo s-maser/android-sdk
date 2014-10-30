@@ -29,9 +29,11 @@ import static org.mockito.Mockito.verify;
 @RunWith(RobolectricTestRunner.class)
 public class RelayrSdkImplTest {
 
+    private BleDevice device = new BleDevice(mock(BluetoothDevice.class), WunderbarGYRO.name(),
+            DIRECT_CONNECTION, mock(BleDeviceManager.class));
+
     @Test public void scan_shouldCall_onNext_whenMatchingDevicesHaveBeenDiscovered_beforeThisScan() {
         BleDeviceManager manager = new BleDeviceManager();
-        BleDevice device = new BleDevice(mock(BluetoothDevice.class), "", WunderbarGYRO.name(), DIRECT_CONNECTION);
         manager.addDiscoveredDevice(device);
         RelayrBleSdk sdk = new RelayrBleSdkImpl(mock(BluetoothAdapter.class), manager);
         Observable<List<BleDevice>> observable = sdk.scan(new HashSet<>(Arrays.asList(WunderbarGYRO)));
@@ -48,7 +50,6 @@ public class RelayrSdkImplTest {
         @SuppressWarnings("unchecked")
         Observer<List<BleDevice>> observer = mock(Observer.class);
         observable.subscribe(observer);
-        BleDevice device = new BleDevice(mock(BluetoothDevice.class), "", WunderbarGYRO.name(), DIRECT_CONNECTION);
         manager.addDiscoveredDevice(device);
         verify(observer).onNext(anyListOf(BleDevice.class));
     }
@@ -68,11 +69,10 @@ public class RelayrSdkImplTest {
     @Test public void scan_shouldNot_interactWithTheObservable_whenADeviceIAmNotInterestedInIsDiscovered() {
         BleDeviceManager manager = new BleDeviceManager();
         RelayrBleSdk sdk = new RelayrBleSdkImpl(mock(BluetoothAdapter.class), manager);
-        Observable<List<BleDevice>> observable = sdk.scan(new HashSet<>(Arrays.asList(WunderbarGYRO)));
+        Observable<List<BleDevice>> observable = sdk.scan(new HashSet<>(Arrays.asList(WunderbarBRIDG)));
         @SuppressWarnings("unchecked")
         Observer<List<BleDevice>> observer = mock(Observer.class);
         observable.subscribe(observer);
-        BleDevice device = new BleDevice(mock(BluetoothDevice.class), "", WunderbarBRIDG.name(), DIRECT_CONNECTION);
         manager.addDiscoveredDevice(device);
         verify(observer, never()).onNext(anyListOf(BleDevice.class));
         verify(observer, never()).onCompleted();

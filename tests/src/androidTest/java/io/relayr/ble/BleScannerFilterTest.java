@@ -41,7 +41,8 @@ public class BleScannerFilterTest {
         String name = "bla";
         String address = "bla";
         BleDeviceManager manager = new BleDeviceManager();
-        BleDevice bleDevice = new BleDevice(mock(BluetoothDevice.class), address, "", ON_BOARDING);
+        BleDevice bleDevice = new BleDevice(mock(BluetoothDevice.class), "", ON_BOARDING,
+                mock(BleDeviceManager.class));
         manager.addDiscoveredDevice(bleDevice);
         BleScannerFilter filter = new BleScannerFilter(manager, null);
         when(device.getAddress()).thenReturn(address);

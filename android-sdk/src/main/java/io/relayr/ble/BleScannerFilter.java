@@ -34,7 +34,7 @@ class BleScannerFilter implements BluetoothAdapter.LeScanCallback {
         List<String> serviceUuids = AdvertisementPacketParser.decodeServicesUuid(scanRecord);
         BleDeviceMode mode = BleDeviceMode.fromServiceUuids(serviceUuids);
         if (!isRelevant(device, deviceName, mode)) return;
-        BleDevice bleDevice = new BleDevice(device, device.getAddress(), deviceName, mode);
+        BleDevice bleDevice = new BleDevice(device, deviceName, mode, mDeviceManager);
         if (mBleFilteredScanCallback != null) mBleFilteredScanCallback.onLeScan(bleDevice, rssi);
     }
 

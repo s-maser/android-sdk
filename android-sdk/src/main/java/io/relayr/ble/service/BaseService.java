@@ -28,6 +28,12 @@ public class BaseService extends Service {
         mBleDevice = device;
     }
 
+    /**
+     * Disconnects and closes the gatt. It should not be called directly use
+     * {@link io.relayr.ble.BleDevice#disconnect()} instead.
+     * @return an observable of the device that was connected.
+     * @hide
+     */
     public Observable<BleDevice> disconnect() {
         return mBluetoothGattReceiver
                 .disconnect(mBluetoothGatt)

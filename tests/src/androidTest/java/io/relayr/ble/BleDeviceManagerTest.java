@@ -21,7 +21,8 @@ import static org.mockito.Mockito.verify;
 @RunWith(RobolectricTestRunner.class)
 public class BleDeviceManagerTest {
 
-    private BleDevice device = new BleDevice(mock(BluetoothDevice.class), "", "", ON_BOARDING);
+    private BleDevice device =
+            new BleDevice(mock(BluetoothDevice.class), "", ON_BOARDING, mock(BleDeviceManager.class));
 
     @Test public void noDiscoveredDevicesOnCreationTest() {
         BleDeviceManager deviceManager = new BleDeviceManager();
