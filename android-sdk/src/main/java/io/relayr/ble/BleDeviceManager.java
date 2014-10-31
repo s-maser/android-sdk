@@ -3,16 +3,16 @@ package io.relayr.ble;
 import android.bluetooth.BluetoothDevice;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import rx.Subscriber;
 
 class BleDeviceManager {
 
-    private final Map<String, BleDevice> mDiscoveredDevices = new HashMap<>();
-    private final Map<Long, Subscriber<? super List<BleDevice>>> mDevicesSubscriberMap = new HashMap<>();
+    private final Map<String, BleDevice> mDiscoveredDevices = new ConcurrentHashMap<>();
+    private final Map<Long, Subscriber<? super List<BleDevice>>> mDevicesSubscriberMap = new ConcurrentHashMap<>();
 
     void addSubscriber(Long key, Subscriber<? super List<BleDevice>> devicesSubscriber) {
         mDevicesSubscriberMap.put(key, devicesSubscriber);
