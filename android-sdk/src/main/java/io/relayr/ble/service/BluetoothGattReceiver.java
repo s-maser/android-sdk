@@ -42,14 +42,17 @@ public class BluetoothGattReceiver extends BluetoothGattCallback {
             @Override
             public void call(Subscriber<? super BluetoothGatt> subscriber) {
                 mConnectionChangesSubscriber = subscriber;
-                bluetoothDevice.connectGatt(RelayrApp.get(), true, BluetoothGattReceiver.this);
+                bluetoothDevice.connectGatt(RelayrApp.get(), false, BluetoothGattReceiver.this);
             }
         });
     }
 
     @Override
     public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
-
+        if (status == 133) {
+            DeviceCompatibilityUtils.refresh(gatt);
+            gatt.getDevice().connectGatt(RelayrApp.get(), false, BluetoothGattReceiver.this);
+        }
         if (status != BluetoothGatt.GATT_SUCCESS) return;
 
         if (newState == STATE_CONNECTED) { // on connected
