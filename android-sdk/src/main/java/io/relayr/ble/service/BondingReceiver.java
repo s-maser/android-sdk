@@ -39,10 +39,10 @@ class BondingReceiver {
                             subscriber.onCompleted();
                         }
 
-                        if (previousBondState == BOND_BONDING && bondState == BOND_NONE) {
+                        /*if (previousBondState == BOND_BONDING && bondState == BOND_NONE) {
                             RelayrApp.get().unregisterReceiver(this);
                             subscriber.onError(new Exception("Not bonded"));
-                        }
+                        }*/
                     }
                 }, new IntentFilter(ACTION_BOND_STATE_CHANGED));
             }

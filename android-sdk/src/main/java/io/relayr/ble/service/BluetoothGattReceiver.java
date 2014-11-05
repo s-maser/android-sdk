@@ -18,7 +18,11 @@ import io.relayr.ble.service.error.DisconnectionException;
 import io.relayr.ble.service.error.WriteCharacteristicException;
 import rx.Observable;
 import rx.Subscriber;
+import rx.functions.Func1;
 
+import static android.bluetooth.BluetoothGatt.GATT_INSUFFICIENT_AUTHENTICATION;
+import static android.bluetooth.BluetoothGatt.GATT_INSUFFICIENT_ENCRYPTION;
+import static android.bluetooth.BluetoothGatt.GATT_SUCCESS;
 import static android.bluetooth.BluetoothGattDescriptor.DISABLE_NOTIFICATION_VALUE;
 import static android.bluetooth.BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE;
 import static android.bluetooth.BluetoothProfile.STATE_CONNECTED;
@@ -53,7 +57,7 @@ public class BluetoothGattReceiver extends BluetoothGattCallback {
             DeviceCompatibilityUtils.refresh(gatt);
             gatt.getDevice().connectGatt(RelayrApp.get(), false, BluetoothGattReceiver.this);
         }
-        if (status != BluetoothGatt.GATT_SUCCESS) return;
+        if (status != GATT_SUCCESS) return;
 
         if (newState == STATE_CONNECTED) { // on connected
             if (mConnectionChangesSubscriber != null) mConnectionChangesSubscriber.onNext(gatt);
@@ -117,11 +121,23 @@ public class BluetoothGattReceiver extends BluetoothGattCallback {
     }
 
     @Override
-    public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
+    public void onCharacteristicWrite(BluetoothGatt gatt,
+                                      final BluetoothGattCharacteristic characteristic,
+                                      int status) {
         Subscriber<? super BluetoothGattCharacteristic> subscriber =
                 mWriteCharacteristicsSubscriberMap.remove(characteristic.getUuid());
-        if (status == BluetoothGatt.GATT_SUCCESS) {
+        if (status == GATT_SUCCESS) {
             subscriber.onNext(characteristic);
+        } else if(GATT_INSUFFICIENT_AUTHENTICATION == status || GATT_INSUFFICIENT_ENCRYPTION == status) {
+            Observable.just(gatt)
+                    .flatMap(new BondingReceiver.BondingFunc1())
+                    .map(new Func1<BluetoothGatt, Boolean>() {
+                        @Override
+                        public Boolean call(BluetoothGatt bluetoothGatt) {
+                            return bluetoothGatt.writeCharacteristic(characteristic);
+                        }
+                    })
+                    .subscribe();
         } else {
             subscriber.onError(new WriteCharacteristicException(characteristic, status));
         }
@@ -139,11 +155,23 @@ public class BluetoothGattReceiver extends BluetoothGattCallback {
     }
 
     @Override
-    public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
+    public void onCharacteristicRead(BluetoothGatt gatt,
+                                     final BluetoothGattCharacteristic characteristic,
+                                     int status) {
         Subscriber<? super BluetoothGattCharacteristic> subscriber =
                 mReadCharacteristicsSubscriberMap.remove(characteristic.getUuid());
-        if (status == BluetoothGatt.GATT_SUCCESS) {
+        if (status == GATT_SUCCESS) {
             subscriber.onNext(characteristic);
+        } else if(GATT_INSUFFICIENT_AUTHENTICATION == status || GATT_INSUFFICIENT_ENCRYPTION == status) {
+            Observable.just(gatt)
+                    .flatMap(new BondingReceiver.BondingFunc1())
+                    .map(new Func1<BluetoothGatt, Boolean>() {
+                        @Override
+                        public Boolean call(BluetoothGatt bluetoothGatt) {
+                            return bluetoothGatt.readCharacteristic(characteristic);
+                        }
+                    })
+                    .subscribe();
         } else {
             subscriber.onError(new WriteCharacteristicException(characteristic, status));
         }

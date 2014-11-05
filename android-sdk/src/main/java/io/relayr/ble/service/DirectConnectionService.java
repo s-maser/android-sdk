@@ -10,7 +10,6 @@ import android.os.Build;
 import java.util.UUID;
 
 import io.relayr.ble.BleDevice;
-import io.relayr.ble.DeviceCompatibilityUtils;
 import io.relayr.ble.service.error.CharacteristicNotFoundException;
 import rx.Observable;
 import rx.functions.Func1;
@@ -27,7 +26,6 @@ import static io.relayr.ble.service.ShortUUID.SERVICE_DIRECT_CONNECTION;
 import static io.relayr.ble.service.Utils.getCharacteristicInServices;
 import static io.relayr.ble.service.Utils.getDescriptorInCharacteristic;
 import static rx.Observable.error;
-import static rx.Observable.just;
 
 /**
  * A class representing the Direct Connection BLE Service.
@@ -44,23 +42,7 @@ public class DirectConnectionService extends BaseService {
                                                               final BluetoothDevice device) {
         final BluetoothGattReceiver receiver = new BluetoothGattReceiver();
         return doConnect(device, receiver)
-                .flatMap(new Func1<BluetoothGatt, Observable<? extends BluetoothGatt>>() {
-                    @Override
-                    public Observable<? extends BluetoothGatt> call(final BluetoothGatt gatt) {
-                        int state = device.getBondState();
-
-                        if (state == BluetoothDevice.BOND_BONDED) {
-                            return just(gatt);
-                        } else if (state == BluetoothDevice.BOND_BONDING) {
-                            return BondingReceiver.subscribeForBondStateChanges(gatt);
-                        } //else if (state == BluetoothDevice.BOND_NONE) {
-
-                        Observable<BluetoothGatt> bluetoothGattObservable =
-                                BondingReceiver.subscribeForBondStateChanges(gatt);
-                        DeviceCompatibilityUtils.createBond(device);
-                        return bluetoothGattObservable;
-                    }
-                })
+                .flatMap(new BondingReceiver.BondingFunc1())
                 .map(new Func1<BluetoothGatt, DirectConnectionService>() {
                     @Override
                     public DirectConnectionService call(BluetoothGatt gatt) {
