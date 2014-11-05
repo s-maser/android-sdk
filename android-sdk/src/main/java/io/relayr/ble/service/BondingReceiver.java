@@ -10,13 +10,38 @@ import android.content.IntentFilter;
 import android.os.Build;
 
 import io.relayr.RelayrApp;
+import io.relayr.ble.DeviceCompatibilityUtils;
 import rx.Observable;
 import rx.Subscriber;
+import rx.functions.Func1;
 
-import static android.bluetooth.BluetoothDevice.*;
+import static android.bluetooth.BluetoothDevice.ACTION_BOND_STATE_CHANGED;
+import static android.bluetooth.BluetoothDevice.BOND_BONDED;
+import static android.bluetooth.BluetoothDevice.EXTRA_BOND_STATE;
+import static android.bluetooth.BluetoothDevice.EXTRA_DEVICE;
+import static android.bluetooth.BluetoothDevice.EXTRA_PREVIOUS_BOND_STATE;
+import static rx.Observable.just;
 
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 class BondingReceiver {
+
+    static class BondingFunc1 implements Func1<BluetoothGatt, Observable<? extends BluetoothGatt>> {
+        @Override
+        public Observable<? extends BluetoothGatt> call(final BluetoothGatt gatt) {
+            int state = gatt.getDevice().getBondState();
+
+            if (state == BluetoothDevice.BOND_BONDED) {
+                return just(gatt);
+            } else if (state == BluetoothDevice.BOND_BONDING) {
+                return BondingReceiver.subscribeForBondStateChanges(gatt);
+            } //else if (state == BluetoothDevice.BOND_NONE) {
+
+            Observable<BluetoothGatt> bluetoothGattObservable =
+                    BondingReceiver.subscribeForBondStateChanges(gatt);
+            DeviceCompatibilityUtils.createBond(gatt.getDevice());
+            return bluetoothGattObservable;
+        }
+    }
 
     static Observable<BluetoothGatt> subscribeForBondStateChanges(final BluetoothGatt gatt) {
         return Observable.create(new Observable.OnSubscribe<BluetoothGatt>() {
