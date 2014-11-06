@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.os.Build;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
@@ -24,17 +25,24 @@ import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 @RunWith(RobolectricTestRunner.class)
 public class RelayrSdkImplTest {
 
-    private BleDevice device = new BleDevice(mock(BluetoothDevice.class), WunderbarGYRO.name(),
-            DIRECT_CONNECTION, mock(BleDeviceManager.class));
+    private BleDevice mDevice;
+
+    @Before public void init() {
+        BluetoothDevice bleDevice = mock(BluetoothDevice.class);
+        when(bleDevice.getAddress()).thenReturn("random");
+        mDevice = new BleDevice(bleDevice, WunderbarGYRO.name(), DIRECT_CONNECTION,
+                mock(BleDeviceManager.class));
+    }
 
     @Test public void scan_shouldCall_onNext_whenMatchingDevicesHaveBeenDiscovered_beforeThisScan() {
         BleDeviceManager manager = new BleDeviceManager();
-        manager.addDiscoveredDevice(device);
+        manager.addDiscoveredDevice(mDevice);
         RelayrBleSdk sdk = new RelayrBleSdkImpl(mock(BluetoothAdapter.class), manager);
         Observable<List<BleDevice>> observable = sdk.scan(new HashSet<>(Arrays.asList(WunderbarGYRO)));
         @SuppressWarnings("unchecked")
@@ -50,7 +58,7 @@ public class RelayrSdkImplTest {
         @SuppressWarnings("unchecked")
         Observer<List<BleDevice>> observer = mock(Observer.class);
         observable.subscribe(observer);
-        manager.addDiscoveredDevice(device);
+        manager.addDiscoveredDevice(mDevice);
         verify(observer).onNext(anyListOf(BleDevice.class));
     }
 
@@ -73,7 +81,7 @@ public class RelayrSdkImplTest {
         @SuppressWarnings("unchecked")
         Observer<List<BleDevice>> observer = mock(Observer.class);
         observable.subscribe(observer);
-        manager.addDiscoveredDevice(device);
+        manager.addDiscoveredDevice(mDevice);
         verify(observer, never()).onNext(anyListOf(BleDevice.class));
         verify(observer, never()).onCompleted();
         verify(observer, never()).onError(any(Exception.class));

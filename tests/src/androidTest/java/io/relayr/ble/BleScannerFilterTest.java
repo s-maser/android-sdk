@@ -35,14 +35,15 @@ public class BleScannerFilterTest {
 
     @Before public void initialise() {
         MockitoAnnotations.initMocks(this);
+        when(device.getAddress()).thenReturn("random");
     }
 
     @Test public void isRelevant_shouldReturnFalse_becauseDeviceIsAlreadyDiscovered() {
         String name = "bla";
         String address = "bla";
         BleDeviceManager manager = new BleDeviceManager();
-        BleDevice bleDevice = new BleDevice(mock(BluetoothDevice.class), "", ON_BOARDING,
-                mock(BleDeviceManager.class));
+        when(device.getAddress()).thenReturn(address);
+        BleDevice bleDevice = new BleDevice(device, "", ON_BOARDING, mock(BleDeviceManager.class));
         manager.addDiscoveredDevice(bleDevice);
         BleScannerFilter filter = new BleScannerFilter(manager, null);
         when(device.getAddress()).thenReturn(address);
