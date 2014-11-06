@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 
+import java.nio.ByteBuffer;
 import java.util.UUID;
 
 import javax.inject.Inject;
@@ -58,6 +59,13 @@ public class BleUtils {
         return mBluetoothAdapter == null ? STATUS_BLUETOOTH_NOT_AVAILABLE:
                 mBluetoothAdapter.isEnabled() ? STATUS_BLE_ENABLED:
                         STATUS_BLUETOOTH_DISABLED;
+    }
+
+    public static UUID fromBytes(byte[] value) {
+        ByteBuffer bb = ByteBuffer.wrap(value);
+        long firstLong = bb.getLong();
+        long secondLong = bb.getLong();
+        return new UUID(firstLong, secondLong);
     }
 
     public static String getShortUUID(UUID uuid) {

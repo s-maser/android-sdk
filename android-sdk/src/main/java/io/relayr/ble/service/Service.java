@@ -8,6 +8,7 @@ import android.os.Build;
 
 import java.util.UUID;
 
+import io.relayr.ble.BleUtils;
 import io.relayr.ble.service.error.CharacteristicNotFoundException;
 import rx.Observable;
 import rx.functions.Func1;
@@ -137,7 +138,7 @@ class Service {
                         if (value == null) {
                             return error(new CharacteristicNotFoundException(what));
                         }
-                        return just(UUID.nameUUIDFromBytes(value));
+                        return just(BleUtils.fromBytes(value));
                     }
                 });
     }
