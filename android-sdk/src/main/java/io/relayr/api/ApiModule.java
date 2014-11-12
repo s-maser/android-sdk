@@ -22,9 +22,6 @@ import retrofit.RestAdapter;
 import retrofit.client.Client;
 import retrofit.client.OkClient;
 
-import static io.relayr.BuildConfig.APPLICATION_ID;
-import static io.relayr.BuildConfig.VERSION_NAME;
-
 @Module(
         complete = false,
         library = true
@@ -32,8 +29,22 @@ import static io.relayr.BuildConfig.VERSION_NAME;
 public class ApiModule {
 
     public static final String API_ENDPOINT = "https://api.relayr.io";
-    private static final String USER_AGENT = APPLICATION_ID + ".sdk.android/" + VERSION_NAME;
     private static final int DISK_CACHE_SIZE = 50 * 1024 * 1024; // 50MB
+    private static final String USER_AGENT = Utils.getUserAgent();
+    private static final RequestInterceptor apiRequestInterceptor = new RequestInterceptor() {
+        @Override
+        public void intercept(RequestFacade request) {
+            request.addHeader("User-Agent", USER_AGENT);
+            request.addHeader("Authorization", DataStorage.getUserToken());
+            request.addHeader("Content-Type", "application/json; charset=UTF-8");
+        }
+    };
+    private static final RequestInterceptor oauthRequestInterceptor = new RequestInterceptor() {
+        @Override
+        public void intercept(RequestFacade request) {
+            request.addHeader("User-Agent", USER_AGENT);
+        }
+    };
     private final Context app;
 
     public ApiModule(Context context) {
@@ -47,22 +58,6 @@ public class ApiModule {
     @Provides @Singleton Client provideClient(OkHttpClient client) {
         return new OkClient(client);
     }
-
-    private static final RequestInterceptor apiRequestInterceptor = new RequestInterceptor() {
-        @Override
-        public void intercept(RequestFacade request) {
-            request.addHeader("User-Agent", USER_AGENT);
-            request.addHeader("Authorization", DataStorage.getUserToken());
-            request.addHeader("Content-Type", "application/json; charset=UTF-8");
-        }
-    };
-
-    private static final RequestInterceptor oauthRequestInterceptor = new RequestInterceptor() {
-        @Override
-        public void intercept(RequestFacade request) {
-            request.addHeader("User-Agent", USER_AGENT);
-        }
-    };
 
     @Provides @Singleton @Named("api") RestAdapter provideApiRestAdapter(Endpoint endpoint,
                                                                          Client client) {
@@ -93,6 +88,10 @@ public class ApiModule {
     @Provides @Singleton SubscriptionApi provideSubscriptionApi(@Named("api")
                                                                 RestAdapter restAdapter) {
         return restAdapter.create(SubscriptionApi.class);
+    }
+
+    @Provides @Singleton CloudApi provideCloudApi(@Named("api") RestAdapter restAdapter) {
+        return restAdapter.create(CloudApi.class);
     }
 
     @Provides @Singleton OkHttpClient provideOkHttpClient() {
