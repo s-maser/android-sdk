@@ -106,6 +106,16 @@ public class MockRelayrApi implements RelayrApi {
     }
 
     @Override
+    public Observable<Void> removeBookmark(String userId, String deviceId) {
+        return Observable.create(new Observable.OnSubscribe<Void>() {
+            @Override
+            public void call(Subscriber<? super Void> subscriber) {
+                subscriber.onNext(null);
+            }
+        });
+    }
+
+    @Override
     public Observable<List<Device>> getBookmarkedDevices(String userId) {
         return mMockBackend.createObservable(new TypeToken<List<Device>>() { },
                 PUBLIC_DEVICES_BOOKMARK);

@@ -12,6 +12,7 @@ import io.relayr.model.Transmitter;
 import io.relayr.model.TransmitterDevice;
 import io.relayr.model.User;
 import retrofit.http.Body;
+import retrofit.http.DELETE;
 import retrofit.http.GET;
 import retrofit.http.PATCH;
 import retrofit.http.POST;
@@ -91,6 +92,14 @@ public interface RelayrApi {
      * @return an {@link rx.Observable} to the bookmarked device */
     @POST("/users/{userId}/devices/{deviceId}/bookmarks")
     Observable<Bookmark> bookmarkPublicDevice(@Path("userId") String userId, @Path("deviceId") String deviceId);
+
+    /** Deletes a bookmarked device.
+     * @param userId id of the user that bookmarked the device
+     * @param deviceId id of bookmarked device - the Id must be one of a public device
+     * @return an empty {@link rx.Observable}
+     */
+    @DELETE("/users/{userId}/devices/{deviceId}/bookmarks")
+    Observable<Void> removeBookmark(@Path("userId") String userId, @Path("deviceId") String deviceId);
 
     /** Returns a list of devices bookmarked by the user.
      * @param userId id of the user that bookmarked devices
