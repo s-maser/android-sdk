@@ -1,14 +1,12 @@
 package io.relayr.api;
 
 import java.util.List;
-import java.util.Map;
 
 import io.relayr.model.App;
 import io.relayr.model.Bookmark;
 import io.relayr.model.Command;
 import io.relayr.model.CreateWunderBar;
 import io.relayr.model.Device;
-import io.relayr.model.DeviceModel;
 import io.relayr.model.Model;
 import io.relayr.model.Transmitter;
 import io.relayr.model.TransmitterDevice;
@@ -115,4 +113,9 @@ public interface RelayrApi {
     @GET("/device-models")
     Observable<List<Model>> getDeviceModels();
 
+    /** Returns information about a specific device model
+     * @param model id of the device model
+     * @return an {@link rx.Observable} of a specific device model */
+    @GET("/device-models/{model}")
+    Observable<Model> getDeviceModel(@Path("model") String model);
 }

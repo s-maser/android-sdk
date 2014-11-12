@@ -127,4 +127,9 @@ public class MockRelayrApi implements RelayrApi {
     public Observable<List<Model>> getDeviceModels() {
         return mMockBackend.createObservable(new TypeToken<List<Model>>() { }, DEVICE_MODELS);
     }
+
+    @Override
+    public Observable<Model> getDeviceModel(String model) {
+        return mMockBackend.createObservable(new TypeToken<Model>() { }, DEVICE_MODELS);
+    }
 }
