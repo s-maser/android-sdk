@@ -35,4 +35,8 @@ public class DebugApiModule {
         return new MockSubscriptionApi(loader);
     }
 
+    @Provides @Singleton CloudApi provideCloudApi() {
+        return new MockCloudApi();
+    }
+
 }
