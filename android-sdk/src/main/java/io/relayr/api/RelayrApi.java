@@ -91,4 +91,10 @@ public interface RelayrApi {
      * @return an {@link rx.Observable} to the bookmarked device */
     @POST("/users/{userId}/devices/{deviceId}/bookmarks")
     Observable<Bookmark> bookmarkPublicDevice(@Path("userId") String userId, @Path("deviceId") String deviceId);
+
+    /** Returns a list of devices bookmarked by the user.
+     * @param userId id of the user that bookmarked devices
+     * @return an {@link rx.Observable} with a list of the users bookmarked devices */
+    @GET("/users/{userId}/devices/bookmarks")
+    Observable<List<Device>> getBookmarkedDevices(@Path("userId") String userId);
 }

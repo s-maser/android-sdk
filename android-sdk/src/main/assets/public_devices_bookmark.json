@@ -1,0 +1,11 @@
+[
+  {
+    "id": "6854bb1c-64ed-4d46-99b4-6cf28b72ad1d",
+    "name": "DanasDevice",
+    "model": "ecf6cf94-cb07-43ac-a85e-dccf26b48c86",
+    "firmwareVersion": "1.0.0",
+    "secret": "233ab3",
+    "owner": "c70faa9f-5eda-49d8-be91-a7e4b1beeca1",
+    "public": true
+  }
+]

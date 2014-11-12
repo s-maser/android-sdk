@@ -15,12 +15,12 @@ import io.relayr.model.Device;
 import io.relayr.model.Transmitter;
 import io.relayr.model.TransmitterDevice;
 import io.relayr.model.User;
-import retrofit.http.Path;
 import rx.Observable;
 import rx.Subscriber;
 
 import static io.relayr.api.MockBackend.APP_INFO;
 import static io.relayr.api.MockBackend.PUBLIC_DEVICES;
+import static io.relayr.api.MockBackend.PUBLIC_DEVICES_BOOKMARK;
 import static io.relayr.api.MockBackend.TRANSMITTER_DEVICES;
 import static io.relayr.api.MockBackend.USERS_CREATE_WUNDERBAR;
 import static io.relayr.api.MockBackend.USERS_TRANSMITTER;
@@ -103,5 +103,11 @@ public class MockRelayrApi implements RelayrApi {
     @Override
     public Observable<Bookmark> bookmarkPublicDevice(String userId, String deviceId) {
         return Observable.just(new Bookmark(userId, deviceId, new Date()));
+    }
+
+    @Override
+    public Observable<List<Device>> getBookmarkedDevices(String userId) {
+        return mMockBackend.createObservable(new TypeToken<List<Device>>() { },
+                PUBLIC_DEVICES_BOOKMARK);
     }
 }
