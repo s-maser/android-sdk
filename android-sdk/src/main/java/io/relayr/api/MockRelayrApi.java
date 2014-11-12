@@ -140,4 +140,13 @@ public class MockRelayrApi implements RelayrApi {
         return mMockBackend.createObservable(new TypeToken<List<ReadingMeaning>>() { },
                 DEVICE_READING_MEANINGS);
     }
+
+    @Override
+    public Observable<Void> deleteWunderbar(String transmitterId) {
+        return Observable.create(new Observable.OnSubscribe<Void>() {
+            @Override
+            public void call(Subscriber<? super Void> subscriber) {
+                subscriber.onNext(null);
+            }
+        });    }
 }

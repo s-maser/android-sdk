@@ -125,4 +125,9 @@ public interface RelayrApi {
     @GET("/device-models/meanings")
     Observable<List<ReadingMeaning>> getReadingMeanings();
 
+    /** Deletes a Wunderbar and all of its components (Transmitter and Devices)
+     * @param transmitterId id of the transmitter (the Master Module)
+     * @return an empty {@link rx.Observable} */
+    @DELETE("/wunderbars/{transmitterId}")
+    Observable<Void> deleteWunderbar(@Path("transmitterId") String transmitterId);
 }
