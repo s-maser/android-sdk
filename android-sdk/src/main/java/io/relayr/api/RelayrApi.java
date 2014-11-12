@@ -1,6 +1,7 @@
 package io.relayr.api;
 
 import java.util.List;
+import java.util.Map;
 
 import io.relayr.model.App;
 import io.relayr.model.Command;
@@ -14,6 +15,7 @@ import retrofit.http.GET;
 import retrofit.http.PATCH;
 import retrofit.http.POST;
 import retrofit.http.Path;
+import retrofit.http.Query;
 import rx.Observable;
 
 /** This class incorporates a wrapped version of the relayr API calls. */
@@ -65,5 +67,12 @@ public interface RelayrApi {
     @GET("/transmitters/{transmitter}/devices")
     Observable<List<TransmitterDevice>> getTransmitterDevices(
             @Path("transmitter") String transmitter);
+
+    /**
+     * Registers the transmitter
+     * @param transmitter transmitter object to register
+     * @return an {@link rx.Observable} to the registered Transmitter */
+    @POST("/transmitters")
+    Observable<Transmitter> registerTransmitter(@Body Transmitter transmitter);
 
 }
