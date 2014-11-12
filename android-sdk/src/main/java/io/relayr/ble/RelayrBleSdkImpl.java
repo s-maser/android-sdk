@@ -32,7 +32,7 @@ class RelayrBleSdkImpl extends RelayrBleSdk implements BleScannerFilter.BleFilte
             @Override
             public void call(Subscriber<? super List<BleDevice>> subscriber) {
                 mDeviceManager.addSubscriber(key, subscriber);
-                if (!mBleDeviceScanner.isScanning()) mBleDeviceScanner.start();
+                mBleDeviceScanner.start();
             }
         }).filter(new Func1<List<BleDevice>, Boolean>() {
             @Override
