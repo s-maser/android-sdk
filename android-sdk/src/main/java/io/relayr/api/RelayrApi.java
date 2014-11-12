@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import io.relayr.model.App;
+import io.relayr.model.Bookmark;
 import io.relayr.model.Command;
 import io.relayr.model.CreateWunderBar;
 import io.relayr.model.Device;
@@ -75,12 +76,19 @@ public interface RelayrApi {
     @POST("/transmitters")
     Observable<Transmitter> registerTransmitter(@Body Transmitter transmitter);
 
-    /** A public device is a device which public attribute has been set to 'true'.
-     * Any user on the relayr platform can access it and use its readings.
-     * In order to retrieve a list of public devices in the system no authorization is required.
+    /** A public device is a device which public attribute has been set to 'true' therefore
+     * no authorization is required.
      * @param meaning When a meaning is specified, the request returns only
      *          the devices which readings match the meaning.
      * @return an {@link rx.Observable} with a list of all public devices. */
     @GET("/devices/public")
     Observable<List<Device>> getPublicDevices(@Query("meaning") String meaning);
+
+    /** Bookmarks a specific public device. In order to receive data from a bookmarked device,
+     * the subscription call must first be initiated.
+     * @param userId id of the user that is bookmarking the device
+     * @param deviceId id of bookmarked device - the Id must be one of a public device
+     * @return an {@link rx.Observable} to the bookmarked device */
+    @POST("/users/{userId}/devices/{deviceId}/bookmarks")
+    Observable<Bookmark> bookmarkPublicDevice(@Path("userId") String userId, @Path("deviceId") String deviceId);
 }

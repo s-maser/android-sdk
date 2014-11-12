@@ -2,17 +2,20 @@ package io.relayr.api;
 
 import com.google.gson.reflect.TypeToken;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import io.relayr.model.App;
+import io.relayr.model.Bookmark;
 import io.relayr.model.Command;
 import io.relayr.model.CreateWunderBar;
 import io.relayr.model.Device;
 import io.relayr.model.Transmitter;
 import io.relayr.model.TransmitterDevice;
 import io.relayr.model.User;
+import retrofit.http.Path;
 import rx.Observable;
 import rx.Subscriber;
 
@@ -95,5 +98,10 @@ public class MockRelayrApi implements RelayrApi {
     @Override
     public Observable<List<Device>> getPublicDevices(String meaning) {
         return mMockBackend.createObservable(new TypeToken<List<Device>>() { }, PUBLIC_DEVICES);
+    }
+
+    @Override
+    public Observable<Bookmark> bookmarkPublicDevice(String userId, String deviceId) {
+        return Observable.just(new Bookmark(userId, deviceId, new Date()));
     }
 }

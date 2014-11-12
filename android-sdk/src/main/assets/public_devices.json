@@ -1,45 +1,48 @@
 [
-    {
-        "id": "d4650445-d85f-4c4a-bbb3-2da7ccd9c28d",
-        "title": "Fridge thermometer",
-        "model": {
-            "id": "ecf6cf94-cb07-43ac-a85e-dccf26b48c86",
-            "name": "Wunderbar Thermometer & Humidity Sensor",
-            "manufacturer": "Relayr GmbH",
-            "readings": [
-                {
-                    "meaning": "temperature",
-                    "unit": "celsius",
-                    "maximum": 100,
-                    "minimum": -100,
-                    "precision": 0.25
-                },
-                {
-                    "meaning": "humidity",
-                    "unit": "percent"
-                }
-            ]
+  {
+    "id": "76e3ac52-3745-40ee-afa0-c3e499681dc8",
+    "name": "DanasSecondDevice",
+    "model": {
+      "id": "ecf6cf94-cb07-43ac-a85e-dccf26b48c86",
+      "name": "Wunderbar Thermometer & Humidity Sensor",
+      "manufacturer": "Relayr GmbH",
+      "readings": [
+        {
+          "meaning": "temperature",
+          "unit": "celsius",
+          "maximum": 100,
+          "minimum": -100,
+          "precision": 0.25
         },
-        "firmwareVersion": "1.0.0",
-        "owner": "4f1ddffb-d9fa-456b-a73e-33daa6284c39",
-        "public": true
+        {
+          "meaning": "humidity",
+          "unit": "percent"
+        }
+      ]
     },
-    {
-        "id": "d4650445-d85f-4c4a-bbb3-2da7ccd9c282",
-        "title": "Baby Room Microphone",
-        "model": {
-            "id": "4f38b6c6-a8e9-4f93-91cd-2ac4064b7b5a",
-            "name": "Wunderbar Microphone",
-            "manufacturer": "Relayr GmbH",
-            "readings": [
-              {
-                  "meaning": "noise_level",
-                  "unit": "db"
-              }
-            ]
+    "firmwareVersion": "1.0.0"
+  },
+  {
+    "id": "6854bb1c-64ed-4d46-99b4-6cf28b72ad1d",
+    "name": "DanasDevice",
+    "model": {
+      "id": "ecf6cf94-cb07-43ac-a85e-dccf26b48c86",
+      "name": "Wunderbar Thermometer & Humidity Sensor",
+      "manufacturer": "Relayr GmbH",
+      "readings": [
+        {
+          "meaning": "temperature",
+          "unit": "celsius",
+          "maximum": 100,
+          "minimum": -100,
+          "precision": 0.25
         },
-        "firmwareVersion": "1.0.0",
-        "owner": "4f1ddffb-d9fa-456b-a73e-33daa6284c39",
-        "public": true
-    }
+        {
+          "meaning": "humidity",
+          "unit": "percent"
+        }
+      ]
+    },
+    "firmwareVersion": "1.0.0"
+  }
 ]
