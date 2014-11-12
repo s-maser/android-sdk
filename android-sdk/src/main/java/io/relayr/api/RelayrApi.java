@@ -75,4 +75,12 @@ public interface RelayrApi {
     @POST("/transmitters")
     Observable<Transmitter> registerTransmitter(@Body Transmitter transmitter);
 
+    /** A public device is a device which public attribute has been set to 'true'.
+     * Any user on the relayr platform can access it and use its readings.
+     * In order to retrieve a list of public devices in the system no authorization is required.
+     * @param meaning When a meaning is specified, the request returns only
+     *          the devices which readings match the meaning.
+     * @return an {@link rx.Observable} with a list of all public devices. */
+    @GET("/devices/public")
+    Observable<List<Device>> getPublicDevices(@Query("meaning") String meaning);
 }

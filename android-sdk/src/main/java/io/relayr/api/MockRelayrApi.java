@@ -13,11 +13,11 @@ import io.relayr.model.Device;
 import io.relayr.model.Transmitter;
 import io.relayr.model.TransmitterDevice;
 import io.relayr.model.User;
-import retrofit.http.Body;
 import rx.Observable;
 import rx.Subscriber;
 
 import static io.relayr.api.MockBackend.APP_INFO;
+import static io.relayr.api.MockBackend.PUBLIC_DEVICES;
 import static io.relayr.api.MockBackend.TRANSMITTER_DEVICES;
 import static io.relayr.api.MockBackend.USERS_CREATE_WUNDERBAR;
 import static io.relayr.api.MockBackend.USERS_TRANSMITTER;
@@ -90,5 +90,10 @@ public class MockRelayrApi implements RelayrApi {
     @Override
     public Observable<Transmitter> registerTransmitter(Transmitter transmitter) {
         return Observable.just(transmitter);
+    }
+
+    @Override
+    public Observable<List<Device>> getPublicDevices(String meaning) {
+        return mMockBackend.createObservable(new TypeToken<List<Device>>() { }, PUBLIC_DEVICES);
     }
 }
