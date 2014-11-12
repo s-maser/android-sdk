@@ -8,6 +8,8 @@ import io.relayr.model.Bookmark;
 import io.relayr.model.Command;
 import io.relayr.model.CreateWunderBar;
 import io.relayr.model.Device;
+import io.relayr.model.DeviceModel;
+import io.relayr.model.Model;
 import io.relayr.model.Transmitter;
 import io.relayr.model.TransmitterDevice;
 import io.relayr.model.User;
@@ -91,19 +93,26 @@ public interface RelayrApi {
      * @param deviceId id of bookmarked device - the Id must be one of a public device
      * @return an {@link rx.Observable} to the bookmarked device */
     @POST("/users/{userId}/devices/{deviceId}/bookmarks")
-    Observable<Bookmark> bookmarkPublicDevice(@Path("userId") String userId, @Path("deviceId") String deviceId);
+    Observable<Bookmark> bookmarkPublicDevice(@Path("userId") String userId,
+                                              @Path("deviceId") String deviceId);
 
     /** Deletes a bookmarked device.
      * @param userId id of the user that bookmarked the device
      * @param deviceId id of bookmarked device - the Id must be one of a public device
-     * @return an empty {@link rx.Observable}
-     */
+     * @return an empty {@link rx.Observable} */
     @DELETE("/users/{userId}/devices/{deviceId}/bookmarks")
-    Observable<Void> removeBookmark(@Path("userId") String userId, @Path("deviceId") String deviceId);
+    Observable<Void> removeBookmark(@Path("userId") String userId,
+                                    @Path("deviceId") String deviceId);
 
     /** Returns a list of devices bookmarked by the user.
      * @param userId id of the user that bookmarked devices
      * @return an {@link rx.Observable} with a list of the users bookmarked devices */
     @GET("/users/{userId}/devices/bookmarks")
     Observable<List<Device>> getBookmarkedDevices(@Path("userId") String userId);
+
+    /** Returns all available device models.
+     * @return an {@link rx.Observable} with a list of all available device models */
+    @GET("/device-models")
+    Observable<List<Model>> getDeviceModels();
+
 }

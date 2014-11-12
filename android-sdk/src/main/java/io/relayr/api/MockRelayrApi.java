@@ -12,6 +12,7 @@ import io.relayr.model.Bookmark;
 import io.relayr.model.Command;
 import io.relayr.model.CreateWunderBar;
 import io.relayr.model.Device;
+import io.relayr.model.Model;
 import io.relayr.model.Transmitter;
 import io.relayr.model.TransmitterDevice;
 import io.relayr.model.User;
@@ -19,6 +20,7 @@ import rx.Observable;
 import rx.Subscriber;
 
 import static io.relayr.api.MockBackend.APP_INFO;
+import static io.relayr.api.MockBackend.DEVICE_MODELS;
 import static io.relayr.api.MockBackend.PUBLIC_DEVICES;
 import static io.relayr.api.MockBackend.PUBLIC_DEVICES_BOOKMARK;
 import static io.relayr.api.MockBackend.TRANSMITTER_DEVICES;
@@ -119,5 +121,10 @@ public class MockRelayrApi implements RelayrApi {
     public Observable<List<Device>> getBookmarkedDevices(String userId) {
         return mMockBackend.createObservable(new TypeToken<List<Device>>() { },
                 PUBLIC_DEVICES_BOOKMARK);
+    }
+
+    @Override
+    public Observable<List<Model>> getDeviceModels() {
+        return mMockBackend.createObservable(new TypeToken<List<Model>>() { }, DEVICE_MODELS);
     }
 }
