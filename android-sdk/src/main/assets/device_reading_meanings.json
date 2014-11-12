@@ -1,0 +1,34 @@
+[
+  {
+    "key": "angular_speed",
+    "value": "angular speed"
+  },
+  {
+    "key": "luminosity",
+    "value": "luminosity"
+  },
+  {
+    "key": "acceleration",
+    "value": "acceleration"
+  },
+  {
+    "key": "temperature",
+    "value": "temperature"
+  },
+  {
+    "key": "proximity",
+    "value": "proximity"
+  },
+  {
+    "key": "color",
+    "value": "color"
+  },
+  {
+    "key": "humidity",
+    "value": "humidity"
+  },
+  {
+    "key": "noise_level",
+    "value": "noise level"
+  }
+]

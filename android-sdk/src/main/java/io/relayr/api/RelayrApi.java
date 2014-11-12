@@ -8,6 +8,7 @@ import io.relayr.model.Command;
 import io.relayr.model.CreateWunderBar;
 import io.relayr.model.Device;
 import io.relayr.model.Model;
+import io.relayr.model.ReadingMeaning;
 import io.relayr.model.Transmitter;
 import io.relayr.model.TransmitterDevice;
 import io.relayr.model.User;
@@ -118,4 +119,10 @@ public interface RelayrApi {
      * @return an {@link rx.Observable} of a specific device model */
     @GET("/device-models/{model}")
     Observable<Model> getDeviceModel(@Path("model") String model);
+
+    /** Returns a list of the possible reading types of the devices on the relayr platform
+     * @return an {@link rx.Observable} with a list of Reading meanings */
+    @GET("/device-models/meanings")
+    Observable<List<ReadingMeaning>> getReadingMeanings();
+
 }

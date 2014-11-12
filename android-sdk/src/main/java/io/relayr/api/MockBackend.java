@@ -31,6 +31,7 @@ public class MockBackend {
     public static final String PUBLIC_DEVICES = "public_devices.json";
     public static final String PUBLIC_DEVICES_BOOKMARK = "public_devices_bookmark.json";
     public static final String DEVICE_MODELS = "device_models.json";
+    public static final String DEVICE_READING_MEANINGS = "device_reading_meanings.json";
 
     private final Context mContext;
 
