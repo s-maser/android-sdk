@@ -39,7 +39,7 @@ public class MockBackend {
         mContext = context;
     }
 
-    private String load(String fileName) throws Exception {
+    public String load(String fileName) throws Exception {
         StringBuilder fileContent = new StringBuilder();
         InputStream inputStream = null;
         InputStreamReader inputStreamReader = null;
