@@ -3,14 +3,21 @@ package io.relayr;
 import android.app.Activity;
 import android.content.Context;
 
+import java.util.Arrays;
+
 import javax.inject.Inject;
 
 import io.relayr.activity.LoginActivity;
+import io.relayr.api.CloudApi;
 import io.relayr.api.RelayrApi;
 import io.relayr.ble.BleUtils;
 import io.relayr.ble.RelayrBleSdk;
+import io.relayr.model.LogEvent;
 import io.relayr.storage.DataStorage;
 import io.relayr.websocket.WebSocketClient;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.schedulers.Schedulers;
 
 /**
  * The RelayrSdk Class serves as the access point to all endpoints in the Android SDK.
@@ -21,6 +28,7 @@ import io.relayr.websocket.WebSocketClient;
 public class RelayrSdk {
 
     @Inject static RelayrApi mRelayrApi;
+    @Inject static CloudApi mCloudApi;
     @Inject static WebSocketClient mWebSocketClient;
     @Inject static BleUtils mBleUtils;
     @Inject static RelayrBleSdk mRelayrBleSdk;
@@ -85,6 +93,28 @@ public class RelayrSdk {
 	public static void logOut() {
 		DataStorage.logOut();
 	}
+
+    /**
+     * Logs an event in the relayr platform. In debug mode, the event will be logged in the console
+     * instead.
+     * @return whether the logging event was performed
+     */
+    public static boolean logMessage(String message) {
+        if (DataStorage.getUserToken().length() == 0) return false;
+        mCloudApi.logMessage(Arrays.asList(new LogEvent(message)))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<Void>() {
+                    @Override
+                    public void call(Void aVoid) { }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        throwable.printStackTrace();
+                    }
+                });
+        return true;
+    }
 
     /**
      * Used as an access point to the class {@link WebSocketClient}
