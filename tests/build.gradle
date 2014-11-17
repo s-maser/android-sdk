@@ -3,7 +3,7 @@ apply plugin: 'robolectric'
 apply plugin: 'jacoco'
 
 android {
-    compileSdkVersion 20
+    compileSdkVersion 21
     buildToolsVersion '21.1'
 
     defaultConfig {
@@ -41,8 +41,8 @@ dependencies {
     compile project(':android-sdk')
     androidTestCompile 'junit:junit:4.11'
     androidTestCompile 'com.squareup:fest-android:1.0.8'
-    androidTestCompile 'org.mockito:mockito-all:1.9.5'
-    androidTestCompile('org.robolectric:robolectric:2.3') {
+    androidTestCompile 'org.mockito:mockito-all:1.10.8'
+    androidTestCompile('org.robolectric:robolectric:2.4') {
         exclude group: 'commons-logging'
         exclude group: 'org.apache.httpcomponents'
     }

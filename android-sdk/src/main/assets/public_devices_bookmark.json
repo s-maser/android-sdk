@@ -6,6 +6,6 @@
     "firmwareVersion": "1.0.0",
     "secret": "233ab3",
     "owner": "c70faa9f-5eda-49d8-be91-a7e4b1beeca1",
-    "public": true
+    "public": "true"
   }
 ]
