@@ -33,11 +33,11 @@ afterEvaluate { project ->
 
                 repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
                     //read from ~/.gradle/gradle.properties
-                    authentication(userName: sonatypeUsername, password: sonatypePassword)
+                    authentication(userName: 'name', password: 'pass')
                 }
                 snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
                     //read from ~/.gradle/gradle.properties
-                    authentication(userName: sonatypeUsername, password: sonatypePassword)
+                    authentication(userName: 'name', password: 'pass')
                 }
 
                 pom.project {

@@ -13,6 +13,7 @@ import dagger.Provides;
         overrides = true,
         injects = {
                 MockStatusApiTest.class,
+                MockRelayrApiTest.class,
                 MockBackendTest.class
         }
 )
