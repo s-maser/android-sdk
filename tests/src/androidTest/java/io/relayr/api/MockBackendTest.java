@@ -12,6 +12,7 @@ import javax.inject.Inject;
 
 import dagger.ObjectGraph;
 import io.relayr.model.App;
+import io.relayr.model.Bookmark;
 import io.relayr.model.Device;
 import io.relayr.model.Reading;
 import rx.Observer;
@@ -30,7 +31,7 @@ public class MockBackendTest {
 
     @Before
     public void init() {
-        ObjectGraph.create(new DebugApiTestModule(Robolectric.application)).inject(this);
+        ObjectGraph.create(new TestModule(Robolectric.application)).inject(this);
     }
 
     @Test
@@ -52,10 +53,19 @@ public class MockBackendTest {
         assertThat(load.name).isEqualTo("Test app");
     }
 
+    @Test
+    public void loadBookmarkTest() throws Exception {
+        Bookmark load = backend.load(new TypeToken<Bookmark>() {
+        }, MockBackend.BOOKMARK_DEVICE);
+
+        assertThat(load).isNotNull();
+        assertThat(load.getCreatedAt()).isNotNull();
+    }
+
     @Test(expected = Exception.class)
     public void loadWrongTypeDataTest_shouldThrowException() throws Exception {
         backend.load(new TypeToken<Device>() {
-        }, MockBackend.PUBLIC_DEVICES_BOOKMARK);
+        }, MockBackend.BOOKMARKED_DEVICES);
     }
 
     @Test

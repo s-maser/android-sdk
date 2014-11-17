@@ -4,6 +4,7 @@ import java.util.List;
 
 import io.relayr.model.App;
 import io.relayr.model.Bookmark;
+import io.relayr.model.BookmarkDevice;
 import io.relayr.model.Command;
 import io.relayr.model.CreateWunderBar;
 import io.relayr.model.Device;
@@ -107,7 +108,7 @@ public interface RelayrApi {
      * @param userId id of the user that bookmarked devices
      * @return an {@link rx.Observable} with a list of the users bookmarked devices */
     @GET("/users/{userId}/devices/bookmarks")
-    Observable<List<Device>> getBookmarkedDevices(@Path("userId") String userId);
+    Observable<List<BookmarkDevice>> getBookmarkedDevices(@Path("userId") String userId);
 
     /** Returns all available device models.
      * @return an {@link rx.Observable} with a list of all available device models */

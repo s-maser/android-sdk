@@ -32,7 +32,7 @@ public class MockStatusApiTest {
     public void init() {
         MockitoAnnotations.initMocks(this);
 
-        ObjectGraph.create(new DebugApiTestModule(Robolectric.application)).inject(this);
+        ObjectGraph.create(new TestModule(Robolectric.application)).inject(this);
     }
 
     @Test

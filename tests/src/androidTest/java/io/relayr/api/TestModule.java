@@ -16,11 +16,11 @@ import dagger.Provides;
                 MockBackendTest.class
         }
 )
-public class DebugApiTestModule {
+public class TestModule {
 
     private final Context app;
 
-    public DebugApiTestModule(Context context) {
+    public TestModule(Context context) {
         app = context;
     }
 
@@ -31,7 +31,7 @@ public class DebugApiTestModule {
     }
 
     @Provides
-    RelayrApi provideMockRelayrApi(MockBackend mockBackend) {
+    RelayrApi provideRelayrApi(MockBackend mockBackend) {
         return new MockRelayrApi(mockBackend);
     }
 

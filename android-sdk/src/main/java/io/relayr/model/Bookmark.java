@@ -5,6 +5,8 @@ import java.util.Date;
 
 public class Bookmark implements Serializable {
 
+    /** Auto generated uid */
+    private static final long serialVersionUID = 1L;
     private String userId;
     private String deviceId;
     private Date createdAt;
@@ -19,24 +21,12 @@ public class Bookmark implements Serializable {
         return userId;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
     public String getDeviceId() {
         return deviceId;
     }
 
-    public void setDeviceId(String deviceId) {
-        this.deviceId = deviceId;
-    }
-
     public Date getCreatedAt() {
         return createdAt;
-    }
-
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
     }
 
     @Override

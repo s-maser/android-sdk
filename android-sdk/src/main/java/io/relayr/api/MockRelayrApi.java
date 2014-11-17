@@ -2,13 +2,13 @@ package io.relayr.api;
 
 import com.google.gson.reflect.TypeToken;
 
-import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import io.relayr.model.App;
 import io.relayr.model.Bookmark;
+import io.relayr.model.BookmarkDevice;
 import io.relayr.model.Command;
 import io.relayr.model.CreateWunderBar;
 import io.relayr.model.Device;
@@ -21,10 +21,11 @@ import rx.Observable;
 import rx.Subscriber;
 
 import static io.relayr.api.MockBackend.APP_INFO;
+import static io.relayr.api.MockBackend.BOOKMARKED_DEVICES;
+import static io.relayr.api.MockBackend.BOOKMARK_DEVICE;
 import static io.relayr.api.MockBackend.DEVICE_MODELS;
 import static io.relayr.api.MockBackend.DEVICE_READING_MEANINGS;
 import static io.relayr.api.MockBackend.PUBLIC_DEVICES;
-import static io.relayr.api.MockBackend.PUBLIC_DEVICES_BOOKMARK;
 import static io.relayr.api.MockBackend.TRANSMITTER_DEVICES;
 import static io.relayr.api.MockBackend.USERS_CREATE_WUNDERBAR;
 import static io.relayr.api.MockBackend.USERS_TRANSMITTER;
@@ -106,7 +107,7 @@ public class MockRelayrApi implements RelayrApi {
 
     @Override
     public Observable<Bookmark> bookmarkPublicDevice(String userId, String deviceId) {
-        return Observable.just(new Bookmark(userId, deviceId, new Date()));
+        return mMockBackend.createObservable(new TypeToken<Bookmark>() { }, BOOKMARK_DEVICE);
     }
 
     @Override
@@ -120,9 +121,9 @@ public class MockRelayrApi implements RelayrApi {
     }
 
     @Override
-    public Observable<List<Device>> getBookmarkedDevices(String userId) {
-        return mMockBackend.createObservable(new TypeToken<List<Device>>() { },
-                PUBLIC_DEVICES_BOOKMARK);
+    public Observable<List<BookmarkDevice>> getBookmarkedDevices(String userId) {
+        return mMockBackend.createObservable(new TypeToken<List<BookmarkDevice>>() { },
+                BOOKMARKED_DEVICES);
     }
 
     @Override
