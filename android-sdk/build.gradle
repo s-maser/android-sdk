@@ -8,7 +8,7 @@ android {
         minSdkVersion 15
         targetSdkVersion 20
         versionCode 1
-        versionName '0.0.4'
+        versionName '0.0.5-SNAPSHOT'
     }
 
     lintOptions {
@@ -96,4 +96,6 @@ task makeJar(type: Copy) {
 
 makeJar.dependsOn(clearJar, build)
 
-apply from: rootProject.file('gradle/gradle-mvn-push.gradle')
+if (!android.defaultConfig.versionName.contains("SNAPSHOT")) {
+    apply from: rootProject.file('gradle/gradle-mvn-push.gradle')
+}
