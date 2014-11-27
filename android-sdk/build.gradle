@@ -1,3 +1,15 @@
+buildscript {
+    repositories {
+        maven { url 'https://maven.fabric.io/repo' }
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:0.13.2'
+        classpath 'com.jakewharton.sdkmanager:gradle-plugin:0.12.0'
+    }
+}
+apply plugin: 'android-sdk-manager'
 apply plugin: 'com.android.library'
 
 android {
