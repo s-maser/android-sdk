@@ -87,7 +87,9 @@ public interface RelayrApi {
     @GET("/devices/public")
     Observable<List<Device>> getPublicDevices(@Query("meaning") String meaning);
 
-    /** Bookmarks a specific public device. In order to receive data from a bookmarked device,
+    /**
+     * Bookmarks a specific public device. By Bookmarking a device you are indicating that you have
+     * a particular interest in this device. In order to receive data from a bookmarked device,
      * the subscription call must first be initiated.
      * @param userId id of the user that is bookmarking the device
      * @param deviceId id of bookmarked device - the Id must be one of a public device

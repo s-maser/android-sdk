@@ -3,6 +3,11 @@ package io.relayr.model;
 import java.io.Serializable;
 import java.util.Date;
 
+/**
+ * A bookmark is used to favorite a Public Device. When a Public Device is bookmarked, it will show
+ * up when you query for bookmarked devices, allowing you to keep track of other users' Public
+ * Devices.
+ */
 public class Bookmark implements Serializable {
 
     /** Auto generated uid */

@@ -2,6 +2,9 @@ package io.relayr.model;
 
 import java.io.Serializable;
 
+/**
+ * Key value object used to identify the type of information gathered by a given device.
+ */
 public class ReadingMeaning implements Serializable {
 
     private final String key;
