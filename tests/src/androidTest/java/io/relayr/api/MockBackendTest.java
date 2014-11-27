@@ -5,6 +5,8 @@ import com.google.gson.reflect.TypeToken;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 
@@ -19,19 +21,19 @@ import rx.Observer;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @RunWith(RobolectricTestRunner.class)
 public class MockBackendTest {
 
-    @Inject
-    MockBackend backend;
+    @Inject MockBackend backend;
+    @Mock Observer<App> appObserver;
 
     @Before
     public void init() {
         ObjectGraph.create(new TestModule(Robolectric.application)).inject(this);
+        MockitoAnnotations.initMocks(this);
     }
 
     @Test
@@ -79,12 +81,10 @@ public class MockBackendTest {
 
     @Test
     public void createObservableTest() {
-        Observer<App> subscriber = mock(Observer.class);
-
         backend.createObservable(new TypeToken<App>() { }, MockBackend.APP_INFO)
-                .subscribe(subscriber);
+                .subscribe(appObserver);
 
-        verify(subscriber, times(1)).onNext(any(App.class));
+        verify(appObserver, times(1)).onNext(any(App.class));
     }
 }
 
