@@ -4,8 +4,8 @@ import java.io.Serializable;
 
 public class ReadingMeaning implements Serializable {
 
-    private String key;
-    private String value;
+    private final String key;
+    private final String value;
 
     public ReadingMeaning(String key, String value) {
         this.key = key;
@@ -16,16 +16,8 @@ public class ReadingMeaning implements Serializable {
         return key;
     }
 
-    public void setKey(String key) {
-        this.key = key;
-    }
-
     public String getValue() {
         return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
     }
 
     @Override

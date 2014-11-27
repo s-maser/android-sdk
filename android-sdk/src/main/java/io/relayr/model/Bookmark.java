@@ -7,9 +7,9 @@ public class Bookmark implements Serializable {
 
     /** Auto generated uid */
     private static final long serialVersionUID = 1L;
-    private String userId;
-    private String deviceId;
-    private Date createdAt;
+    private final String userId;
+    private final String deviceId;
+    private final Date createdAt;
 
     public Bookmark(String userId, String deviceId, Date createdAt) {
         this.userId = userId;
