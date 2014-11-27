@@ -18,7 +18,6 @@ public class RelayrPropertiesTest {
     @Before public void setUp() {
         mProperties = new Properties();
         mProperties.put(PROPERTIES_KEY_APP_ID, PROPERTIES_KEY_APP_ID);
-        mProperties.put(PROPERTIES_KEY_CLIENT_ID, PROPERTIES_KEY_CLIENT_ID);
         mProperties.put(PROPERTIES_KEY_CLIENT_SECRET, PROPERTIES_KEY_CLIENT_SECRET);
     }
 
@@ -29,7 +28,6 @@ public class RelayrPropertiesTest {
     @Test public void loadPropertiesFile_assertPropertiesExist() {
         RelayrProperties properties = loadPropertiesFile(mProperties);
         Assert.assertEquals(properties.appId, PROPERTIES_KEY_APP_ID);
-        Assert.assertEquals(properties.clientId, PROPERTIES_KEY_CLIENT_ID);
         Assert.assertEquals(properties.clientSecret, PROPERTIES_KEY_CLIENT_SECRET);
     }
 

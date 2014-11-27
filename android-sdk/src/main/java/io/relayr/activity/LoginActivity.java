@@ -76,7 +76,7 @@ public class LoginActivity extends Activity {
                     mWebView.setVisibility(View.GONE);
                     mOauthApi
                             .authoriseUser(code,
-                                    RelayrProperties.get().clientId,
+                                    RelayrProperties.get().appId,
                                     RelayrProperties.get().clientSecret,
                                     "authorization_code",
                                     REDIRECT_URI,
@@ -128,7 +128,7 @@ public class LoginActivity extends Activity {
         Uri.Builder uriBuilder = Uri.parse(ApiModule.API_ENDPOINT).buildUpon();
         uriBuilder.path("/oauth2/auth");
 
-        uriBuilder.appendQueryParameter("client_id", RelayrProperties.get().clientId);
+        uriBuilder.appendQueryParameter("client_id", RelayrProperties.get().appId);
         uriBuilder.appendQueryParameter("redirect_uri", REDIRECT_URI);
         uriBuilder.appendQueryParameter("response_type", "code");
         uriBuilder.appendQueryParameter("scope", "access-own-user-info");

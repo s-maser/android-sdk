@@ -9,18 +9,15 @@ import io.relayr.RelayrApp;
 public final class RelayrProperties {
 
     private static final String PROPERTIES_FILE_NAME = "relayrsdk.properties";
-    static final String PROPERTIES_KEY_CLIENT_ID = "clientId";
     static final String PROPERTIES_KEY_CLIENT_SECRET = "clientSecret";
     static final String PROPERTIES_KEY_APP_ID = "appId";
 
     private static RelayrProperties mRelayrProperties = null;
 
-	public final String clientId;
     public final String clientSecret;
     public final String appId;
 
-    private RelayrProperties(String clientId, String clientSecret, String appId) {
-        this.clientId = clientId;
+    private RelayrProperties(String clientSecret, String appId) {
         this.clientSecret = clientSecret;
         this.appId = appId;
     }
@@ -50,10 +47,9 @@ public final class RelayrProperties {
     }
 
     static RelayrProperties loadPropertiesFile(Properties properties) {
-        String clientId = getProperty(properties.getProperty(PROPERTIES_KEY_CLIENT_ID));
         String clientSecret = getProperty(properties.getProperty(PROPERTIES_KEY_CLIENT_SECRET));
         String appId = getProperty(properties.getProperty(PROPERTIES_KEY_APP_ID));
-        return new RelayrProperties(clientId, clientSecret, appId);
+        return new RelayrProperties(clientSecret, appId);
 	}
 
     private static String getProperty(String property) {
