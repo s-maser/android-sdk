@@ -103,7 +103,7 @@ public interface RelayrApi {
      * @param deviceId id of bookmarked device - the Id must be one of a public device
      * @return an empty {@link rx.Observable} */
     @DELETE("/users/{userId}/devices/{deviceId}/bookmarks")
-    Observable<Void> removeBookmark(@Path("userId") String userId,
+    Observable<Void> deleteBookmark(@Path("userId") String userId,
                                     @Path("deviceId") String deviceId);
 
     /** Returns a list of devices bookmarked by the user.
@@ -128,9 +128,9 @@ public interface RelayrApi {
     @GET("/device-models/meanings")
     Observable<List<ReadingMeaning>> getReadingMeanings();
 
-    /** Deletes a Wunderbar and all of its components (Transmitter and Devices)
+    /** Deletes a WunderBar and all of its components (Transmitter and Devices)
      * @param transmitterId id of the transmitter (the Master Module)
      * @return an empty {@link rx.Observable} */
     @DELETE("/wunderbars/{transmitterId}")
-    Observable<Void> deleteWunderbar(@Path("transmitterId") String transmitterId);
+    Observable<Void> deleteWunderBar(@Path("transmitterId") String transmitterId);
 }
