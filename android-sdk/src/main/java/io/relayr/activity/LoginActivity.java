@@ -39,7 +39,6 @@ public class LoginActivity extends Activity {
     private volatile boolean isObtainingAccessToken;
     private WebView mWebView;
     private View mLoadingView;
-    private static final String REDIRECT_URI = "http://localhost";
 
     @SuppressLint("setJavaScriptEnabled")
     @Override
@@ -79,7 +78,7 @@ public class LoginActivity extends Activity {
                                     RelayrProperties.get().appId,
                                     RelayrProperties.get().clientSecret,
                                     "authorization_code",
-                                    REDIRECT_URI,
+                                    RelayrProperties.get().redirectUri,
                                     "")
                             .flatMap(new Func1<OauthToken, Observable<User>>() {
                                 @Override
@@ -129,7 +128,7 @@ public class LoginActivity extends Activity {
         uriBuilder.path("/oauth2/auth");
 
         uriBuilder.appendQueryParameter("client_id", RelayrProperties.get().appId);
-        uriBuilder.appendQueryParameter("redirect_uri", REDIRECT_URI);
+        uriBuilder.appendQueryParameter("redirect_uri", RelayrProperties.get().redirectUri);
         uriBuilder.appendQueryParameter("response_type", "code");
         uriBuilder.appendQueryParameter("scope", "access-own-user-info");
 
@@ -139,7 +138,7 @@ public class LoginActivity extends Activity {
 
     static String getCode(String url) {
         String codeParam = "?code=";
-        if (url.contains(REDIRECT_URI) && url.contains(codeParam)) {
+        if (url.contains(RelayrProperties.get().redirectUri) && url.contains(codeParam)) {
             int tokenPosition = url.indexOf(codeParam);
             String code = url.substring(tokenPosition + codeParam.length());
             if (code.contains("&")) code = code.substring(0, code.indexOf("&"));

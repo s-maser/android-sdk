@@ -19,6 +19,7 @@ public class RelayrPropertiesTest {
         mProperties = new Properties();
         mProperties.put(PROPERTIES_KEY_APP_ID, PROPERTIES_KEY_APP_ID);
         mProperties.put(PROPERTIES_KEY_CLIENT_SECRET, PROPERTIES_KEY_CLIENT_SECRET);
+        mProperties.put(PROPERTIES_KEY_REDIRECT_URI, PROPERTIES_KEY_REDIRECT_URI);
     }
 
     @Test public void loadPropertiesFile_assertNotNull() {
@@ -29,6 +30,12 @@ public class RelayrPropertiesTest {
         RelayrProperties properties = loadPropertiesFile(mProperties);
         Assert.assertEquals(properties.appId, PROPERTIES_KEY_APP_ID);
         Assert.assertEquals(properties.clientSecret, PROPERTIES_KEY_CLIENT_SECRET);
+        Assert.assertEquals(properties.redirectUri, PROPERTIES_KEY_REDIRECT_URI);
+    }
+
+    @Test public void loadPropertiesFile_assertDefaultRedirectUriIsUsed() {
+        RelayrProperties properties = loadPropertiesFile(new Properties());
+        Assert.assertEquals(properties.redirectUri, DEFAULT_REDIRECT_URI);
     }
 
 }
