@@ -1,0 +1,48 @@
+[
+  {
+    "id": "76e3ac52-3745-40ee-afa0-c3e499681dc8",
+    "name": "DanasSecondDevice",
+    "model": {
+      "id": "ecf6cf94-cb07-43ac-a85e-dccf26b48c86",
+      "name": "Wunderbar Thermometer & Humidity Sensor",
+      "manufacturer": "Relayr GmbH",
+      "readings": [
+        {
+          "meaning": "temperature",
+          "unit": "celsius",
+          "maximum": 100,
+          "minimum": -100,
+          "precision": 0.25
+        },
+        {
+          "meaning": "humidity",
+          "unit": "percent"
+        }
+      ]
+    },
+    "firmwareVersion": "1.0.0"
+  },
+  {
+    "id": "6854bb1c-64ed-4d46-99b4-6cf28b72ad1d",
+    "name": "DanasDevice",
+    "model": {
+      "id": "ecf6cf94-cb07-43ac-a85e-dccf26b48c86",
+      "name": "Wunderbar Thermometer & Humidity Sensor",
+      "manufacturer": "Relayr GmbH",
+      "readings": [
+        {
+          "meaning": "temperature",
+          "unit": "celsius",
+          "maximum": 100,
+          "minimum": -100,
+          "precision": 0.25
+        },
+        {
+          "meaning": "humidity",
+          "unit": "percent"
+        }
+      ]
+    },
+    "firmwareVersion": "1.0.0"
+  }
+]

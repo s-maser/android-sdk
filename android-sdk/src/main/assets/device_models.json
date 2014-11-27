@@ -1,0 +1,18 @@
+[
+  {
+    "id": "ecf6cf94-cb07-43ac-a85e-dccf26b48c86",
+    "name": "Wunderbar Thermometer",
+    "manufacturer": "Relayr GmbH",
+    "readings": [
+      {
+        "id": "80088e66-a5ab-4ad8-87fd-6690fe3da226",
+        "deviceModel": "ecf6cf94-cb07-43ac-a85e-dccf26b48c86",
+        "meaning": "temperature",
+        "unit": "celsius",
+        "maximum": 100,
+        "minimum": -100,
+        "precision": 0.10000000149011612
+      }
+    ]
+  }
+]

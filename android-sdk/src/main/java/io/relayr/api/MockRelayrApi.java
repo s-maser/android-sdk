@@ -7,9 +7,13 @@ import java.util.List;
 import javax.inject.Inject;
 
 import io.relayr.model.App;
+import io.relayr.model.Bookmark;
+import io.relayr.model.BookmarkDevice;
 import io.relayr.model.Command;
 import io.relayr.model.CreateWunderBar;
 import io.relayr.model.Device;
+import io.relayr.model.Model;
+import io.relayr.model.ReadingMeaning;
 import io.relayr.model.Transmitter;
 import io.relayr.model.TransmitterDevice;
 import io.relayr.model.User;
@@ -17,6 +21,11 @@ import rx.Observable;
 import rx.Subscriber;
 
 import static io.relayr.api.MockBackend.APP_INFO;
+import static io.relayr.api.MockBackend.BOOKMARKED_DEVICES;
+import static io.relayr.api.MockBackend.BOOKMARK_DEVICE;
+import static io.relayr.api.MockBackend.DEVICE_MODELS;
+import static io.relayr.api.MockBackend.DEVICE_READING_MEANINGS;
+import static io.relayr.api.MockBackend.PUBLIC_DEVICES;
 import static io.relayr.api.MockBackend.TRANSMITTER_DEVICES;
 import static io.relayr.api.MockBackend.USERS_CREATE_WUNDERBAR;
 import static io.relayr.api.MockBackend.USERS_TRANSMITTER;
@@ -85,4 +94,60 @@ public class MockRelayrApi implements RelayrApi {
         return mMockBackend.createObservable(new TypeToken<List<TransmitterDevice>>() { },
                 TRANSMITTER_DEVICES);
     }
+
+    @Override
+    public Observable<Transmitter> registerTransmitter(Transmitter transmitter) {
+        return Observable.just(transmitter);
+    }
+
+    @Override
+    public Observable<List<Device>> getPublicDevices(String meaning) {
+        return mMockBackend.createObservable(new TypeToken<List<Device>>() { }, PUBLIC_DEVICES);
+    }
+
+    @Override
+    public Observable<Bookmark> bookmarkPublicDevice(String userId, String deviceId) {
+        return mMockBackend.createObservable(new TypeToken<Bookmark>() { }, BOOKMARK_DEVICE);
+    }
+
+    @Override
+    public Observable<Void> removeBookmark(String userId, String deviceId) {
+        return Observable.create(new Observable.OnSubscribe<Void>() {
+            @Override
+            public void call(Subscriber<? super Void> subscriber) {
+                subscriber.onNext(null);
+            }
+        });
+    }
+
+    @Override
+    public Observable<List<BookmarkDevice>> getBookmarkedDevices(String userId) {
+        return mMockBackend.createObservable(new TypeToken<List<BookmarkDevice>>() { },
+                BOOKMARKED_DEVICES);
+    }
+
+    @Override
+    public Observable<List<Model>> getDeviceModels() {
+        return mMockBackend.createObservable(new TypeToken<List<Model>>() { }, DEVICE_MODELS);
+    }
+
+    @Override
+    public Observable<Model> getDeviceModel(String model) {
+        return mMockBackend.createObservable(new TypeToken<Model>() { }, DEVICE_MODELS);
+    }
+
+    @Override
+    public Observable<List<ReadingMeaning>> getReadingMeanings() {
+        return mMockBackend.createObservable(new TypeToken<List<ReadingMeaning>>() { },
+                DEVICE_READING_MEANINGS);
+    }
+
+    @Override
+    public Observable<Void> deleteWunderbar(String transmitterId) {
+        return Observable.create(new Observable.OnSubscribe<Void>() {
+            @Override
+            public void call(Subscriber<? super Void> subscriber) {
+                subscriber.onNext(null);
+            }
+        });    }
 }
