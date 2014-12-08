@@ -1,11 +1,10 @@
 buildscript {
     repositories {
-        maven { url 'https://maven.fabric.io/repo' }
         mavenCentral()
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.13.2'
+        classpath 'com.android.tools.build:gradle:1.0.0-rc4'
         classpath 'com.jakewharton.sdkmanager:gradle-plugin:0.12.0'
     }
 }
@@ -61,7 +60,7 @@ android.libraryVariants.all { variant ->
         source = variant.javaCompile.source
         ext.androidJar = files(plugins.findPlugin("com.android.library").getBootClasspath())
         classpath = files(variant.javaCompile.classpath.files) + ext.androidJar
-        options.memberLevel = org.gradle.external.javadoc.JavadocMemberLevel.PUBLIC
+        options.memberLevel = JavadocMemberLevel.PUBLIC
         options.links("http://docs.oracle.com/javase/7/docs/api/");
         options.links("http://d.android.com/reference");
         options.links("http://reactivex.io/RxJava/javadoc/");
