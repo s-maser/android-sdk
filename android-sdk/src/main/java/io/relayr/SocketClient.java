@@ -1,17 +1,15 @@
 package io.relayr;
 
 import io.relayr.model.TransmitterDevice;
-import rx.Subscriber;
-import rx.Subscription;
+import rx.Observable;
 
 public interface SocketClient {
 
     /**
      * Subscribes an app to a device channel. Enables the app to receive data from the device.
      * @param device The device object to be subscribed to.
-     * @param subscriber The app which subscribes to the device channel
      */
-    public Subscription subscribe(TransmitterDevice device, Subscriber<Object> subscriber);
+    public Observable<Object> subscribe(TransmitterDevice device);
 
     /**
      * Unsubscribes an app from a device channel, stopping and cleaning up the connection.
