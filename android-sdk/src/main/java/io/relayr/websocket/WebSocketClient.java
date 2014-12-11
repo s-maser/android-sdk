@@ -43,13 +43,9 @@ public class WebSocketClient implements SocketClient {
         mWebSocketFactory = factory;
     }
 
-    private Observable<Object> subscribe(PublishSubject<Object> subject) {
-        return subject.observeOn(AndroidSchedulers.mainThread());
-    }
-
     public Observable<Object> subscribe(TransmitterDevice device) {
         if (mWebSocketConnections.containsKey(device.id)) {
-            return subscribe(mWebSocketConnections.get(device.id));
+            return mWebSocketConnections.get(device.id);
         } else {
             return start(device);
         }
@@ -92,7 +88,14 @@ public class WebSocketClient implements SocketClient {
                 });
 
         mWebSocketConnections.put(device.id, subject);
-        return subscribe(subject).observeOn(AndroidSchedulers.mainThread());
+        return subject
+                .doOnError(new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        unSubscribe(device.id);
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread());
     }
 
     /*public void unSubscribeAll() {
