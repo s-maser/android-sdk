@@ -4,8 +4,8 @@ import io.relayr.model.WebSocketConfig;
 
 class WebSocketFactory {
 
-    WebSocket createWebSocket(WebSocketConfig webSocketConfig) {
-        return new WebSocket(webSocketConfig);
+    MqttWebSocket createWebSocket(WebSocketConfig webSocketConfig) {
+        return new MqttWebSocket(webSocketConfig);
     }
 
 }

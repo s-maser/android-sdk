@@ -75,13 +75,14 @@ public class MockBackendTest {
         Reading[] webSocketReadings = backend.getWebSocketReadings();
 
         assertThat(webSocketReadings).isNotNull();
-        assertThat(8).isEqualTo(webSocketReadings.length);
+        assertThat(webSocketReadings.length).isEqualTo(8);
         assertThat(webSocketReadings[0].accel.y).isEqualTo(13.02f);
     }
 
     @Test
     public void createObservableTest() {
-        backend.createObservable(new TypeToken<App>() { }, MockBackend.APP_INFO)
+        backend.createObservable(new TypeToken<App>() {
+        }, MockBackend.APP_INFO)
                 .subscribe(appObserver);
 
         verify(appObserver, times(1)).onNext(any(App.class));

@@ -13,7 +13,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
-class MockWebSocket extends WebSocket {
+class MockWebSocket extends MqttWebSocket {
 
     private final MockBackend mMockBackend;
 

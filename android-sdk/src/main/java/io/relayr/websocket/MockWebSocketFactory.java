@@ -14,7 +14,7 @@ class MockWebSocketFactory extends WebSocketFactory {
         mMockBackend = mockBackend;
     }
 
-    WebSocket createWebSocket(WebSocketConfig webSocketConfig) {
+    MqttWebSocket createWebSocket(WebSocketConfig webSocketConfig) {
         return new MockWebSocket(webSocketConfig, mMockBackend);
     }
 

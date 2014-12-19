@@ -30,16 +30,17 @@ public class WebSocketClient implements SocketClient {
     private final SubscriptionApi mSubscriptionApi;
     private final WebSocketFactory mWebSocketFactory;
     private final Map<String, PublishSubject<Object>> mWebSocketConnections = new HashMap<>();
-    private WebSocket mWebSocket = new UnInitializedWebSocket();
+    private MqttWebSocket mWebSocket = new UnInitializedWebSocket();
 
-    private static class UnInitializedWebSocket extends WebSocket {
+    private static class UnInitializedWebSocket extends MqttWebSocket {
 
         public UnInitializedWebSocket() {
             super(new WebSocketConfig("", "", "", ""));
         }
     }
 
-    @Inject WebSocketClient(SubscriptionApi subscriptionApi, WebSocketFactory factory) {
+    @Inject
+    WebSocketClient(SubscriptionApi subscriptionApi, WebSocketFactory factory) {
         mSubscriptionApi = subscriptionApi;
         mWebSocketFactory = factory;
     }
@@ -167,30 +168,63 @@ public class WebSocketClient implements SocketClient {
         mWebSocket.subscribe(channel, new WebSocketCallback() {
             @Override
             public void connectCallback(Object message) {
+                Log.e("WSC", "connectCallback");
 
             }
 
             @Override
             public void disconnectCallback(Object message) {
-                subject.onCompleted();
-                mWebSocketConnections.remove(deviceId);
+                Log.e("WSC", "disconnectCallback");
+
             }
 
             @Override
             public void reconnectCallback(Object message) {
+                Log.e("WSC", "reconnectCallback");
 
             }
 
             @Override
             public void successCallback(Object message) {
-                subject.onNext(message);
+                Log.e("WSC", "successCallback");
             }
 
             @Override
             public void errorCallback(Throwable error) {
-                subject.onError(error);
-                mWebSocketConnections.clear();
+                Log.e("WSC", "errorCallback");
+
             }
         });
     }
+//    private void subscribeToChannel(String channel, final String deviceId,
+//                                    final PublishSubject<Object> subject) {
+//        mWebSocket.subscribe(channel, new WebSocketCallback() {
+//            @Override
+//            public void connectCallback(Object message) {
+//
+//            }
+//
+//            @Override
+//            public void disconnectCallback(Object message) {
+//                subject.onCompleted();
+//                mWebSocketConnections.remove(deviceId);
+//            }
+//
+//            @Override
+//            public void reconnectCallback(Object message) {
+//
+//            }
+//
+//            @Override
+//            public void successCallback(Object message) {
+//                subject.onNext(message);
+//            }
+//
+//            @Override
+//            public void errorCallback(Throwable error) {
+//                subject.onError(error);
+//                mWebSocketConnections.clear();
+//            }
+//        });
+//    }
 }
