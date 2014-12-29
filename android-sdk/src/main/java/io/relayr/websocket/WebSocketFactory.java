@@ -2,10 +2,13 @@ package io.relayr.websocket;
 
 import io.relayr.model.WebSocketConfig;
 
-class WebSocketFactory {
+public class WebSocketFactory {
 
-    MqttWebSocket createWebSocket(WebSocketConfig webSocketConfig) {
-        return new MqttWebSocket(webSocketConfig);
+    WebSocket createWebSocket(WebSocketConfig conf) {
+        return new PubNubWebSocket(conf);
     }
 
+    WebSocket createWebSocket() {
+        return new MqttWebSocket();
+    }
 }

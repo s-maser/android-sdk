@@ -2,20 +2,15 @@ package io.relayr.api;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.robolectric.Robolectric;
-import org.robolectric.RobolectricTestRunner;
 
 import java.util.List;
 
 import javax.inject.Inject;
 
-import dagger.ObjectGraph;
-import io.relayr.RelayrSdk;
+import io.relayr.TestEnvironment;
 import io.relayr.model.App;
 import io.relayr.model.Bookmark;
 import io.relayr.model.BookmarkDevice;
@@ -29,11 +24,9 @@ import io.relayr.model.User;
 import rx.Observer;
 
 import static org.fest.assertions.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-@RunWith(RobolectricTestRunner.class)
-public class MockRelayrApiTest {
+public class MockRelayrApiTest extends TestEnvironment {
 
     private final String ID = "4f1ddffb-d9fa-456b-a73e-33daa6284c39";
 
@@ -56,10 +49,9 @@ public class MockRelayrApiTest {
 
     @Before
     public void init() {
-        MockitoAnnotations.initMocks(this);
-
-        RelayrSdk.initInMockMode(Robolectric.application);
-        ObjectGraph.create(new TestModule(Robolectric.application)).inject(this);
+        super.init();
+        inject();
+        initSdk();
     }
 
     @Test
@@ -81,7 +73,7 @@ public class MockRelayrApiTest {
 
         verify(subscriber).onNext(appCaptor.capture());
 
-        assertThat(appCaptor.getValue().id).isEqualTo("shiny_id");
+        assertThat(appCaptor.getValue().id).isEqualTo(USER_ID);
     }
 
     @Test

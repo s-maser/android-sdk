@@ -4,11 +4,13 @@ import com.google.gson.reflect.TypeToken;
 
 import javax.inject.Inject;
 
+import io.relayr.model.MqttChannel;
 import io.relayr.model.WebSocketConfig;
 import rx.Observable;
 import rx.Subscriber;
 
 import static io.relayr.api.MockBackend.APPS_DEVICES_START;
+import static io.relayr.api.MockBackend.MQTT_CREDENTIALS;
 
 public class MockSubscriptionApi implements SubscriptionApi {
 
@@ -34,6 +36,12 @@ public class MockSubscriptionApi implements SubscriptionApi {
                 subscriber.onCompleted();
             }
         });
+    }
+
+    @Override
+    public Observable<MqttChannel> subscribeToMqtt(String appId,  String deviceId) {
+        return mMockBackend.createObservable(new TypeToken<MqttChannel>() { },
+                MQTT_CREDENTIALS);
     }
 
 }

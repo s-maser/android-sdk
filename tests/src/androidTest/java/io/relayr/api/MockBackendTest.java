@@ -13,6 +13,7 @@ import org.robolectric.RobolectricTestRunner;
 import javax.inject.Inject;
 
 import dagger.ObjectGraph;
+import io.relayr.TestEnvironment;
 import io.relayr.model.App;
 import io.relayr.model.Bookmark;
 import io.relayr.model.Device;
@@ -24,16 +25,15 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-@RunWith(RobolectricTestRunner.class)
-public class MockBackendTest {
+public class MockBackendTest extends TestEnvironment {
 
     @Inject MockBackend backend;
     @Mock Observer<App> appObserver;
 
     @Before
     public void init() {
-        ObjectGraph.create(new TestModule(Robolectric.application)).inject(this);
-        MockitoAnnotations.initMocks(this);
+        super.init();
+        inject();
     }
 
     @Test
@@ -41,8 +41,8 @@ public class MockBackendTest {
         String load = backend.load(MockBackend.APP_INFO);
 
         assertThat(load).isNotNull();
-        assertThat(load.contains("shiny_id"));
-        assertThat(load.contains("Test app"));
+        assertThat(load.contains(USER_ID));
+        assertThat(load.contains(APP_NAME));
     }
 
     @Test
@@ -51,8 +51,8 @@ public class MockBackendTest {
         }, MockBackend.APP_INFO);
 
         assertThat(load).isNotNull();
-        assertThat(load.id).isEqualTo("shiny_id");
-        assertThat(load.name).isEqualTo("Test app");
+        assertThat(load.id).isEqualTo(USER_ID);
+        assertThat(load.name).isEqualTo(APP_NAME);
     }
 
     @Test
