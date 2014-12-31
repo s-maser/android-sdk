@@ -3,21 +3,17 @@ package io.relayr;
 import android.app.Activity;
 import android.content.Context;
 
-import java.util.Arrays;
-
 import javax.inject.Inject;
 
 import io.relayr.activity.LoginActivity;
-import io.relayr.api.CloudApi;
 import io.relayr.api.RelayrApi;
 import io.relayr.ble.BleUtils;
 import io.relayr.ble.RelayrBleSdk;
-import io.relayr.model.LogEvent;
 import io.relayr.storage.DataStorage;
+import io.relayr.util.LoggerUtils;
+import io.relayr.util.ReachAbilityUtils;
 import io.relayr.websocket.WebSocketClient;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
-import rx.schedulers.Schedulers;
+import rx.Observable;
 
 /**
  * The RelayrSdk Class serves as the access point to all endpoints in the Android SDK.
@@ -28,10 +24,13 @@ import rx.schedulers.Schedulers;
 public class RelayrSdk {
 
     @Inject static RelayrApi mRelayrApi;
-    @Inject static CloudApi mCloudApi;
     @Inject static WebSocketClient mWebSocketClient;
+
     @Inject static BleUtils mBleUtils;
     @Inject static RelayrBleSdk mRelayrBleSdk;
+
+    @Inject static LoggerUtils mLoggerUtils;
+    @Inject static ReachAbilityUtils mReachabilityUtils;
 
     private static LoginEventListener loginEventListener;
 
@@ -96,24 +95,33 @@ public class RelayrSdk {
 
     /**
      * Logs an event in the relayr platform. In debug mode, the event will be logged in the console
-     * instead.
+     * instead. Connection availability and platform reachability are checked automatically when
+     * using this method.
      * @return whether the logging event was performed
      */
     public static boolean logMessage(String message) {
-        if (DataStorage.getUserToken().length() == 0) return false;
-        mCloudApi.logMessage(Arrays.asList(new LogEvent(message)))
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<Void>() {
-                    @Override
-                    public void call(Void aVoid) { }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        throwable.printStackTrace();
-                    }
-                });
+        if (DataStorage.getUserToken().isEmpty()) return false;
+
+         mLoggerUtils.logMessage(message);
+
         return true;
+    }
+
+    /**
+     * Sends bulk of all previously logged messages to relayr platform. Connection availability
+     * and platform reachability are checked automatically when using this method.
+     * @return whether the messages were flushed
+     */
+    public static Observable<Boolean> flushLoggedMessages() {
+        return mLoggerUtils.flushLoggedMessages();
+    }
+
+    /**
+     * Checks relayr platform reachability.
+     * @return true if platform is reachable, false otherwise
+     */
+    public static Observable<Boolean> isPlatformReachable() {
+        return mReachabilityUtils.isPlatformReachable();
     }
 
     /**
