@@ -16,7 +16,6 @@ import io.relayr.model.TransmitterDevice;
 import io.relayr.model.WebSocketConfig;
 import rx.Observable;
 import rx.Subscriber;
-import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.functions.Func1;
@@ -44,19 +43,15 @@ public class WebSocketClient implements SocketClient {
         mWebSocketFactory = factory;
     }
 
-    private Subscription subscribe(PublishSubject<Object> subject, Subscriber<Object> subscriber) {
-        return subject.observeOn(AndroidSchedulers.mainThread()).subscribe(subscriber);
-    }
-
-    public Subscription subscribe(TransmitterDevice device, Subscriber<Object> subscriber) {
+    public Observable<Object> subscribe(TransmitterDevice device) {
         if (mWebSocketConnections.containsKey(device.id)) {
-            return subscribe(mWebSocketConnections.get(device.id), subscriber);
+            return mWebSocketConnections.get(device.id);
         } else {
-            return start(device, subscriber);
+            return start(device);
         }
     }
 
-    private Subscription start(final TransmitterDevice device, final Subscriber<Object> subscriber) {
+    private Observable<Object> start(final TransmitterDevice device) {
         final PublishSubject<Object> subject = PublishSubject.create();
 
         // if mWebSocket.isSubscribedToAnyone: subscribeToChannel(device.getId(), subject);
@@ -93,7 +88,14 @@ public class WebSocketClient implements SocketClient {
                 });
 
         mWebSocketConnections.put(device.id, subject);
-        return subscribe(subject, subscriber);
+        return subject
+                .doOnError(new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        unSubscribe(device.id);
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread());
     }
 
     /*public void unSubscribeAll() {
