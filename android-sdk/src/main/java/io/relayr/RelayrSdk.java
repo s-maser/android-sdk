@@ -100,11 +100,7 @@ public class RelayrSdk {
      * @return whether the logging event was performed
      */
     public static boolean logMessage(String message) {
-        if (DataStorage.getUserToken().isEmpty()) return false;
-
-         mLoggerUtils.logMessage(message);
-
-        return true;
+        return mLoggerUtils.logMessage(message);
     }
 
     /**
@@ -112,7 +108,7 @@ public class RelayrSdk {
      * and platform reachability are checked automatically when using this method.
      * @return whether the messages were flushed
      */
-    public static Observable<Boolean> flushLoggedMessages() {
+    public static boolean flushLoggedMessages() {
         return mLoggerUtils.flushLoggedMessages();
     }
 
@@ -123,7 +119,6 @@ public class RelayrSdk {
     public static Observable<Boolean> isPlatformReachable() {
         return mReachabilityUtils.isPlatformReachable();
     }
-
     /**
      * Used as an access point to the class {@link WebSocketClient}
      * @return the handler of the WebSocket client
