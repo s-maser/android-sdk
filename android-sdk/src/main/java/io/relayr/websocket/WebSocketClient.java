@@ -40,30 +40,30 @@ public class WebSocketClient implements SocketClient {
         mWebSocket = factory.createWebSocket();
     }
 
-    @Override
-    public Subscription subscribe(TransmitterDevice device, Subscriber<Object> subscriber) {
-        String deviceId = device.id;
-
-        if (!mWebSocketConnections.containsKey(deviceId)) return start(deviceId, subscriber);
-        else return subscribe(mWebSocketConnections.get(deviceId), subscriber);
+    public Observable<Object> subscribe(TransmitterDevice device) {
+        if (mWebSocketConnections.containsKey(device.id)) {
+            return mWebSocketConnections.get(device.id);
+        } else {
+            return start(device);
+        }
     }
 
-    private Subscription subscribe(PublishSubject<Object> subject, Subscriber<Object> subscriber) {
-        return subject.observeOn(AndroidSchedulers.mainThread()).subscribe(subscriber);
-    }
-
-    private Subscription start(final String deviceId, final Subscriber<Object> subscriber) {
+    private Observable<Object> start(final TransmitterDevice device) {
         final PublishSubject<Object> subject = PublishSubject.create();
+
+        // if mWebSocket.isSubscribedToAnyone: subscribeToChannel(device.getId(), subject);
+        // else: mRelayrSDK.subscribe(...)
 
         RelayrSdk.getRelayrApi()
                 .getAppInfo()
                 .flatMap(new Func1<App, Observable<MqttChannel>>() {
                     @Override
                     public Observable<MqttChannel> call(App app) {
-                        return mSubscriptionApi.subscribeToMqtt(app.id, deviceId);
+                        return mSubscriptionApi.subscribeToMqtt(app.id, device.id);
                     }
                 })
                 .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<MqttChannel>() {
 
                     @Override
@@ -74,18 +74,24 @@ public class WebSocketClient implements SocketClient {
                     public void onError(Throwable e) {
                         Log.e(TAG, e.getMessage());
                         e.printStackTrace();
-                        mWebSocketConnections.remove(deviceId);
+                        mWebSocketConnections.remove(device.id);
                     }
 
                     @Override
                     public void onNext(MqttChannel credentials) {
-                        subscribeToChannel(credentials, deviceId, subject);
+                        subscribeToChannel(credentials, device.id, subject);
                     }
                 });
 
-        mWebSocketConnections.put(deviceId, subject);
-
-        return subscribe(subject, subscriber);
+        mWebSocketConnections.put(device.id, subject);
+        return subject
+                .doOnError(new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        unSubscribe(device.id);
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread());
     }
 
     private void subscribeToChannel(MqttChannel credentials,
@@ -152,3 +158,4 @@ public class WebSocketClient implements SocketClient {
                 });
     }
 }
+
