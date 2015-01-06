@@ -11,7 +11,6 @@ import io.relayr.api.CloudApi;
 import io.relayr.model.LogEvent;
 import io.relayr.storage.DataStorage;
 import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
@@ -42,12 +41,13 @@ public class LoggerUtils {
         if (sEvents.size() >= AUTO_FLUSH && !loggingData) {
             loggingData = true;
             sReachUtils.isPlatformReachable()
-                    .observeOn(Schedulers.io())
-                    .subscribeOn(Schedulers.io())
+                    .observeOn(Schedulers.newThread())
+                    .subscribeOn(Schedulers.newThread())
                     .subscribe(new Action1<Boolean>() {
                         @Override
                         public void call(Boolean status) {
                             if (status != null && status) logToPlatform(pollElements(AUTO_FLUSH));
+                            else loggingData = false;
                         }
                     });
         }
@@ -61,12 +61,23 @@ public class LoggerUtils {
         loggingData = true;
 
         sReachUtils.isPlatformAvailable()
-                .observeOn(Schedulers.io())
-                .subscribeOn(Schedulers.io())
-                .subscribe(new Action1<Boolean>() {
+                .observeOn(Schedulers.newThread())
+                .subscribeOn(Schedulers.newThread())
+                .subscribe(new Subscriber<Boolean>() {
                     @Override
-                    public void call(Boolean status) {
+                    public void onCompleted() {
+                        loggingData = false;
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        loggingData = false;
+                    }
+
+                    @Override
+                    public void onNext(Boolean status) {
                         if (status) logToPlatform(pollElements(sEvents.size()));
+                        else loggingData = false;
                     }
                 });
 
@@ -75,8 +86,8 @@ public class LoggerUtils {
 
     private void logToPlatform(final List<LogEvent> events) {
         sApi.logMessage(events)
-                .observeOn(Schedulers.io())
-                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.newThread())
+                .subscribeOn(Schedulers.newThread())
                 .subscribe(new Subscriber<Void>() {
                     @Override
                     public void onCompleted() {

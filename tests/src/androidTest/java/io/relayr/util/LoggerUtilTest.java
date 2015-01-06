@@ -1,6 +1,7 @@
 package io.relayr.util;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -14,7 +15,6 @@ import java.util.concurrent.TimeUnit;
 import io.relayr.RelayrSdk;
 import io.relayr.api.CloudApi;
 import io.relayr.api.StatusApi;
-import io.relayr.model.Status;
 import io.relayr.storage.DataStorage;
 import rx.Observable;
 import rx.Subscriber;
@@ -38,24 +38,20 @@ public class LoggerUtilTest {
 
     @Before
     public void init() {
-        DataStorage.saveUserToken("ut");
-
-        MockitoAnnotations.initMocks(this);
         lock = new CountDownLatch(1);
 
+        DataStorage.saveUserToken("ut");
+        MockitoAnnotations.initMocks(this);
+
+        Observable<Boolean> mockObservable = Observable.create(new Observable.OnSubscribe<Boolean>() {
+            @Override
+            public void call(Subscriber<? super Boolean> subscriber) {
+                subscriber.onNext(true);
+            }
+        });
         when(reachUtils.isConnectedToInternet()).thenReturn(true);
-        when(reachUtils.isPlatformAvailable()).thenReturn(Observable.create(new Observable.OnSubscribe<Boolean>() {
-            @Override
-            public void call(Subscriber<? super Boolean> subscriber) {
-                subscriber.onNext(true);
-            }
-        }));
-        when(reachUtils.isPlatformReachable()).thenReturn(Observable.create(new Observable.OnSubscribe<Boolean>() {
-            @Override
-            public void call(Subscriber<? super Boolean> subscriber) {
-                subscriber.onNext(true);
-            }
-        }));
+        when(reachUtils.isPlatformAvailable()).thenReturn(mockObservable);
+        when(reachUtils.isPlatformReachable()).thenReturn(mockObservable);
 
         when(cloudApi.logMessage(anyList())).thenReturn(Observable.create(new Observable
                 .OnSubscribe<Void>() {
@@ -65,50 +61,50 @@ public class LoggerUtilTest {
             }
         }));
 
-        RelayrSdk.initInMockMode(Robolectric.application.getApplicationContext());
-
         logUtils = new LoggerUtils(cloudApi, reachUtils);
     }
 
     @Test
     public void logMessage_RelayrSdkTest() {
+        RelayrSdk.initInMockMode(Robolectric.application.getApplicationContext());
         assertThat(RelayrSdk.logMessage("1")).isTrue();
     }
 
     @Test
     public void logNullMessage_RelayrSdkTest() {
+        RelayrSdk.initInMockMode(Robolectric.application.getApplicationContext());
         assertThat(RelayrSdk.logMessage(null)).isTrue();
     }
 
     @Test
     public void logMessageFlowTest() {
         logMultiple(4);
-        delayVerify(0);
+        verifyWithDelay(0);
 
         logUtils.logMessage("0");
-        delayVerify(1);
+        verifyWithDelay(1);
 
         logUtils.logMessage("0");
-        delayVerify(1);
+        verifyWithDelay(1);
 
         logMultiple(4);
 
-        delayVerify(2);
+        verifyWithDelay(2);
     }
 
     @Test
     public void flushLoggedMessagesFlowTest() {
         logMultiple(4);
-        delayVerify(0);
+        verifyWithDelay(0);
 
         logUtils.flushLoggedMessages();
-        delayVerify(1);
+        verifyWithDelay(1);
 
         logUtils.logMessage("6");
-        delayVerify(1);
+        verifyWithDelay(1);
     }
 
-    private void delayVerify(int times) {
+    private void verifyWithDelay(int times) {
         try {
             lock.await(200, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {

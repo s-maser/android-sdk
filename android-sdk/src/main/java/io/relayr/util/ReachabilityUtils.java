@@ -12,7 +12,6 @@ import io.relayr.api.StatusApi;
 import io.relayr.model.Status;
 import rx.Observable;
 import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
@@ -41,8 +40,7 @@ public class ReachAbilityUtils {
 
     Observable<Boolean> isPlatformAvailable() {
         return sApi.getServerStatus()
-                .observeOn(Schedulers.io())
-                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.newThread())
                 .map(new Func1<Status, Boolean>() {
                     @Override
                     public Boolean call(Status status) {
