@@ -1,10 +1,14 @@
 package io.relayr.util;
 
 import android.content.Context;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -21,10 +25,12 @@ import rx.schedulers.Schedulers;
 public class ReachabilityUtils {
 
     private final String TAG = ReachabilityUtils.class.getSimpleName();
+    private final String PERMISSION_INTERNET = "android.permission.INTERNET";
     private final String PERMISSION_NETWORK = "android.permission.ACCESS_NETWORK_STATE";
-    private final String PERMISSION_INTERNET = "android.permission.ACCESS_NETWORK_STATE";
 
     private static StatusApi sApi;
+
+    private static Map<String, Boolean> sPermissions = new HashMap<>();
 
     @Inject
     ReachabilityUtils(StatusApi api) {
@@ -37,11 +43,7 @@ public class ReachabilityUtils {
     }
 
     public boolean isConnectedToInternet() {
-        if (RelayrApp.get().checkCallingOrSelfPermission(PERMISSION_NETWORK) == PackageManager.PERMISSION_GRANTED) {
-            Log.e(TAG, "To use ReachabilityUtils add ACCESS_NETWORK_STATE permission to AndroidManifest.");
-
-            return false;
-        }
+        if (!checkPermission(PERMISSION_NETWORK)) return false;
 
         ConnectivityManager manager = (ConnectivityManager) RelayrApp.get().getSystemService(Context
                 .CONNECTIVITY_SERVICE);
@@ -51,11 +53,7 @@ public class ReachabilityUtils {
     }
 
     Observable<Boolean> isPlatformAvailable() {
-        if (RelayrApp.get().checkCallingOrSelfPermission(PERMISSION_INTERNET) == PackageManager.PERMISSION_GRANTED) {
-            Log.e(TAG, "To use ReachabilityUtils add INTERNET permission to AndroidManifest.");
-
-            return emptyResult();
-        }
+        if (!checkPermission(PERMISSION_INTERNET)) return emptyResult();
 
         return sApi.getServerStatus()
                 .subscribeOn(Schedulers.newThread())
@@ -74,5 +72,32 @@ public class ReachabilityUtils {
                 sub.onNext(false);
             }
         });
+    }
+
+    private boolean checkPermission(String permission) {
+        if (sPermissions.get(permission) != null) return sPermissions.get(permission);
+
+        Context appContext = RelayrApp.get().getApplicationContext();
+        try {
+            PackageInfo info = appContext.getPackageManager()
+                    .getPackageInfo(appContext.getPackageName(), PackageManager.GET_PERMISSIONS);
+            if (info.requestedPermissions != null) {
+                for (String p : info.requestedPermissions) {
+                    if (p.equals(permission)) {
+                        sPermissions.put(permission, true);
+                        return true;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        Log.e(TAG, "To be able to use Reacability utils please add " + permission + " permission " +
+                "to AndroidManifest file.");
+
+        sPermissions.put(permission, false);
+
+        return false;
     }
 }

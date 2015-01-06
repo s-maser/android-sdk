@@ -168,7 +168,7 @@ public class LoginActivity extends Activity {
     }
 
     private void showWarning(String warning) {
-        Log.d(TAG, warning);
+        Log.e(TAG, warning);
 
         showView(mInfoView);
         mInfoView.setText(warning);
