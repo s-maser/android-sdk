@@ -1,6 +1,7 @@
 package io.relayr.websocket;
 
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,6 +22,8 @@ import static org.fest.assertions.api.Assertions.assertThat;
 
 @RunWith(RobolectricTestRunner.class)
 public class SslUtilTest {
+
+    private final String CERT_URL = "https://dev-mqtt.relayr.io/relayr.crt";
 
     @Before
     public void init() {
@@ -48,15 +51,22 @@ public class SslUtilTest {
 
     @Test
     public void createCertificateTest() {
-        Certificate certificate = SslUtil.instance().loadCertificate();
+        Certificate certificate = SslUtil.instance().loadCertificate(CERT_URL);
 
         assertThat(certificate).isNotNull();
         assertThat(certificate.getType()).isEqualTo("X.509");
     }
 
     @Test
+    public void createCertificateTest_ShouldFail() {
+        Certificate certificate = SslUtil.instance().loadCertificate(CERT_URL + "fake");
+
+        assertThat(certificate).isNull();
+    }
+
+    @Test
     public void createKeyStoreTest() throws KeyStoreException {
-        Certificate certificate = SslUtil.instance().loadCertificate();
+        Certificate certificate = SslUtil.instance().loadCertificate(CERT_URL);
         KeyStore keyStore = SslUtil.instance().createKeyStore(certificate);
 
         assertThat(keyStore).isNotNull();

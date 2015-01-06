@@ -7,6 +7,7 @@ import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -26,10 +27,10 @@ public class SslUtil {
 
     private static final String PROPERTIES_FILE_NAME = "ssl.properties";
 
-    private static SslUtil sslUtil;
-
-    private final Context context;
     private final Properties properties = new Properties();
+
+    private static SslUtil sslUtil;
+    private static Certificate certificate;
 
     static SslUtil instance() {
         return sslUtil;
@@ -40,7 +41,7 @@ public class SslUtil {
     }
 
     private SslUtil(Context context) {
-        this.context = context;
+        certificate = null;
 
         try {
             properties.load(context.getAssets().open(PROPERTIES_FILE_NAME));
@@ -92,7 +93,7 @@ public class SslUtil {
 
         try {
             tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-            tmf.init(createKeyStore(loadCertificate()));
+            tmf.init(createKeyStore(loadCertificate(properties.getProperty("cert_url"))));
         } catch (NoSuchAlgorithmException | KeyStoreException e) {
             e.printStackTrace();
         }
@@ -100,9 +101,10 @@ public class SslUtil {
         return tmf;
     }
 
-    Certificate loadCertificate() {
-        CertificateFactory cf = null;
+    Certificate loadCertificate(String url) {
+        if(certificate != null) return certificate;
 
+        CertificateFactory cf = null;
         try {
             cf = CertificateFactory.getInstance("X.509");
         } catch (CertificateException e) {
@@ -111,9 +113,8 @@ public class SslUtil {
 
         if (cf == null) return null;
 
-        Certificate certificate = null;
         try {
-            InputStream caInput = new BufferedInputStream(context.getAssets().open("relayr.crt"));
+            InputStream caInput = new URL(url).openStream();
             certificate = cf.generateCertificate(caInput);
         } catch (CertificateException | IOException e) {
             e.printStackTrace();

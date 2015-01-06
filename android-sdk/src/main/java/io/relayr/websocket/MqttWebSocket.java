@@ -33,7 +33,6 @@ class MqttWebSocket extends WebSocket<MqttChannel> {
             @Override
             public void messageArrived(String topic, MqttMessage message) throws Exception {
                 webSocketCallback.successCallback(message);
-                System.err.println("msg: " + message.toString());
             }
 
             @Override
@@ -43,7 +42,7 @@ class MqttWebSocket extends WebSocket<MqttChannel> {
 
         try {
             mClient.connect(SslUtil.instance().getConnectOptions(channel.getCredentials()));
-            webSocketCallback.connectCallback("Connected");
+            webSocketCallback.connectCallback("");
         } catch (MqttException e) {
             webSocketCallback.errorCallback(e);
             e.printStackTrace();

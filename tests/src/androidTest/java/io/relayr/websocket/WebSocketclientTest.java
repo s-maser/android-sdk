@@ -13,7 +13,6 @@ import io.relayr.api.SubscriptionApi;
 import io.relayr.model.MqttChannel;
 import io.relayr.model.TransmitterDevice;
 import rx.Observable;
-import rx.observers.TestSubscriber;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
@@ -47,13 +46,15 @@ public class WebSocketClientTest extends TestEnvironment {
         when(subscriptionApi.subscribeToMqtt(anyString(), anyString())).thenReturn(observable);
 
         socketClient = new WebSocketClient(subscriptionApi, webSocketFactory);
-        socketClient.subscribe(createTransmitterDevice(), new TestSubscriber<Object>() {
-        });
+        socketClient.subscribe(createTransmitterDevice());
 
         await();
 
         verify(webSocketFactory, times(1)).createWebSocket();
         verify(subscriptionApi, times(1)).subscribeToMqtt(USER_ID, APP_NAME);
+
+        await();
+
         verify(webSocket, times(1)).subscribe(any(MqttChannel.class),
                 any(WebSocketCallback.class));
     }
@@ -76,14 +77,12 @@ public class WebSocketClientTest extends TestEnvironment {
 
         verify(subscriptionApi, never()).subscribeToMqtt(USER_ID, APP_NAME);
 
-        socketClient.subscribe(createTransmitterDevice(), new TestSubscriber<Object>() {
-        });
+        socketClient.subscribe(createTransmitterDevice());
 
         await();
         verify(subscriptionApi, times(1)).subscribeToMqtt(USER_ID, APP_NAME);
 
-        socketClient.subscribe(createTransmitterDevice(), new TestSubscriber<Object>() {
-        });
+        socketClient.subscribe(createTransmitterDevice());
 
         await();
         verify(subscriptionApi, times(1)).subscribeToMqtt(USER_ID, APP_NAME);
@@ -93,8 +92,7 @@ public class WebSocketClientTest extends TestEnvironment {
         await();
         verify(subscriptionApi, times(1)).unSubscribe(USER_ID, APP_NAME);
 
-        socketClient.subscribe(createTransmitterDevice(), new TestSubscriber<Object>() {
-        });
+        socketClient.subscribe(createTransmitterDevice());
 
         await();
         verify(subscriptionApi, times(2)).subscribeToMqtt(USER_ID, APP_NAME);

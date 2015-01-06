@@ -23,6 +23,7 @@ class MockWebSocket extends WebSocket<MqttChannel> {
 
     @Override
     public void subscribe(MqttChannel channel, final WebSocketCallback callback) {
+        callback.connectCallback("");
         Observable.from(mMockBackend.getWebSocketReadings())
                 .delay(1, TimeUnit.SECONDS)
                 .map(new Func1<Reading, String>() {
