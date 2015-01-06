@@ -11,7 +11,7 @@ import io.relayr.ble.BleUtils;
 import io.relayr.ble.RelayrBleSdk;
 import io.relayr.storage.DataStorage;
 import io.relayr.util.LoggerUtils;
-import io.relayr.util.ReachAbilityUtils;
+import io.relayr.util.ReachabilityUtils;
 import io.relayr.websocket.WebSocketClient;
 import rx.Observable;
 
@@ -30,7 +30,7 @@ public class RelayrSdk {
     @Inject static RelayrBleSdk mRelayrBleSdk;
 
     @Inject static LoggerUtils mLoggerUtils;
-    @Inject static ReachAbilityUtils mReachabilityUtils;
+    @Inject static ReachabilityUtils mReachabilityUtils;
 
     private static LoginEventListener loginEventListener;
 

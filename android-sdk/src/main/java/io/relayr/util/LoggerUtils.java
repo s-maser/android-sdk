@@ -11,7 +11,6 @@ import io.relayr.api.CloudApi;
 import io.relayr.model.LogEvent;
 import io.relayr.storage.DataStorage;
 import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
@@ -21,13 +20,13 @@ public class LoggerUtils {
     private static final int AUTO_FLUSH = 5;
 
     private static CloudApi sApi;
-    private static ReachAbilityUtils sReachUtils;
+    private static ReachabilityUtils sReachUtils;
 
     private static ConcurrentLinkedQueue<LogEvent> sEvents;
     private static boolean loggingData = false;
 
     @Inject
-    LoggerUtils(CloudApi api, ReachAbilityUtils reachUtils) {
+    LoggerUtils(CloudApi api, ReachabilityUtils reachUtils) {
         sApi = api;
 
         sReachUtils = reachUtils;
@@ -42,12 +41,13 @@ public class LoggerUtils {
         if (sEvents.size() >= AUTO_FLUSH && !loggingData) {
             loggingData = true;
             sReachUtils.isPlatformReachable()
-                    .observeOn(Schedulers.io())
-                    .subscribeOn(Schedulers.io())
+                    .observeOn(Schedulers.newThread())
+                    .subscribeOn(Schedulers.newThread())
                     .subscribe(new Action1<Boolean>() {
                         @Override
                         public void call(Boolean status) {
                             if (status != null && status) logToPlatform(pollElements(AUTO_FLUSH));
+                            else loggingData = false;
                         }
                     });
         }
@@ -58,15 +58,28 @@ public class LoggerUtils {
     public boolean flushLoggedMessages() {
         if (sEvents.isEmpty() || !sReachUtils.isConnectedToInternet()) return false;
 
+        final int eventsToFlush = sEvents.size();
+
         loggingData = true;
 
         sReachUtils.isPlatformAvailable()
-                .observeOn(Schedulers.io())
-                .subscribeOn(Schedulers.io())
-                .subscribe(new Action1<Boolean>() {
+                .observeOn(Schedulers.newThread())
+                .subscribeOn(Schedulers.newThread())
+                .subscribe(new Subscriber<Boolean>() {
                     @Override
-                    public void call(Boolean status) {
-                        if (status) logToPlatform(pollElements(sEvents.size()));
+                    public void onCompleted() {
+                        loggingData = false;
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        loggingData = false;
+                    }
+
+                    @Override
+                    public void onNext(Boolean status) {
+                        if (status) logToPlatform(pollElements(eventsToFlush));
+                        else loggingData = false;
                     }
                 });
 
@@ -74,9 +87,11 @@ public class LoggerUtils {
     }
 
     private void logToPlatform(final List<LogEvent> events) {
+        if(events.isEmpty()) return;
+
         sApi.logMessage(events)
-                .observeOn(Schedulers.io())
-                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.newThread())
+                .subscribeOn(Schedulers.newThread())
                 .subscribe(new Subscriber<Void>() {
                     @Override
                     public void onCompleted() {
@@ -98,12 +113,16 @@ public class LoggerUtils {
     }
 
     private List<LogEvent> pollElements(int total) {
-        List<LogEvent> events = new ArrayList<>(total);
-        for (int i = 0; i < total; i++) {
-            events.add(sEvents.poll());
-        }
+        synchronized (new Object()) {
+            int elements = sEvents.size() < total ? sEvents.size() : total;
 
-        return events;
+            List<LogEvent> events = new ArrayList<>(elements);
+            for (int i = 0; i < elements; i++) {
+                events.add(sEvents.poll());
+            }
+
+            return events;
+        }
     }
 }
 
