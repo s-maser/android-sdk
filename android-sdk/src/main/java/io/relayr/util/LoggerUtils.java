@@ -23,7 +23,7 @@ public class LoggerUtils {
     private static ReachabilityUtils sReachUtils;
 
     private static ConcurrentLinkedQueue<LogEvent> sEvents;
-    private static boolean loggingData = false;
+    private static boolean sLoggingData = false;
 
     @Inject
     LoggerUtils(CloudApi api, ReachabilityUtils reachUtils) {
@@ -38,8 +38,8 @@ public class LoggerUtils {
 
         sEvents.add(new LogEvent(message == null ? "null" : message));
 
-        if (sEvents.size() >= AUTO_FLUSH && !loggingData) {
-            loggingData = true;
+        if (sEvents.size() >= AUTO_FLUSH && !sLoggingData) {
+            sLoggingData = true;
             sReachUtils.isPlatformReachable()
                     .observeOn(Schedulers.newThread())
                     .subscribeOn(Schedulers.newThread())
@@ -47,7 +47,7 @@ public class LoggerUtils {
                         @Override
                         public void call(Boolean status) {
                             if (status != null && status) logToPlatform(pollElements(AUTO_FLUSH));
-                            else loggingData = false;
+                            else sLoggingData = false;
                         }
                     });
         }
@@ -60,39 +60,26 @@ public class LoggerUtils {
 
         final int eventsToFlush = sEvents.size();
 
-        loggingData = true;
+        sLoggingData = true;
 
         sReachUtils.isPlatformAvailable()
                 .observeOn(Schedulers.newThread())
                 .subscribeOn(Schedulers.newThread())
                 .subscribe(new Subscriber<Boolean>() {
-<<<<<<< HEAD
                     @Override
                     public void onCompleted() {
-                        loggingData = false;
+                        sLoggingData = false;
                     }
 
                     @Override
-=======
-                    @Override
-                    public void onCompleted() {
-                        loggingData = false;
-                    }
-
-                    @Override
->>>>>>> 152f9986aadad9bbc04e1afda46aaef511f4a0c9
                     public void onError(Throwable e) {
-                        loggingData = false;
+                        sLoggingData = false;
                     }
 
                     @Override
                     public void onNext(Boolean status) {
-<<<<<<< HEAD
                         if (status) logToPlatform(pollElements(eventsToFlush));
-=======
-                        if (status) logToPlatform(pollElements(sEvents.size()));
->>>>>>> 152f9986aadad9bbc04e1afda46aaef511f4a0c9
-                        else loggingData = false;
+                        else sLoggingData = false;
                     }
                 });
 
@@ -108,19 +95,19 @@ public class LoggerUtils {
                 .subscribe(new Subscriber<Void>() {
                     @Override
                     public void onCompleted() {
-                        loggingData = false;
+                        sLoggingData = false;
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         e.printStackTrace();
                         sEvents.addAll(events);
-                        loggingData = false;
+                        sLoggingData = false;
                     }
 
                     @Override
                     public void onNext(Void aVoid) {
-                        loggingData = false;
+                        sLoggingData = false;
                     }
                 });
     }

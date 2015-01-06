@@ -6,12 +6,14 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.TextView;
 
 import javax.inject.Inject;
 
@@ -28,17 +30,22 @@ import io.relayr.storage.DataStorage;
 import io.relayr.storage.RelayrProperties;
 import rx.Observable;
 import rx.Observer;
+import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 public class LoginActivity extends Activity {
 
+    private static final String TAG = LoginActivity.class.getSimpleName();
+
     @Inject OauthApi mOauthApi;
     @Inject RelayrApi mRelayrApi;
+
     private volatile boolean isObtainingAccessToken;
     private WebView mWebView;
     private View mLoadingView;
+    private TextView mInfoView;
 
     @SuppressLint("setJavaScriptEnabled")
     @Override
@@ -46,13 +53,43 @@ public class LoginActivity extends Activity {
         super.onCreate(savedInstanceState);
         RelayrApp.inject(this);
         View view = View.inflate(this, R.layout.login_layout, null);
+
         mWebView = (WebView) view.findViewById(R.id.web_view);
         mLoadingView = view.findViewById(R.id.loading_spinner);
+        mInfoView = (TextView) view.findViewById(R.id.info_view);
+
         setContentView(view);
+    }
 
-        // Initially hide the loading view.
-        mLoadingView.setVisibility(View.GONE);
+    @Override
+    protected void onResume() {
+        super.onResume();
 
+        if (!RelayrSdk.isConnectedToInternet())
+            showWarning(getString(R.string.network_error));
+        else
+            RelayrSdk.isPlatformReachable()
+                    .subscribeOn(Schedulers.newThread())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Subscriber<Boolean>() {
+                        @Override
+                        public void onCompleted() {
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            showWarning(getString(R.string.platform_error));
+                        }
+
+                        @Override
+                        public void onNext(Boolean status) {
+                            if (status) showLogInScreen();
+                            else showWarning(getString(R.string.platform_error));
+                        }
+                    });
+    }
+
+    private void showLogInScreen() {
         mWebView.setWebChromeClient(new WebChromeClient());
         mWebView.setVerticalScrollBarEnabled(false);
 
@@ -61,20 +98,24 @@ public class LoginActivity extends Activity {
         webSettings.setAppCacheEnabled(true);
         webSettings.setCacheMode(WebSettings.LOAD_DEFAULT);
 
-        mWebView.setVisibility(View.VISIBLE);
+        showView(mWebView);
 
         mWebView.setWebViewClient(new WebViewClient() {
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
-                Log.d("Login_Activity", "WebView opening: " + url);
+                Log.d(TAG, "WebView opening: " + url);
+
                 final String code = getCode(url);
+
                 if (code != null && !isObtainingAccessToken) {
-                    Log.d("Relayr_LoginActivity", "onPageStarted code: " + code);
+                    Log.d(TAG, "onPageStarted code: " + code);
+
                     isObtainingAccessToken = true;
                     mLoadingView.setVisibility(View.VISIBLE);
                     mWebView.setVisibility(View.GONE);
                     mOauthApi
-                            .authoriseUser(code,
+                            .authoriseUser(
+                                    code,
                                     RelayrProperties.get().appId,
                                     RelayrProperties.get().clientSecret,
                                     "authorization_code",
@@ -102,14 +143,16 @@ public class LoginActivity extends Activity {
                                 public void onCompleted() {
                                     finish();
                                     LoginEventListener listener = RelayrSdk.getLoginEventListener();
-                                    if (listener != null) listener.onSuccessUserLogIn();
+                                    if (listener != null)
+                                        listener.onSuccessUserLogIn();
                                 }
 
                                 @Override
                                 public void onError(Throwable e) {
                                     finish();
                                     LoginEventListener listener = RelayrSdk.getLoginEventListener();
-                                    if (listener != null) listener.onErrorLogin(e);
+                                    if (listener != null)
+                                        listener.onErrorLogin(e);
                                 }
 
                                 @Override
@@ -120,7 +163,30 @@ public class LoginActivity extends Activity {
                 }
             }
         });
+
         mWebView.loadUrl(getLoginUrl());
+    }
+
+    private void showWarning(String warning) {
+        Log.d(TAG, warning);
+
+        showView(mInfoView);
+        mInfoView.setText(warning);
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                finish();
+            }
+        }, 5000);
+    }
+
+    private void showView(View view) {
+        mLoadingView.setVisibility(View.GONE);
+        mWebView.setVisibility(View.GONE);
+        mInfoView.setVisibility(View.GONE);
+
+        view.setVisibility(View.VISIBLE);
     }
 
     private String getLoginUrl() {
@@ -135,14 +201,13 @@ public class LoginActivity extends Activity {
         return uriBuilder.build().toString();
     }
 
-
     static String getCode(String url) {
         String codeParam = "?code=";
         if (url.contains(RelayrProperties.get().redirectUri) && url.contains(codeParam)) {
             int tokenPosition = url.indexOf(codeParam);
             String code = url.substring(tokenPosition + codeParam.length());
             if (code.contains("&")) code = code.substring(0, code.indexOf("&"));
-            Log.d("Login_Activity", "Access code: " + code);
+            Log.d(TAG, "Access code: " + code);
             return code;
         } else {
             return null;

@@ -113,12 +113,21 @@ public class RelayrSdk {
     }
 
     /**
+     * Checks connection to the Internet.
+     * @return true if connected, false otherwise
+     */
+    public static boolean isConnectedToInternet() {
+        return mReachabilityUtils.isConnectedToInternet();
+    }
+
+    /**
      * Checks relayr platform reachability.
      * @return true if platform is reachable, false otherwise
      */
     public static Observable<Boolean> isPlatformReachable() {
         return mReachabilityUtils.isPlatformReachable();
     }
+
     /**
      * Used as an access point to the class {@link WebSocketClient}
      * @return the handler of the WebSocket client

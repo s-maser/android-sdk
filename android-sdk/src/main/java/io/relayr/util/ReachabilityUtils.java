@@ -1,8 +1,10 @@
 package io.relayr.util;
 
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.util.Log;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -18,6 +20,10 @@ import rx.schedulers.Schedulers;
 @Singleton
 public class ReachabilityUtils {
 
+    private final String TAG = ReachabilityUtils.class.getSimpleName();
+    private final String PERMISSION_NETWORK = "android.permission.ACCESS_NETWORK_STATE";
+    private final String PERMISSION_INTERNET = "android.permission.ACCESS_NETWORK_STATE";
+
     private static StatusApi sApi;
 
     @Inject
@@ -30,7 +36,13 @@ public class ReachabilityUtils {
         else return isPlatformAvailable();
     }
 
-    boolean isConnectedToInternet() {
+    public boolean isConnectedToInternet() {
+        if (RelayrApp.get().checkCallingOrSelfPermission(PERMISSION_NETWORK) == PackageManager.PERMISSION_GRANTED) {
+            Log.e(TAG, "To use ReachabilityUtils add ACCESS_NETWORK_STATE permission to AndroidManifest.");
+
+            return false;
+        }
+
         ConnectivityManager manager = (ConnectivityManager) RelayrApp.get().getSystemService(Context
                 .CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = manager.getActiveNetworkInfo();
@@ -39,6 +51,12 @@ public class ReachabilityUtils {
     }
 
     Observable<Boolean> isPlatformAvailable() {
+        if (RelayrApp.get().checkCallingOrSelfPermission(PERMISSION_INTERNET) == PackageManager.PERMISSION_GRANTED) {
+            Log.e(TAG, "To use ReachabilityUtils add INTERNET permission to AndroidManifest.");
+
+            return emptyResult();
+        }
+
         return sApi.getServerStatus()
                 .subscribeOn(Schedulers.newThread())
                 .map(new Func1<Status, Boolean>() {
