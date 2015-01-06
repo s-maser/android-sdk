@@ -66,19 +66,32 @@ public class LoggerUtils {
                 .observeOn(Schedulers.newThread())
                 .subscribeOn(Schedulers.newThread())
                 .subscribe(new Subscriber<Boolean>() {
+<<<<<<< HEAD
                     @Override
                     public void onCompleted() {
                         loggingData = false;
                     }
 
                     @Override
+=======
+                    @Override
+                    public void onCompleted() {
+                        loggingData = false;
+                    }
+
+                    @Override
+>>>>>>> 152f9986aadad9bbc04e1afda46aaef511f4a0c9
                     public void onError(Throwable e) {
                         loggingData = false;
                     }
 
                     @Override
                     public void onNext(Boolean status) {
+<<<<<<< HEAD
                         if (status) logToPlatform(pollElements(eventsToFlush));
+=======
+                        if (status) logToPlatform(pollElements(sEvents.size()));
+>>>>>>> 152f9986aadad9bbc04e1afda46aaef511f4a0c9
                         else loggingData = false;
                     }
                 });
