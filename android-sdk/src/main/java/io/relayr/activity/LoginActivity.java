@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.webkit.WebChromeClient;
@@ -28,6 +27,7 @@ import io.relayr.model.OauthToken;
 import io.relayr.model.User;
 import io.relayr.storage.DataStorage;
 import io.relayr.storage.RelayrProperties;
+import io.relayr.util.ReachabilityUtils;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscriber;
@@ -65,28 +65,44 @@ public class LoginActivity extends Activity {
     protected void onResume() {
         super.onResume();
 
-        if (!RelayrSdk.isConnectedToInternet())
+        showView(mLoadingView);
+
+        if (!RelayrSdk.isPermissionGranted(ReachabilityUtils.PERMISSION_INTERNET)) {
+            showWarning(String.format(getString(R.string.permission_error),
+                    ReachabilityUtils.PERMISSION_INTERNET));
+            return;
+        }
+
+        if (!RelayrSdk.isPermissionGranted(ReachabilityUtils.PERMISSION_NETWORK)) {
+            showWarning(String.format(getString(R.string.permission_error),
+                    ReachabilityUtils.PERMISSION_NETWORK));
+            return;
+        }
+
+        if (!RelayrSdk.isConnectedToInternet()) {
             showWarning(getString(R.string.network_error));
-        else
-            RelayrSdk.isPlatformReachable()
-                    .subscribeOn(Schedulers.newThread())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Subscriber<Boolean>() {
-                        @Override
-                        public void onCompleted() {
-                        }
+            return;
+        }
 
-                        @Override
-                        public void onError(Throwable e) {
-                            showWarning(getString(R.string.platform_error));
-                        }
+        RelayrSdk.isPlatformReachable()
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<Boolean>() {
+                    @Override
+                    public void onCompleted() {
+                    }
 
-                        @Override
-                        public void onNext(Boolean status) {
-                            if (status) showLogInScreen();
-                            else showWarning(getString(R.string.platform_error));
-                        }
-                    });
+                    @Override
+                    public void onError(Throwable e) {
+                        showWarning(getString(R.string.platform_error));
+                    }
+
+                    @Override
+                    public void onNext(Boolean status) {
+                        if (status) showLogInScreen();
+                        else showWarning(getString(R.string.platform_error));
+                    }
+                });
     }
 
     private void showLogInScreen() {
@@ -172,13 +188,6 @@ public class LoginActivity extends Activity {
 
         showView(mInfoView);
         mInfoView.setText(warning);
-
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                finish();
-            }
-        }, 5000);
     }
 
     private void showView(View view) {

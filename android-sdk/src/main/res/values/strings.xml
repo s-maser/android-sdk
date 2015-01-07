@@ -2,7 +2,11 @@
 <resources>
 
     <string name="network_error">Please connect to the Internet before trying to log in.</string>
-    <string name="platform_error">Relayr platform is not available at the moment. Please try again
-        later.</string>
+    <string name="platform_error">Relayr platform is not available at the moment. Please try
+        again later.</string>
+
+    <string name="permission_error">"To be able to use Reacability utils please add %s permission to
+        AndroidManifest file.</string>
+
 
 </resources>

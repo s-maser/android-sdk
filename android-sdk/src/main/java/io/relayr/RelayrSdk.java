@@ -25,10 +25,8 @@ public class RelayrSdk {
 
     @Inject static RelayrApi mRelayrApi;
     @Inject static WebSocketClient mWebSocketClient;
-
     @Inject static BleUtils mBleUtils;
     @Inject static RelayrBleSdk mRelayrBleSdk;
-
     @Inject static LoggerUtils mLoggerUtils;
     @Inject static ReachabilityUtils mReachabilityUtils;
 
@@ -95,7 +93,8 @@ public class RelayrSdk {
 
     /**
      * Logs an event in the relayr platform. In debug mode, the event will be logged in the console
-     * instead. Connection availability and platform reachability are checked automatically when
+     * instead. In production mode messages will be saved locally and logged to platform
+     * in bulks. Connection availability and platform reachability are checked automatically when
      * using this method.
      * @return whether the logging event was performed
      */
@@ -110,6 +109,16 @@ public class RelayrSdk {
      */
     public static boolean flushLoggedMessages() {
         return mLoggerUtils.flushLoggedMessages();
+    }
+
+    /**
+     * Checks if permission is granted by application.
+     * @param permission Use standard AndroidManifest full permission name
+     *                   (e.g. android.permission.INTERNET)
+     * @return true if granted, false otherwise
+     */
+    public static boolean isPermissionGranted(String permission) {
+        return mReachabilityUtils.isPermissionGranted(permission);
     }
 
     /**

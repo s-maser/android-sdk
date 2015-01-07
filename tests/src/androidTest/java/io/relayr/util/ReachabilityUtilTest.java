@@ -116,6 +116,27 @@ public class ReachabilityUtilTest {
         assertThat(reachable).isFalse();
     }
 
+    @Test
+    public void checkPermissionTest() {
+        final String PERMISSION_INTERNET = "android.permission.INTERNET";
+
+        assertThat(utils.isPermissionGranted(PERMISSION_INTERNET)).isTrue();
+    }
+
+    @Test
+    public void checkFaultyPermissionTest() {
+        final String PERMISSION_INTERNET = "";
+
+        assertThat(utils.isPermissionGranted(PERMISSION_INTERNET)).isFalse();
+    }
+
+    @Test
+    public void checkUnExistingPermissionTest() {
+        final String PERMISSION_INTERNET = "android.permission.ACCESS_WIFI_STATE";
+
+        assertThat(utils.isPermissionGranted(PERMISSION_INTERNET)).isFalse();
+    }
+
     public void await() {
         try {
             lock.await(100, TimeUnit.MILLISECONDS);

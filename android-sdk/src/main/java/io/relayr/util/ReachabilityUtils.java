@@ -24,9 +24,10 @@ import rx.schedulers.Schedulers;
 @Singleton
 public class ReachabilityUtils {
 
+    public static final String PERMISSION_INTERNET = "android.permission.INTERNET";
+    public static final String PERMISSION_NETWORK = "android.permission.ACCESS_NETWORK_STATE";
+
     private final String TAG = ReachabilityUtils.class.getSimpleName();
-    private final String PERMISSION_INTERNET = "android.permission.INTERNET";
-    private final String PERMISSION_NETWORK = "android.permission.ACCESS_NETWORK_STATE";
 
     private static StatusApi sApi;
 
@@ -43,7 +44,7 @@ public class ReachabilityUtils {
     }
 
     public boolean isConnectedToInternet() {
-        if (!checkPermission(PERMISSION_NETWORK)) return false;
+        if (!isPermissionGranted(PERMISSION_NETWORK)) return false;
 
         ConnectivityManager manager = (ConnectivityManager) RelayrApp.get().getSystemService(Context
                 .CONNECTIVITY_SERVICE);
@@ -52,29 +53,9 @@ public class ReachabilityUtils {
         return networkInfo != null && networkInfo.isConnected();
     }
 
-    Observable<Boolean> isPlatformAvailable() {
-        if (!checkPermission(PERMISSION_INTERNET)) return emptyResult();
+    public boolean isPermissionGranted(String permission) {
+        if (permission == null || permission.isEmpty()) return false;
 
-        return sApi.getServerStatus()
-                .subscribeOn(Schedulers.newThread())
-                .map(new Func1<Status, Boolean>() {
-                    @Override
-                    public Boolean call(Status status) {
-                        return status != null && status.getDatabase().equals("ok");
-                    }
-                });
-    }
-
-    private Observable<Boolean> emptyResult() {
-        return Observable.create(new Observable.OnSubscribe<Boolean>() {
-            @Override
-            public void call(Subscriber<? super Boolean> sub) {
-                sub.onNext(false);
-            }
-        });
-    }
-
-    private boolean checkPermission(String permission) {
         if (sPermissions.get(permission) != null) return sPermissions.get(permission);
 
         Context appContext = RelayrApp.get().getApplicationContext();
@@ -99,5 +80,27 @@ public class ReachabilityUtils {
         sPermissions.put(permission, false);
 
         return false;
+    }
+
+    Observable<Boolean> isPlatformAvailable() {
+        if (!isPermissionGranted(PERMISSION_INTERNET)) return emptyResult();
+
+        return sApi.getServerStatus()
+                .subscribeOn(Schedulers.newThread())
+                .map(new Func1<Status, Boolean>() {
+                    @Override
+                    public Boolean call(Status status) {
+                        return status != null && status.getDatabase().equals("ok");
+                    }
+                });
+    }
+
+    private Observable<Boolean> emptyResult() {
+        return Observable.create(new Observable.OnSubscribe<Boolean>() {
+            @Override
+            public void call(Subscriber<? super Boolean> sub) {
+                sub.onNext(false);
+            }
+        });
     }
 }
