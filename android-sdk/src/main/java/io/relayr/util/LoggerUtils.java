@@ -25,6 +25,8 @@ public class LoggerUtils {
     private static ConcurrentLinkedQueue<LogEvent> sEvents;
     private static boolean sLoggingData = false;
 
+    private final Object eventLock = new Object();
+
     @Inject
     LoggerUtils(CloudApi api, ReachabilityUtils reachUtils) {
         sApi = api;
@@ -113,7 +115,7 @@ public class LoggerUtils {
     }
 
     private List<LogEvent> pollElements(int total) {
-        synchronized (new Object()) {
+        synchronized (eventLock) {
             int elements = sEvents.size() < total ? sEvents.size() : total;
 
             List<LogEvent> events = new ArrayList<>(elements);
