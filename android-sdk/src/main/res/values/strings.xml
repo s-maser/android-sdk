@@ -6,4 +6,7 @@
 
     <string name="permission_error">"To be able to use RelayrSdk please add %s to AndroidManifest.</string>
 
+    <string name="retry">Retry</string>
+    <string name="cancel">Cancel</string>
+
 </resources>

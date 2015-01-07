@@ -45,7 +45,8 @@ public class LoginActivity extends Activity {
     private volatile boolean isObtainingAccessToken;
     private WebView mWebView;
     private View mLoadingView;
-    private TextView mInfoView;
+    private TextView mInfoText;
+    private View mInfoView;
 
     @SuppressLint("setJavaScriptEnabled")
     @Override
@@ -56,7 +57,8 @@ public class LoginActivity extends Activity {
 
         mWebView = (WebView) view.findViewById(R.id.web_view);
         mLoadingView = view.findViewById(R.id.loading_spinner);
-        mInfoView = (TextView) view.findViewById(R.id.info_view);
+        mInfoText = (TextView) view.findViewById(R.id.info_text);
+        mInfoView = view.findViewById(R.id.info_view);
 
         setContentView(view);
     }
@@ -65,6 +67,20 @@ public class LoginActivity extends Activity {
     protected void onResume() {
         super.onResume();
 
+        checkConditions();
+    }
+
+    /* Called from xml */
+    public void onRetryClick(View view) {
+        checkConditions();
+    }
+
+    /* Called from xml */
+    public void onCancelClick(View view) {
+        finish();
+    }
+
+    private void checkConditions() {
         showView(mLoadingView);
 
         if (!RelayrSdk.isPermissionGranted(ReachabilityUtils.PERMISSION_INTERNET)) {
@@ -187,7 +203,7 @@ public class LoginActivity extends Activity {
         Log.e(TAG, warning);
 
         showView(mInfoView);
-        mInfoView.setText(warning);
+        mInfoText.setText(warning);
     }
 
     private void showView(View view) {
