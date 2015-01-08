@@ -1,5 +1,7 @@
 package io.relayr.util;
 
+import android.util.Log;
+
 import java.util.List;
 
 import javax.inject.Inject;
@@ -15,11 +17,14 @@ import rx.schedulers.Schedulers;
 @Singleton
 public class LoggerUtils {
 
+    private final String TAG = LoggerUtils.class.getSimpleName();
+
     private static final int AUTO_FLUSH = 5;
 
     private static CloudApi sApi;
     private static ReachabilityUtils sReachUtils;
 
+    //Used for synchronizing flushing and auto sending logged messages
     private static boolean sLoggingData = false;
 
     @Inject
@@ -53,9 +58,12 @@ public class LoggerUtils {
     }
 
     public boolean flushLoggedMessages() {
-        if (LogStorage.isEmpty() || !sReachUtils.isConnectedToInternet()) return false;
-
         sLoggingData = true;
+
+        if (LogStorage.isEmpty() || !sReachUtils.isConnectedToInternet()) {
+            sLoggingData = false;
+            return false;
+        }
 
         sReachUtils.isPlatformAvailable()
                 .observeOn(Schedulers.newThread())
@@ -68,6 +76,7 @@ public class LoggerUtils {
 
                     @Override
                     public void onError(Throwable e) {
+                        if (e.getMessage() != null) Log.w(TAG, e.getMessage());
                         sLoggingData = false;
                     }
 
@@ -81,7 +90,7 @@ public class LoggerUtils {
         return true;
     }
 
-    private void logToPlatform(final List<LogEvent> events) {
+    private void logToPlatform(List<LogEvent> events) {
         if (events.isEmpty()) return;
 
         sApi.logMessage(events)
@@ -95,7 +104,7 @@ public class LoggerUtils {
 
                     @Override
                     public void onError(Throwable e) {
-                        e.printStackTrace();
+                        if (e.getMessage() != null) Log.w(TAG, e.getMessage());
                         sLoggingData = false;
                     }
 
