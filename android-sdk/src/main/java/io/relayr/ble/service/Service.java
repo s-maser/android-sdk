@@ -41,7 +41,7 @@ class Service {
                     @Override
                     public Observable<? extends BluetoothGatt> call(BluetoothGatt gatt) {
                         if (unBond && gatt.getDevice().getBondState() != BOND_NONE) {
-                            // It was previously bonded on direct connection and needs to remove 
+                            // It was previously bonded on direct connection and needs to remove
                             // bond and update the services to work properly
                             DeviceCompatibilityUtils.removeBond(gatt.getDevice());
                             return receiver.connect(bluetoothDevice)

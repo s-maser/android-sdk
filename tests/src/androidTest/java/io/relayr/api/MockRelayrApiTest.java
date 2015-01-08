@@ -29,7 +29,6 @@ import io.relayr.model.User;
 import rx.Observer;
 
 import static org.fest.assertions.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 @RunWith(RobolectricTestRunner.class)
@@ -91,7 +90,7 @@ public class MockRelayrApiTest {
 
         verify(subscriber).onNext(userCaptor.capture());
 
-        assertThat(userCaptor.getValue().getName()).isEqualTo("Hugo Doménech Juárez");
+        assertThat(userCaptor.getValue().email).isEqualTo("hugo@email.com");
     }
 
     @Test

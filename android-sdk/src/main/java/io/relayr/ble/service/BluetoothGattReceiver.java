@@ -63,8 +63,6 @@ public class BluetoothGattReceiver extends BluetoothGattCallback {
             DeviceCompatibilityUtils.refresh(gatt);
             gatt.getDevice().connectGatt(RelayrApp.get(), false, receiver);
         }
-        
-        
     }
 
     @Override

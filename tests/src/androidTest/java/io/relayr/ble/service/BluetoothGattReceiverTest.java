@@ -77,7 +77,7 @@ public class BluetoothGattReceiverTest {
                 .flatMap(new Func1<BluetoothGatt, Observable<BluetoothGatt>>() {
                     @Override
                     public Observable<BluetoothGatt> call(BluetoothGatt gatt) {
-                        return receiver.discoverDevices(gatt);
+                        return receiver.discoverServices(gatt);
                     }
                 })
                 .subscribe(observer);
