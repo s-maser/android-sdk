@@ -92,7 +92,7 @@ public class BluetoothGattReceiver extends BluetoothGattCallback {
         }*/
     }
 
-    public Observable<BluetoothGatt> discoverDevices(final BluetoothGatt bluetoothGatt) {
+    public Observable<BluetoothGatt> discoverServices(final BluetoothGatt bluetoothGatt) {
         return Observable.create(new Observable.OnSubscribe<BluetoothGatt>() {
             @Override
             public void call(Subscriber<? super BluetoothGatt> subscriber) {
