@@ -116,9 +116,6 @@ public class BluetoothGattReceiver extends BluetoothGattCallback {
             @Override
             public void call(Subscriber<? super BluetoothGatt> subscriber) {
                 mDisconnectedSubscriber = subscriber;
-                if (bluetoothGatt.getDevice().getBondState() != BluetoothDevice.BOND_NONE) {
-                    DeviceCompatibilityUtils.removeBond(bluetoothGatt.getDevice());
-                }
                 bluetoothGatt.disconnect();
             }
         });
