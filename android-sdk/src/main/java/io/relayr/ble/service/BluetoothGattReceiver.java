@@ -27,6 +27,8 @@ import static android.bluetooth.BluetoothGattDescriptor.DISABLE_NOTIFICATION_VAL
 import static android.bluetooth.BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE;
 import static android.bluetooth.BluetoothProfile.STATE_CONNECTED;
 import static android.bluetooth.BluetoothProfile.STATE_DISCONNECTED;
+import static io.relayr.ble.service.BluetoothGattReceiver.UndocumentedBleStuff.fixUndocumentedBleStatusProblem;
+import static io.relayr.ble.service.BluetoothGattReceiver.UndocumentedBleStuff.isUndocumentedErrorStatus;
 
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class BluetoothGattReceiver extends BluetoothGattCallback {
@@ -50,12 +52,26 @@ public class BluetoothGattReceiver extends BluetoothGattCallback {
             }
         });
     }
+    
+    static class UndocumentedBleStuff {
+        
+        static boolean isUndocumentedErrorStatus(int status) {
+            return status == 133 || status == 137;
+        }
+        
+        static void fixUndocumentedBleStatusProblem(BluetoothGatt gatt, BluetoothGattReceiver receiver) {
+            DeviceCompatibilityUtils.refresh(gatt);
+            gatt.getDevice().connectGatt(RelayrApp.get(), false, receiver);
+        }
+        
+        
+    }
 
     @Override
     public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
-        if (status == 133) {
-            DeviceCompatibilityUtils.refresh(gatt);
-            gatt.getDevice().connectGatt(RelayrApp.get(), false, BluetoothGattReceiver.this);
+        if (isUndocumentedErrorStatus(status)) {
+            fixUndocumentedBleStatusProblem(gatt, this);
+            return;
         }
         if (status != GATT_SUCCESS) return;
 
@@ -138,6 +154,8 @@ public class BluetoothGattReceiver extends BluetoothGattCallback {
                         }
                     })
                     .subscribe();
+        } else if (isUndocumentedErrorStatus(status)) {
+            fixUndocumentedBleStatusProblem(gatt, this);
         } else {
             subscriber.onError(new WriteCharacteristicException(characteristic, status));
         }
@@ -172,6 +190,8 @@ public class BluetoothGattReceiver extends BluetoothGattCallback {
                         }
                     })
                     .subscribe();
+        } else if (isUndocumentedErrorStatus(status)) {
+            fixUndocumentedBleStatusProblem(gatt, this);
         } else {
             subscriber.onError(new WriteCharacteristicException(characteristic, status));
         }
