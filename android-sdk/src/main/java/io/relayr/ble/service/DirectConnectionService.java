@@ -41,7 +41,7 @@ public class DirectConnectionService extends BaseService {
     public static Observable<DirectConnectionService> connect(final BleDevice bleDevice,
                                                               final BluetoothDevice device) {
         final BluetoothGattReceiver receiver = new BluetoothGattReceiver();
-        return doConnect(device, receiver)
+        return doConnect(device, receiver, false)
                 .flatMap(new BondingReceiver.BondingFunc1())
                 .map(new Func1<BluetoothGatt, DirectConnectionService>() {
                     @Override

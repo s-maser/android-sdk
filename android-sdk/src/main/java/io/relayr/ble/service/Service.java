@@ -9,10 +9,12 @@ import android.os.Build;
 import java.util.UUID;
 
 import io.relayr.ble.BleUtils;
+import io.relayr.ble.DeviceCompatibilityUtils;
 import io.relayr.ble.service.error.CharacteristicNotFoundException;
 import rx.Observable;
 import rx.functions.Func1;
 
+import static android.bluetooth.BluetoothDevice.*;
 import static android.bluetooth.BluetoothGattCharacteristic.FORMAT_SFLOAT;
 import static android.bluetooth.BluetoothGattCharacteristic.FORMAT_UINT16;
 import static io.relayr.ble.service.Utils.getCharacteristicInServices;
@@ -31,13 +33,31 @@ class Service {
     }
 
     protected static Observable<? extends BluetoothGatt> doConnect(
-            final BluetoothDevice bluetoothDevice, final BluetoothGattReceiver receiver) {
+            final BluetoothDevice bluetoothDevice, final BluetoothGattReceiver receiver, 
+            final boolean unBond) {
         return receiver
                 .connect(bluetoothDevice)
-                .flatMap(new Func1<BluetoothGatt, Observable<BluetoothGatt>>() {
+                .flatMap(new Func1<BluetoothGatt, Observable<? extends BluetoothGatt>>() {
                     @Override
-                    public Observable<BluetoothGatt> call(BluetoothGatt gatt) {
-                        return receiver.discoverDevices(gatt);
+                    public Observable<? extends BluetoothGatt> call(BluetoothGatt gatt) {
+                        if (unBond && gatt.getDevice().getBondState() != BOND_NONE) {
+                            // It was previously bonded on direct connection and needs to remove 
+                            // bond and update the services to work properly
+                            DeviceCompatibilityUtils.removeBond(gatt.getDevice());
+                            return receiver.connect(bluetoothDevice)
+                                    .flatMap(new Func1<BluetoothGatt, Observable<? extends BluetoothGatt>>() {
+                                        @Override
+                                        public Observable<? extends BluetoothGatt> call(BluetoothGatt gatt) {
+                                            DeviceCompatibilityUtils.refresh(gatt);
+                                            return receiver.discoverServices(gatt);
+                                        }
+                                    });
+                        } else if (!unBond && gatt.getDevice().getBondState() == BOND_NONE) {
+                            // It was previously connected to master module and has not updated the services.
+                            DeviceCompatibilityUtils.refresh(gatt);
+                            return doConnect(bluetoothDevice, receiver, true);
+                        }
+                        return receiver.discoverServices(gatt);
                     }
                 });
     }
