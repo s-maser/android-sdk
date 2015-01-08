@@ -106,7 +106,7 @@ public class BaseServiceTest {
                 .subscribe(observer);
 
         receiver.onConnectionStateChange(gatt, GATT_SUCCESS, STATE_CONNECTED);
-        //receiver.onServicesDiscovered(gatt, GATT_SUCCESS);
+        receiver.onServicesDiscovered(gatt, GATT_SUCCESS);
 
         verify(observer, times(1)).onNext(any(BaseService.class));
     }
