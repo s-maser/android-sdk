@@ -1,7 +1,7 @@
 package io.relayr.util;
 
+import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -37,11 +37,12 @@ public class LoggerUtilTest {
     private LoggerUtils logUtils;
 
     @Before
-    public void init() {
+    public void before() {
         lock = new CountDownLatch(1);
 
         DataStorage.saveUserToken("ut");
         MockitoAnnotations.initMocks(this);
+        RelayrSdk.initInMockMode(Robolectric.application.getApplicationContext());
 
         Observable<Boolean> mockObservable = Observable.create(new Observable.OnSubscribe<Boolean>() {
             @Override
@@ -64,6 +65,12 @@ public class LoggerUtilTest {
         logUtils = new LoggerUtils(cloudApi, reachUtils);
     }
 
+    @After
+    public void after() {
+        LogStorage.STORAGE.edit().clear().apply();
+        LogStorage.LogPropsStorage.clear();
+    }
+
     @Test
     public void logMessage_RelayrSdkTest() {
         RelayrSdk.initInMockMode(Robolectric.application.getApplicationContext());
@@ -73,7 +80,7 @@ public class LoggerUtilTest {
     @Test
     public void logNullMessage_RelayrSdkTest() {
         RelayrSdk.initInMockMode(Robolectric.application.getApplicationContext());
-        assertThat(RelayrSdk.logMessage(null)).isTrue();
+        assertThat(RelayrSdk.logMessage(null)).isFalse();
     }
 
     @Test

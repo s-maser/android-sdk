@@ -1,8 +1,6 @@
 package io.relayr.util;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -22,25 +20,22 @@ public class LoggerUtils {
     private static CloudApi sApi;
     private static ReachabilityUtils sReachUtils;
 
-    private static ConcurrentLinkedQueue<LogEvent> sEvents;
     private static boolean sLoggingData = false;
-
-    private final Object eventLock = new Object();
 
     @Inject
     LoggerUtils(CloudApi api, ReachabilityUtils reachUtils) {
         sApi = api;
-
         sReachUtils = reachUtils;
-        sEvents = new ConcurrentLinkedQueue<>();
+
+        LogStorage.init(AUTO_FLUSH);
     }
 
     public boolean logMessage(String message) {
-        if (DataStorage.getUserToken().isEmpty()) return false;
+        if (DataStorage.getUserToken().isEmpty() || message == null) return false;
 
-        sEvents.add(new LogEvent(message == null ? "null" : message));
+        boolean ready = LogStorage.saveMessage(new LogEvent(message));
 
-        if (sEvents.size() >= AUTO_FLUSH && !sLoggingData) {
+        if (ready && !sLoggingData) {
             sLoggingData = true;
             sReachUtils.isPlatformReachable()
                     .observeOn(Schedulers.newThread())
@@ -48,7 +43,7 @@ public class LoggerUtils {
                     .subscribe(new Action1<Boolean>() {
                         @Override
                         public void call(Boolean status) {
-                            if (status != null && status) logToPlatform(pollElements(AUTO_FLUSH));
+                            if (status != null && status) logToPlatform(LogStorage.loadMessages());
                             else sLoggingData = false;
                         }
                     });
@@ -58,9 +53,7 @@ public class LoggerUtils {
     }
 
     public boolean flushLoggedMessages() {
-        if (sEvents.isEmpty() || !sReachUtils.isConnectedToInternet()) return false;
-
-        final int eventsToFlush = sEvents.size();
+        if (LogStorage.isEmpty() || !sReachUtils.isConnectedToInternet()) return false;
 
         sLoggingData = true;
 
@@ -80,7 +73,7 @@ public class LoggerUtils {
 
                     @Override
                     public void onNext(Boolean status) {
-                        if (status) logToPlatform(pollElements(eventsToFlush));
+                        if (status) logToPlatform(LogStorage.loadAllMessages());
                         else sLoggingData = false;
                     }
                 });
@@ -89,7 +82,7 @@ public class LoggerUtils {
     }
 
     private void logToPlatform(final List<LogEvent> events) {
-        if(events.isEmpty()) return;
+        if (events.isEmpty()) return;
 
         sApi.logMessage(events)
                 .observeOn(Schedulers.newThread())
@@ -103,7 +96,6 @@ public class LoggerUtils {
                     @Override
                     public void onError(Throwable e) {
                         e.printStackTrace();
-                        sEvents.addAll(events);
                         sLoggingData = false;
                     }
 
@@ -112,19 +104,6 @@ public class LoggerUtils {
                         sLoggingData = false;
                     }
                 });
-    }
-
-    private List<LogEvent> pollElements(int total) {
-        synchronized (eventLock) {
-            int elements = sEvents.size() < total ? sEvents.size() : total;
-
-            List<LogEvent> events = new ArrayList<>(elements);
-            for (int i = 0; i < elements; i++) {
-                events.add(sEvents.poll());
-            }
-
-            return events;
-        }
     }
 }
 
