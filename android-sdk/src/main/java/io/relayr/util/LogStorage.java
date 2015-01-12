@@ -33,6 +33,8 @@ public class LogStorage {
 
         sTotal = LogPropsStorage.getTotal();
         sHead = LogPropsStorage.getHead();
+
+        refreshOldMessages();
     }
 
     static boolean isEmpty() {
@@ -112,6 +114,20 @@ public class LogStorage {
         }
     }
 
+    public synchronized static List<LogEvent> loadOldMessages() {
+        synchronized (sHead) {
+            String currentHead = STORAGE.getString("" + sHead, null);
+
+            if (currentHead != null && currentHead.equals(LogPropsStorage.getLastMessage()))
+                if (LogPropsStorage.getLastMessageRepeat() >= 3) {
+                    LogPropsStorage.saveLastMsgRepeat(0);
+                    return loadAllMessages();
+                }
+        }
+
+        return new ArrayList<>();
+    }
+
     private static Long moveHead() {
         synchronized (sHead) {
             synchronized (sTotal) {
@@ -126,32 +142,63 @@ public class LogStorage {
         }
     }
 
+    private static void refreshOldMessages() {
+        String currentHead = STORAGE.getString("" + sHead, null);
+        String lastMessage = LogPropsStorage.getLastMessage();
+
+        if (lastMessage != null && currentHead != null && lastMessage.equals(currentHead))
+            LogPropsStorage.saveLastMsgRepeat(LogPropsStorage.getLastMessageRepeat() + 1);
+        else {
+            LogPropsStorage.saveLastMsgRepeat(1);
+            LogPropsStorage.saveLastMessage(currentHead);
+        }
+    }
+
     static class LogPropsStorage {
         private static final String PROPS_FILE = "io.relayr.log.properties.storage";
-        private static final String PROPS_FILE_HEAD = "io.relayr.log.properties.storage.head";
-        private static final String PROPS_FILE_TOTAL = "io.relayr.log.properties.storage.total";
+        private static final String PROPS_HEAD = "io.relayr.log.properties.storage.head";
+        private static final String PROPS_TOTAL = "io.relayr.log.properties.storage.total";
+
+        private static final String PROPS_LAST_MSG = "io.relayr.log.properties.storage.last";
+        private static final String PROPS_LAST_REPEAT = "io.relayr.log.properties.storage.last.repeat";
 
         private static final SharedPreferences PROPS =
                 RelayrApp.get().getSharedPreferences(PROPS_FILE, Context.MODE_PRIVATE);
 
         static Long getTotal() {
-            Long total = PROPS.getLong(PROPS_FILE_TOTAL, -1);
+            Long total = PROPS.getLong(PROPS_TOTAL, -1);
             if (total == -1) total = 0L;
             return total;
         }
 
         static Long getHead() {
-            Long head = PROPS.getLong(PROPS_FILE_HEAD, -1);
+            Long head = PROPS.getLong(PROPS_HEAD, -1);
             if (head == -1) head = 0L;
             return head;
         }
 
+        static String getLastMessage() {
+            return PROPS.getString(PROPS_LAST_MSG, null);
+        }
+
+        static int getLastMessageRepeat() {
+            return PROPS.getInt(PROPS_LAST_REPEAT, 0);
+        }
+
+        static void saveLastMessage(String head) {
+            PROPS.edit().putString(PROPS_LAST_MSG, head).apply();
+        }
+
+        static void saveLastMsgRepeat(int repeat) {
+            PROPS.edit().putInt(PROPS_LAST_REPEAT, repeat).apply();
+        }
+
         static void saveHead(Long head) {
-            PROPS.edit().putLong(PROPS_FILE_HEAD, head).apply();
+            PROPS.edit().putLong(PROPS_HEAD, head).apply();
         }
 
         static void saveTotal(Long total) {
-            PROPS.edit().putLong(PROPS_FILE_TOTAL, total).apply();
+            PROPS.edit().putLong(PROPS_TOTAL, total).apply();
         }
 
         static void clear() {

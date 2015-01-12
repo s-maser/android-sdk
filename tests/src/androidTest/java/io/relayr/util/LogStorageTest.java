@@ -185,6 +185,41 @@ public class LogStorageTest {
         assertThat(LogStorage.STORAGE.getString("50", null)).isNull();
     }
 
+    @Test
+    public void loadOldMessages_shouldFlush() {
+        LogStorage.saveMessage(new LogEvent("1"));
+
+        assertThat(LogStorage.isEmpty()).isFalse();
+
+        LogStorage.init(3);
+        LogStorage.init(3);
+
+        assertThat(LogStorage.isEmpty()).isFalse();
+
+        LogStorage.init(3);
+        assertThat(LogStorage.loadOldMessages().isEmpty()).isFalse();
+        assertThat(LogStorage.isEmpty()).isTrue();
+    }
+
+    @Test
+    public void loadOldMessages_shouldNOTFlush() {
+        LogStorage.saveMessage(new LogEvent("1"));
+
+        assertThat(LogStorage.isEmpty()).isFalse();
+
+        LogStorage.init(3);
+        LogStorage.init(3);
+
+        LogStorage.saveMessage(new LogEvent("2"));
+
+        assertThat(LogStorage.isEmpty()).isFalse();
+
+        LogStorage.init(3);
+
+        assertThat(LogStorage.loadOldMessages().isEmpty()).isTrue();
+        assertThat(LogStorage.isEmpty()).isFalse();
+    }
+
     private void await() {
         try {
             lock.await(200, TimeUnit.MILLISECONDS);
@@ -192,5 +227,4 @@ public class LogStorageTest {
             e.printStackTrace();
         }
     }
-
 }

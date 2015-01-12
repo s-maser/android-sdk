@@ -33,6 +33,9 @@ public class LoggerUtils {
         sReachUtils = reachUtils;
 
         LogStorage.init(AUTO_FLUSH);
+
+        List<LogEvent> logEvents = LogStorage.loadOldMessages();
+        if (!logEvents.isEmpty()) flushLoggedMessages();
     }
 
     public boolean logMessage(String message) {
