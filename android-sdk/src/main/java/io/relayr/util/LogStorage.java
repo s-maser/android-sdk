@@ -114,18 +114,18 @@ public class LogStorage {
         }
     }
 
-    public synchronized static List<LogEvent> loadOldMessages() {
+    public synchronized static boolean oldMessagesExist() {
         synchronized (sHead) {
             String currentHead = STORAGE.getString("" + sHead, null);
 
             if (currentHead != null && currentHead.equals(LogPropsStorage.getLastMessage()))
                 if (LogPropsStorage.getLastMessageRepeat() >= 3) {
                     LogPropsStorage.saveLastMsgRepeat(0);
-                    return loadAllMessages();
+                    return true;
                 }
         }
 
-        return new ArrayList<>();
+        return false;
     }
 
     private static Long moveHead() {

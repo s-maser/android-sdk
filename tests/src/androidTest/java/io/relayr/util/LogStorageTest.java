@@ -197,8 +197,7 @@ public class LogStorageTest {
         assertThat(LogStorage.isEmpty()).isFalse();
 
         LogStorage.init(3);
-        assertThat(LogStorage.loadOldMessages().isEmpty()).isFalse();
-        assertThat(LogStorage.isEmpty()).isTrue();
+        assertThat(LogStorage.oldMessagesExist()).isTrue();
     }
 
     @Test
@@ -216,8 +215,7 @@ public class LogStorageTest {
 
         LogStorage.init(3);
 
-        assertThat(LogStorage.loadOldMessages().isEmpty()).isTrue();
-        assertThat(LogStorage.isEmpty()).isFalse();
+        assertThat(LogStorage.oldMessagesExist()).isFalse();
     }
 
     private void await() {

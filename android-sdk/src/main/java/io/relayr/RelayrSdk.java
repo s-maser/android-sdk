@@ -94,8 +94,8 @@ public class RelayrSdk {
     /**
      * Logs an event in the relayr platform. In debug mode, the event will be logged in the console
      * instead. In production mode messages will be saved locally and logged to platform
-     * in bulks. Connection availability and platform reachability are checked automatically when
-     * using this method.
+     * in bulks after every 5 logged messages. Connection availability and platform reachability
+     * are checked automatically when using this method.
      * @return whether the logging event was performed
      */
     public static boolean logMessage(String message) {

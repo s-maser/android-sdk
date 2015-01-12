@@ -111,6 +111,19 @@ public class LoggerUtilTest {
         verifyWithDelay(1);
     }
 
+    @Test
+    public void flushOldMessages() {
+        logUtils.logMessage("1");
+        verifyWithDelay(0);
+
+        logUtils = new LoggerUtils(cloudApi, reachUtils);
+        verifyWithDelay(0);
+        logUtils = new LoggerUtils(cloudApi, reachUtils);
+        verifyWithDelay(0);
+        logUtils = new LoggerUtils(cloudApi, reachUtils);
+        verifyWithDelay(1);
+    }
+
     private void verifyWithDelay(int times) {
         try {
             lock.await(200, TimeUnit.MILLISECONDS);

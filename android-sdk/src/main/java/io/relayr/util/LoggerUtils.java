@@ -34,8 +34,7 @@ public class LoggerUtils {
 
         LogStorage.init(AUTO_FLUSH);
 
-        List<LogEvent> logEvents = LogStorage.loadOldMessages();
-        if (!logEvents.isEmpty()) flushLoggedMessages();
+        if (LogStorage.oldMessagesExist()) flushLoggedMessages();
     }
 
     public boolean logMessage(String message) {
