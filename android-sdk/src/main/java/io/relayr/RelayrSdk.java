@@ -9,8 +9,8 @@ import io.relayr.activity.LoginActivity;
 import io.relayr.api.RelayrApi;
 import io.relayr.ble.BleUtils;
 import io.relayr.ble.RelayrBleSdk;
+import io.relayr.log.Logger;
 import io.relayr.storage.DataStorage;
-import io.relayr.util.LoggerUtils;
 import io.relayr.util.ReachabilityUtils;
 import io.relayr.websocket.WebSocketClient;
 import rx.Observable;
@@ -30,7 +30,7 @@ public class RelayrSdk {
     @Inject static WebSocketClient mWebSocketClient;
     @Inject static BleUtils mBleUtils;
     @Inject static RelayrBleSdk mRelayrBleSdk;
-    @Inject static LoggerUtils mLoggerUtils;
+    @Inject static Logger mLoggerUtils;
     @Inject static ReachabilityUtils mReachabilityUtils;
 
     private static LoginEventListener loginEventListener;

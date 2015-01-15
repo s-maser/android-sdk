@@ -25,7 +25,7 @@ import rx.schedulers.Schedulers;
 @Singleton
 public class ReachabilityUtils {
 
-    private final String TAG = ReachabilityUtils.class.getSimpleName();
+    private static final String TAG = "io.relayr.util.ReachabilityUtils";
 
     private StatusApi mApi;
     private Map<String, Boolean> sPermissions;
@@ -80,7 +80,7 @@ public class ReachabilityUtils {
         return false;
     }
 
-    Observable<Boolean> isPlatformAvailable() {
+    public Observable<Boolean> isPlatformAvailable() {
         if (!isPermissionGranted(RelayrSdk.PERMISSION_INTERNET)) return emptyResult();
 
         return mApi.getServerStatus()

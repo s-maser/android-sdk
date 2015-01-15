@@ -1,4 +1,4 @@
-package io.relayr.util;
+package io.relayr.log;
 
 import org.junit.After;
 import org.junit.Before;
@@ -15,7 +15,9 @@ import java.util.concurrent.TimeUnit;
 import io.relayr.RelayrSdk;
 import io.relayr.api.CloudApi;
 import io.relayr.api.StatusApi;
-import io.relayr.storage.DataStorage;
+import io.relayr.log.*;
+import io.relayr.storage.*;
+import io.relayr.util.ReachabilityUtils;
 import rx.Observable;
 import rx.Subscriber;
 
@@ -27,14 +29,14 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricTestRunner.class)
-public class LoggerUtilTest {
+public class LoggerTest {
 
     @Mock private CloudApi cloudApi;
     @Mock private StatusApi statusApi;
     @Mock private ReachabilityUtils reachUtils;
 
     private CountDownLatch lock;
-    private LoggerUtils logUtils;
+    private Logger logUtils;
 
     @Before
     public void before() {
@@ -62,13 +64,13 @@ public class LoggerUtilTest {
             }
         }));
 
-        logUtils = new LoggerUtils(cloudApi, reachUtils);
+        logUtils = new Logger(cloudApi, reachUtils);
     }
 
     @After
     public void after() {
-        LogStorage.STORAGE.edit().clear().apply();
-        LogStorage.LogPropsStorage.clear();
+        LoggerStorage.clear();
+        LoggerStorage.LoggerPropertiesStorage.clear();
     }
 
     @Test
@@ -116,11 +118,11 @@ public class LoggerUtilTest {
         logUtils.logMessage("1");
         verifyWithDelay(0);
 
-        logUtils = new LoggerUtils(cloudApi, reachUtils);
+        logUtils = new Logger(cloudApi, reachUtils);
         verifyWithDelay(0);
-        logUtils = new LoggerUtils(cloudApi, reachUtils);
+        logUtils = new Logger(cloudApi, reachUtils);
         verifyWithDelay(0);
-        logUtils = new LoggerUtils(cloudApi, reachUtils);
+        logUtils = new Logger(cloudApi, reachUtils);
         verifyWithDelay(1);
     }
 
