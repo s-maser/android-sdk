@@ -83,15 +83,15 @@ public class LoginActivity extends Activity {
     private void checkConditions() {
         showView(mLoadingView);
 
-        if (!RelayrSdk.isPermissionGranted(ReachabilityUtils.PERMISSION_INTERNET)) {
+        if (!RelayrSdk.isPermissionGrantedToAccessInternet()) {
             showWarning(String.format(getString(R.string.permission_error),
-                    ReachabilityUtils.PERMISSION_INTERNET));
+                    RelayrSdk.PERMISSION_INTERNET));
             return;
         }
 
-        if (!RelayrSdk.isPermissionGranted(ReachabilityUtils.PERMISSION_NETWORK)) {
+        if (!RelayrSdk.isPermissionGrantedToAccessTheNetwork()) {
             showWarning(String.format(getString(R.string.permission_error),
-                    ReachabilityUtils.PERMISSION_NETWORK));
+                    RelayrSdk.PERMISSION_NETWORK));
             return;
         }
 

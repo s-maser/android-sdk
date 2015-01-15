@@ -18,19 +18,18 @@ import rx.schedulers.Schedulers;
 public class LoggerUtils {
 
     private final String TAG = LoggerUtils.class.getSimpleName();
+    private final int AUTO_FLUSH = 5;
 
-    private static final int AUTO_FLUSH = 5;
-
-    private static CloudApi sApi;
-    private static ReachabilityUtils sReachUtils;
+    private  CloudApi mApi;
+    private  ReachabilityUtils mReachUtils;
 
     //Used for synchronizing flushing and auto sending logged messages
-    private static boolean sLoggingData = false;
+    private volatile boolean loggingData = false;
 
     @Inject
     LoggerUtils(CloudApi api, ReachabilityUtils reachUtils) {
-        sApi = api;
-        sReachUtils = reachUtils;
+        mApi = api;
+        mReachUtils = reachUtils;
 
         LogStorage.init(AUTO_FLUSH);
 
@@ -42,50 +41,48 @@ public class LoggerUtils {
 
         boolean ready = LogStorage.saveMessage(new LogEvent(message));
 
-        if (ready && !sLoggingData) {
-            sLoggingData = true;
-            sReachUtils.isPlatformReachable()
+        if (ready && !loggingData) {
+            loggingData = true;
+            mReachUtils.isPlatformReachable()
                     .observeOn(Schedulers.newThread())
-                    .subscribeOn(Schedulers.newThread())
                     .subscribe(new Action1<Boolean>() {
                         @Override
                         public void call(Boolean status) {
                             if (status != null && status) logToPlatform(LogStorage.loadMessages());
-                            else sLoggingData = false;
+                            else loggingData = false;
                         }
                     });
         }
 
-        return sReachUtils.isConnectedToInternet();
+        return mReachUtils.isConnectedToInternet();
     }
 
     public boolean flushLoggedMessages() {
-        sLoggingData = true;
+        loggingData = true;
 
-        if (LogStorage.isEmpty() || !sReachUtils.isConnectedToInternet()) {
-            sLoggingData = false;
+        if (LogStorage.isEmpty() || !mReachUtils.isConnectedToInternet()) {
+            loggingData = false;
             return false;
         }
 
-        sReachUtils.isPlatformAvailable()
+        mReachUtils.isPlatformAvailable()
                 .observeOn(Schedulers.newThread())
-                .subscribeOn(Schedulers.newThread())
                 .subscribe(new Subscriber<Boolean>() {
                     @Override
                     public void onCompleted() {
-                        sLoggingData = false;
+                        loggingData = false;
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         if (e.getMessage() != null) Log.w(TAG, e.getMessage());
-                        sLoggingData = false;
+                        loggingData = false;
                     }
 
                     @Override
                     public void onNext(Boolean status) {
                         if (status) logToPlatform(LogStorage.loadAllMessages());
-                        else sLoggingData = false;
+                        else loggingData = false;
                     }
                 });
 
@@ -95,24 +92,23 @@ public class LoggerUtils {
     private void logToPlatform(List<LogEvent> events) {
         if (events.isEmpty()) return;
 
-        sApi.logMessage(events)
+        mApi.logMessage(events)
                 .observeOn(Schedulers.newThread())
-                .subscribeOn(Schedulers.newThread())
                 .subscribe(new Subscriber<Void>() {
                     @Override
                     public void onCompleted() {
-                        sLoggingData = false;
+                        loggingData = false;
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         if (e.getMessage() != null) Log.w(TAG, e.getMessage());
-                        sLoggingData = false;
+                        loggingData = false;
                     }
 
                     @Override
                     public void onNext(Void aVoid) {
-                        sLoggingData = false;
+                        loggingData = false;
                     }
                 });
     }

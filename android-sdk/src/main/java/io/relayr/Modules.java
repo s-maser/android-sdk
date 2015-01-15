@@ -5,6 +5,7 @@ import android.content.Context;
 import io.relayr.activity.UiModule;
 import io.relayr.api.ApiModule;
 import io.relayr.ble.BleModule;
+import io.relayr.util.UtilModule;
 import io.relayr.websocket.WebSocketModule;
 
 final class Modules {
@@ -14,6 +15,7 @@ final class Modules {
                 new ApiModule(app),
                 new WebSocketModule(),
                 new BleModule(app),
+                new UtilModule(),
                 new UiModule()
         };
     }

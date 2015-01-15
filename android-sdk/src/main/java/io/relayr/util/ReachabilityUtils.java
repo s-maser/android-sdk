@@ -14,6 +14,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import io.relayr.RelayrApp;
+import io.relayr.RelayrSdk;
 import io.relayr.api.StatusApi;
 import io.relayr.model.Status;
 import rx.Observable;
@@ -24,18 +25,15 @@ import rx.schedulers.Schedulers;
 @Singleton
 public class ReachabilityUtils {
 
-    public static final String PERMISSION_INTERNET = "android.permission.INTERNET";
-    public static final String PERMISSION_NETWORK = "android.permission.ACCESS_NETWORK_STATE";
-
     private final String TAG = ReachabilityUtils.class.getSimpleName();
 
-    private static StatusApi sApi;
-
-    private static Map<String, Boolean> sPermissions = new HashMap<>();
+    private StatusApi mApi;
+    private Map<String, Boolean> sPermissions;
 
     @Inject
     ReachabilityUtils(StatusApi api) {
-        sApi = api;
+        mApi = api;
+        sPermissions = new HashMap<>();
     }
 
     public Observable<Boolean> isPlatformReachable() {
@@ -44,7 +42,7 @@ public class ReachabilityUtils {
     }
 
     public boolean isConnectedToInternet() {
-        if (!isPermissionGranted(PERMISSION_NETWORK)) return false;
+        if (!isPermissionGranted(RelayrSdk.PERMISSION_NETWORK)) return false;
 
         ConnectivityManager manager = (ConnectivityManager) RelayrApp.get().getSystemService(Context
                 .CONNECTIVITY_SERVICE);
@@ -83,9 +81,9 @@ public class ReachabilityUtils {
     }
 
     Observable<Boolean> isPlatformAvailable() {
-        if (!isPermissionGranted(PERMISSION_INTERNET)) return emptyResult();
+        if (!isPermissionGranted(RelayrSdk.PERMISSION_INTERNET)) return emptyResult();
 
-        return sApi.getServerStatus()
+        return mApi.getServerStatus()
                 .subscribeOn(Schedulers.newThread())
                 .map(new Func1<Status, Boolean>() {
                     @Override

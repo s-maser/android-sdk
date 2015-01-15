@@ -23,6 +23,9 @@ import rx.Observable;
  */
 public class RelayrSdk {
 
+    public static final String PERMISSION_INTERNET = "android.permission.INTERNET";
+    public static final String PERMISSION_NETWORK = "android.permission.ACCESS_NETWORK_STATE";
+
     @Inject static RelayrApi mRelayrApi;
     @Inject static WebSocketClient mWebSocketClient;
     @Inject static BleUtils mBleUtils;
@@ -112,13 +115,19 @@ public class RelayrSdk {
     }
 
     /**
-     * Checks if permission is granted by application.
-     * @param permission Use standard AndroidManifest full permission name
-     *                   (e.g. android.permission.INTERNET)
+     * Checks if android.permission.INTERNET permission is granted by application.
      * @return true if granted, false otherwise
      */
-    public static boolean isPermissionGranted(String permission) {
-        return mReachabilityUtils.isPermissionGranted(permission);
+    public static boolean isPermissionGrantedToAccessInternet() {
+        return mReachabilityUtils.isPermissionGranted(PERMISSION_INTERNET);
+    }
+
+    /**
+     * Checks if android.permission.ACCESS_NETWORK_STATE permission is granted by application.
+     * @return true if granted, false otherwise
+     */
+    public static boolean isPermissionGrantedToAccessTheNetwork() {
+        return mReachabilityUtils.isPermissionGranted(PERMISSION_NETWORK);
     }
 
     /**
