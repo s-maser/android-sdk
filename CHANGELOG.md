@@ -1,6 +1,16 @@
 Change Log
 ==========
 
+Version 0.0.6 *(2015-01-16)*
+----------------------------
+ * Stabilise BLE (Bluetooth Low Energy) connections.
+ * Batching for logging and ability to flush all logged messages still in memory.
+ * Reachability calls to see whether our platform is accessible.
+ * Reachability and permissions check in LoginActivity to avoid friction with new users when 
+   forgetting permissions.
+ * Breaking changes: WebSocketClient returns an Observable instead of a Subscription on subscribe 
+   to values.
+
 Version 0.0.5 *(2014-11-27)*
 ----------------------------
  * Provide the ability to log events / messages
