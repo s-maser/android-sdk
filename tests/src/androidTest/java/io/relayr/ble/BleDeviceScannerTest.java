@@ -56,6 +56,6 @@ public class BleDeviceScannerTest {
         bleDevicesScanner.setScanPeriod(20);
         bleDevicesScanner.start();
         Assert.assertTrue(bleDevicesScanner.isScanning());
-        Mockito.verify(adapter, Mockito.timeout(50).atLeastOnce()).stopLeScan(bleDevicesScanner);
+        Mockito.verify(adapter, Mockito.timeout(200).atLeastOnce()).stopLeScan(bleDevicesScanner);
     }
 }
