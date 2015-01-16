@@ -10,7 +10,6 @@ import io.relayr.ble.service.DirectConnectionService;
 import io.relayr.model.TransmitterDevice;
 import rx.Observable;
 import rx.Subscriber;
-import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
 
@@ -19,7 +18,7 @@ import static java.util.Arrays.asList;
 public class BleSocketClient implements SocketClient {
 
     @Override
-    public Subscription subscribe(TransmitterDevice device, final Subscriber<Object> subscriber) {
+    public Observable<Object> subscribe(TransmitterDevice device) {
         return RelayrSdk.getRelayrBleSdk()
                 .scan(new HashSet<>(asList(BleDeviceType.from(device.getModel()))))
                 .flatMap(new Func1<List<BleDevice>, Observable<BleDevice>>() {
@@ -50,23 +49,14 @@ public class BleSocketClient implements SocketClient {
                         return service.getReadings();
                     }
                 })
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<String>() {
+                .map(new Func1<String, Object>() {
                     @Override
-                    public void onCompleted() {
-
+                    public Object call(String s) {
+                        return s;
                     }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        subscriber.onError(e);
-                    }
-
-                    @Override
-                    public void onNext(String o) {
-                        subscriber.onNext(o);
-                    }
-                });
+                })
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .observeOn(AndroidSchedulers.mainThread());
     }
 
     @Override

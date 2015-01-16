@@ -111,7 +111,7 @@ public class MockRelayrApi implements RelayrApi {
     }
 
     @Override
-    public Observable<Void> removeBookmark(String userId, String deviceId) {
+    public Observable<Void> deleteBookmark(String userId, String deviceId) {
         return Observable.create(new Observable.OnSubscribe<Void>() {
             @Override
             public void call(Subscriber<? super Void> subscriber) {
@@ -143,7 +143,7 @@ public class MockRelayrApi implements RelayrApi {
     }
 
     @Override
-    public Observable<Void> deleteWunderbar(String transmitterId) {
+    public Observable<Void> deleteWunderBar(String transmitterId) {
         return Observable.create(new Observable.OnSubscribe<Void>() {
             @Override
             public void call(Subscriber<? super Void> subscriber) {
