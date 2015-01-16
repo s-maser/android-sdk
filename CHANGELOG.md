@@ -1,6 +1,10 @@
 Change Log
 ==========
 
+Version 0.0.7 *(2015-01-16)*
+----------------------------
+ * Fix mock method isPlatformReachable in reachability utils to be always reachable.
+
 Version 0.0.6 *(2015-01-16)*
 ----------------------------
  * Stabilise BLE (Bluetooth Low Energy) connections.
