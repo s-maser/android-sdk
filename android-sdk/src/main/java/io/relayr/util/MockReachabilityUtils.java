@@ -18,7 +18,7 @@ public class MockReachabilityUtils extends ReachabilityUtils {
         return Observable.create(new Observable.OnSubscribe<Boolean>() {
             @Override
             public void call(Subscriber<? super Boolean> sub) {
-                sub.onNext(false);
+                sub.onNext(true);
             }
         });
     }
