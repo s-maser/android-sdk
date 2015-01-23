@@ -1,6 +1,10 @@
 package io.relayr.model;
 
 import java.io.Serializable;
+import java.util.List;
+
+import io.relayr.RelayrSdk;
+import rx.Observable;
 
 /** The Transmitter class is a representation of the Transmitter entity.
  * A Transmitter is another basic entity on the relayr platform.
@@ -28,4 +32,18 @@ public class Transmitter implements Serializable {
     public String getName() {
         return name;
     }
+
+    /**
+     * @return an {@link rx.Observable} with a list of devices that belong to the specific
+     * transmitter. */
+    public Observable<List<TransmitterDevice>> getDevices() {
+        return RelayrSdk.getRelayrApi().getTransmitterDevices(id);
+    }
+
+    /** Updates a transmitter.
+     * @return an {@link rx.Observable} to the updated Transmitter */
+    public Observable<Transmitter> updateTransmitter() {
+        return RelayrSdk.getRelayrApi().updateTransmitter(this, id);
+    }
+
 }

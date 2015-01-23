@@ -4,6 +4,9 @@ import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
+import io.relayr.RelayrSdk;
+import rx.Observable;
+
 /** The Device class is a representation of the device entity.
  * A device entity is any external entity capable of gathering measurements
  * or one which is capable of receiving information from the relayr platform.
@@ -84,4 +87,34 @@ public class Device implements Serializable {
                 ", isPublic=" + isPublic +
                 '}';
     }
+
+    public TransmitterDevice toTransmitterDevice() {
+        return new TransmitterDevice(id, secret, owner, name, model.getId());
+    }
+
+    /**
+     * Subscribes an app to a device channel. Enables the app to receive data from the device.
+     */
+    public Observable<Object> subscribeToCloudReadings() {
+        return RelayrSdk.getWebSocketClient().subscribe(toTransmitterDevice());
+    }
+
+    /**
+     * Unsubscribes an app from a device channel, stopping and cleaning up the connection.
+     */
+    public void unSubscribeToCloudReadings() {
+        RelayrSdk.getWebSocketClient().unSubscribe(id);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return o instanceof TransmitterDevice && ((TransmitterDevice) o).id.equals(id) ||
+                o instanceof Device && ((Device) o).id.equals(id);
+    }
+
+    /** Sends a command to the this device */
+    public Observable<Void> sendCommand(String commandName, Command command) {
+        return RelayrSdk.getRelayrApi().sendCommand(id, commandName, command);
+    }
+    
 }
