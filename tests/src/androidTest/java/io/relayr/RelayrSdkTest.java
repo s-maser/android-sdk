@@ -7,7 +7,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 
@@ -38,16 +37,10 @@ public class RelayrSdkTest {
         Assert.assertFalse(RelayrSdk.isBleSupported());
     }
 
-    @Test public void getLoginEventListener_shouldBeNullIfNotTriedToLogIn() {
-        Activity activity = Robolectric.buildActivity(Activity.class).create().get();
-        RelayrSdk.logIn(activity, null);
-        Assert.assertNull(RelayrSdk.getLoginEventListener());
-    }
-
     @Test public void getLoginEventListener_shouldNotBeNullIfTriedToLogIn() {
         Activity activity = Robolectric.buildActivity(Activity.class).create().get();
-        RelayrSdk.logIn(activity, Mockito.mock(LoginEventListener.class));
-        Assert.assertNotNull(RelayrSdk.getLoginEventListener());
+        RelayrSdk.logIn(activity).subscribe();
+        Assert.assertNotNull(RelayrSdk.getLoginSubscriber());
     }
 
     @Test public void getVersion_shouldBeVersionName() {

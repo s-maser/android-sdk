@@ -10,10 +10,13 @@ import io.relayr.api.RelayrApi;
 import io.relayr.ble.BleUtils;
 import io.relayr.ble.RelayrBleSdk;
 import io.relayr.log.Logger;
+import io.relayr.model.User;
 import io.relayr.storage.DataStorage;
 import io.relayr.util.ReachabilityUtils;
 import io.relayr.websocket.WebSocketClient;
 import rx.Observable;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
 
 /**
  * The RelayrSdk Class serves as the access point to all endpoints in the Android SDK.
@@ -33,7 +36,7 @@ public class RelayrSdk {
     @Inject static Logger mLoggerUtils;
     @Inject static ReachabilityUtils mReachabilityUtils;
 
-    private static LoginEventListener loginEventListener;
+    private static Subscriber<? super User> mLoginSubscriber;
 
     /**
      * Initializes the SDK. Should be called when the {@link android.app.Application} is
@@ -76,9 +79,18 @@ public class RelayrSdk {
     }
 
     /** Launches the login activity. Enables the user to log in to the relayr platform. */
-	public static void logIn(Activity currentActivity, LoginEventListener listener) {
-        loginEventListener = listener;
+	public static Observable<User> logIn(Activity currentActivity) {
+        Observable.OnSubscribe<User> onSubscribe = new Observable.OnSubscribe<User>() {
+            @Override
+            public void call(Subscriber<? super User> subscriber) {
+                mLoginSubscriber = subscriber;
+            }
+        };
         LoginActivity.startActivity(currentActivity);
+        return Observable
+                .create(onSubscribe)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(AndroidSchedulers.mainThread());
 	}
 
     /**
@@ -201,7 +213,7 @@ public class RelayrSdk {
      * Listener indicating a 'login' event
      * @return the listener or null if doesn't exist
      */
-	public static LoginEventListener getLoginEventListener() {
-		return loginEventListener;
+	public static Subscriber<? super User> getLoginSubscriber() {
+		return mLoginSubscriber;
 	}
 }

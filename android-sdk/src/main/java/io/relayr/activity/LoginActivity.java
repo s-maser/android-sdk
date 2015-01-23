@@ -16,7 +16,6 @@ import android.widget.TextView;
 
 import javax.inject.Inject;
 
-import io.relayr.LoginEventListener;
 import io.relayr.R;
 import io.relayr.RelayrApp;
 import io.relayr.RelayrSdk;
@@ -27,7 +26,6 @@ import io.relayr.model.OauthToken;
 import io.relayr.model.User;
 import io.relayr.storage.DataStorage;
 import io.relayr.storage.RelayrProperties;
-import io.relayr.util.ReachabilityUtils;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscriber;
@@ -173,23 +171,21 @@ public class LoginActivity extends Activity {
 
                                 @Override
                                 public void onCompleted() {
-                                    finish();
-                                    LoginEventListener listener = RelayrSdk.getLoginEventListener();
-                                    if (listener != null)
-                                        listener.onSuccessUserLogIn();
+
                                 }
 
                                 @Override
                                 public void onError(Throwable e) {
                                     finish();
-                                    LoginEventListener listener = RelayrSdk.getLoginEventListener();
-                                    if (listener != null)
-                                        listener.onErrorLogin(e);
+                                    Subscriber<? super User> subscriber = RelayrSdk.getLoginSubscriber();
+                                    if (subscriber != null) subscriber.onError(e);
                                 }
 
                                 @Override
                                 public void onNext(User user) {
-
+                                    finish();
+                                    Subscriber<? super User> subscriber = RelayrSdk.getLoginSubscriber();
+                                    if (subscriber != null) subscriber.onNext(user);
                                 }
                             });
                 }
