@@ -3,20 +3,19 @@ package io.relayr.model;
 /** A reading is the information gathered by the device. */
 public class Reading {
 
-    public float hum;
-    public float temp;
-    public float snd_level;
-    public float light;
-    public float prox;
-    public LightColorProx.Color clr;
-    public AccelGyroscope.Accelerometer accel;
-    public AccelGyroscope.Gyroscope gyro;
+    public String id;
+    public long received;
+    public long recorded;
+    public Readings readings = new Readings();
 
-    /*public final String timestamp;
-    public final Map<String, String> value;
-
-    public Reading(String timestamp, Map<String, String> value) {
-        this.timestamp = timestamp;
-        this.value = value;
-    }*/
+    public class Readings {
+        public float humidity;
+        public float temperature;
+        public float noiseLevel;
+        public float luminosity;
+        public float proximity;
+        public LightColorProx.Color color;
+        public AccelGyroscope.Accelerometer acceleration;
+        public AccelGyroscope.Gyroscope angularSpeed;
+    }
 }

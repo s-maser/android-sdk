@@ -76,7 +76,7 @@ public class MockBackendTest extends TestEnvironment {
 
         assertThat(webSocketReadings).isNotNull();
         assertThat(webSocketReadings.length).isEqualTo(8);
-        assertThat(webSocketReadings[0].accel.y).isEqualTo(13.02f);
+        assertThat(webSocketReadings[0].readings.acceleration.y).isEqualTo(13.02f);
     }
 
     @Test

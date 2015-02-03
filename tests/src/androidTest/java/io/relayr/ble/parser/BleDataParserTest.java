@@ -26,88 +26,88 @@ public class BleDataParserTest {
     @Test public void getFormattedValue_for_WunderbarLIGHT_lightValue() {
         String val = BleDataParser.getFormattedValue(WunderbarLIGHT, lightData);
         Reading reading = new Gson().fromJson(val, Reading.class);
-        Assert.assertEquals(2557, reading.light, 5);
+        Assert.assertEquals(2557, reading.readings.luminosity, 5);
     }
 
     @Test public void getFormattedValue_for_WunderbarLIGHT_redColor() {
         String val = BleDataParser.getFormattedValue(WunderbarLIGHT, lightData);
         Reading reading = new Gson().fromJson(val, Reading.class);
-        Assert.assertEquals(1571, reading.clr.r);
+        Assert.assertEquals(1571, reading.readings.color.red);
     }
 
     @Test public void getFormattedValue_for_WunderbarLIGHT_blueColor() {
         String val = BleDataParser.getFormattedValue(WunderbarLIGHT, lightData);
         Reading reading = new Gson().fromJson(val, Reading.class);
-        Assert.assertEquals(22, reading.clr.b);
+        Assert.assertEquals(22, reading.readings.color.blue);
     }
 
     @Test public void getFormattedValue_for_WunderbarLIGHT_greenColor() {
         String val = BleDataParser.getFormattedValue(WunderbarLIGHT, lightData);
         Reading reading = new Gson().fromJson(val, Reading.class);
-        Assert.assertEquals(1304, reading.clr.g);
+        Assert.assertEquals(1304, reading.readings.color.green);
     }
 
     @Test public void getFormattedValue_for_WunderbarLIGHT_proximityValue() {
         String val = BleDataParser.getFormattedValue(WunderbarLIGHT, lightData);
         Reading reading = new Gson().fromJson(val, Reading.class);
-        Assert.assertEquals(2047, reading.prox, 5);
+        Assert.assertEquals(2047, reading.readings.proximity, 5);
     }
 
     @Test public void getFormattedValue_for_WunderbarGyro_xGyroscopeValue() {
         String val = BleDataParser.getFormattedValue(WunderbarGYRO, gyroData);
         Reading reading = new Gson().fromJson(val, Reading.class);
-        Assert.assertEquals(-4.62, reading.gyro.x, 5);
+        Assert.assertEquals(-4.62, reading.readings.angularSpeed.x, 5);
     }
 
     @Test public void getFormattedValue_for_WunderbarGyro_yGyroscopeValue() {
         String val = BleDataParser.getFormattedValue(WunderbarGYRO, gyroData);
         Reading reading = new Gson().fromJson(val, Reading.class);
-        Assert.assertEquals(12.32, reading.gyro.y, 5);
+        Assert.assertEquals(12.32, reading.readings.angularSpeed.y, 5);
     }
 
     @Test public void getFormattedValue_for_WunderbarGyro_zGyroscopeValue() {
         String val = BleDataParser.getFormattedValue(WunderbarGYRO, gyroData);
         Reading reading = new Gson().fromJson(val, Reading.class);
-        Assert.assertEquals(-0.25, reading.gyro.z, 5);
+        Assert.assertEquals(-0.25, reading.readings.angularSpeed.z, 5);
     }
 
     @Test public void getFormattedValue_for_WunderbarGyro_xAccelerometerValue() {
         String val = BleDataParser.getFormattedValue(WunderbarGYRO, gyroData);
         Reading reading = new Gson().fromJson(val, Reading.class);
-        Assert.assertEquals(0.15, reading.accel.x, 5);
+        Assert.assertEquals(0.15, reading.readings.acceleration.x, 5);
     }
 
     @Test public void getFormattedValue_for_WunderbarGyro_yAccelerometerValue() {
         String val = BleDataParser.getFormattedValue(WunderbarGYRO, gyroData);
         Reading reading = new Gson().fromJson(val, Reading.class);
-        Assert.assertEquals(0.01, reading.accel.y, 5);
+        Assert.assertEquals(0.01, reading.readings.acceleration.y, 5);
     }
 
     @Test public void getFormattedValue_for_WunderbarGyro_zAccelerometerValue() {
         String val = BleDataParser.getFormattedValue(WunderbarGYRO, gyroData);
         Reading reading = new Gson().fromJson(val, Reading.class);
-        Assert.assertEquals(0.95, reading.accel.z, 5);
+        Assert.assertEquals(0.95, reading.readings.acceleration.z, 5);
     }
 
     @Test public void getFormattedValue_for_WunderbarMIC() {
         byte[] data = new byte[] { 0x59, 0x00 };
         String val = BleDataParser.getFormattedValue(WunderbarMIC, data);
         Reading reading = new Gson().fromJson(val, Reading.class);
-        Assert.assertEquals(89, reading.snd_level, 5);
+        Assert.assertEquals(89, reading.readings.noiseLevel, 5);
     }
 
     @Test public void getFormattedValue_for_WunderbarHTU_temperatureValue() {
         byte[] data = new byte[] { (byte) 0xA6, 0x09, 0x79, 0x15 };
         String val = BleDataParser.getFormattedValue(WunderbarHTU, data);
         Reading reading = new Gson().fromJson(val, Reading.class);
-        Assert.assertEquals(24.70000, reading.temp, 5);
+        Assert.assertEquals(24.70000, reading.readings.temperature, 5);
     }
 
     @Test public void getFormattedValue_for_WunderbarHTU_humidityValue() {
         byte[] data = new byte[] { (byte) 0xA6, 0x09, 0x79, 0x15 };
         String val = BleDataParser.getFormattedValue(WunderbarHTU, data);
         Reading reading = new Gson().fromJson(val, Reading.class);
-        Assert.assertEquals(54.97000, reading.hum, 5);
+        Assert.assertEquals(54.97000, reading.readings.humidity, 5);
     }
 
 }

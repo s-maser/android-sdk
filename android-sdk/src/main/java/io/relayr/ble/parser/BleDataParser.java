@@ -30,12 +30,12 @@ public abstract class BleDataParser {
 
 	private static String getLIGHTSensorData(byte[] value) {
         Reading reading = new Reading();
-        reading.clr = new LightColorProx.Color();
-        reading.light = (byteToUnsignedInt(value[1]) << 8) | byteToUnsignedInt(value[0]);
-        reading.clr.r = (byteToUnsignedInt(value[3]) << 8) | byteToUnsignedInt(value[2]);
-        reading.clr.g = (byteToUnsignedInt(value[5]) << 8) | byteToUnsignedInt(value[4]);
-        reading.clr.b = (byteToUnsignedInt(value[7]) << 8) | byteToUnsignedInt(value[6]);
-        reading.prox = (byteToUnsignedInt(value[9]) << 8) | byteToUnsignedInt(value[8]);
+        reading.readings.color = new LightColorProx.Color();
+        reading.readings.luminosity = (byteToUnsignedInt(value[1]) << 8) | byteToUnsignedInt(value[0]);
+        reading.readings.color.red = (byteToUnsignedInt(value[3]) << 8) | byteToUnsignedInt (value[2]);
+        reading.readings.color.green = (byteToUnsignedInt(value[5]) << 8) | byteToUnsignedInt(value[4]);
+        reading.readings.color.blue = (byteToUnsignedInt(value[7]) << 8) | byteToUnsignedInt(value[6]);
+        reading.readings.proximity = (byteToUnsignedInt(value[9]) << 8) | byteToUnsignedInt(value[8]);
 		return new Gson().toJson(reading);
 	}
 
@@ -58,15 +58,15 @@ public abstract class BleDataParser {
         int accelerationY = (byteToUnsignedInt(value[15]) << 8) | byteToUnsignedInt(value[14]);
         int accelerationZ = (byteToUnsignedInt(value[17]) << 8) | byteToUnsignedInt(value[16]);
 
-        reading.accel = new AccelGyroscope.Accelerometer();
-        reading.accel.x = (float) accelerationX / 100.0f;
-        reading.accel.y = (float) accelerationY / 100.0f;
-        reading.accel.z = (float) accelerationZ / 100.0f;
+        reading.readings.acceleration = new AccelGyroscope.Accelerometer();
+        reading.readings.acceleration.x = (float) accelerationX / 100.0f;
+        reading.readings.acceleration.y = (float) accelerationY / 100.0f;
+        reading.readings.acceleration.z = (float) accelerationZ / 100.0f;
 
-        reading.gyro = new AccelGyroscope.Gyroscope();
-        reading.gyro.x = (float) gyroscopeX / 100.0f;
-        reading.gyro.y = (float) gyroscopeY / 100.0f;
-        reading.gyro.z = (float) gyroscopeZ / 100.0f;
+        reading.readings.angularSpeed = new AccelGyroscope.Gyroscope();
+        reading.readings.angularSpeed.x = (float) gyroscopeX / 100.0f;
+        reading.readings.angularSpeed.y = (float) gyroscopeY / 100.0f;
+        reading.readings.angularSpeed.z = (float) gyroscopeZ / 100.0f;
         return new Gson().toJson(reading);
 	}
 
@@ -75,14 +75,14 @@ public abstract class BleDataParser {
         int temperature = (byteToUnsignedInt(value[1]) << 8) | byteToUnsignedInt(value[0]);
         int humidity = (byteToUnsignedInt(value[3]) << 8) | byteToUnsignedInt(value[2]);
 
-        reading.hum = (float) humidity / 100.0f;
-        reading.temp = (float) temperature / 100.0f;
+        reading.readings.humidity = (float) humidity / 100.0f;
+        reading.readings.temperature = (float) temperature / 100.0f;
         return new Gson().toJson(reading);
 	}
 
 	private static String getMICSensorData(byte[] value) {
         Reading reading = new Reading();
-        reading.snd_level = (byteToUnsignedInt(value[1]) << 8) | byteToUnsignedInt(value[0]);
+        reading.readings.noiseLevel = (byteToUnsignedInt(value[1]) << 8) | byteToUnsignedInt(value[0]);
         return new Gson().toJson(reading);
 	}
 
