@@ -39,4 +39,8 @@ public class DebugApiModule {
         return new MockCloudApi();
     }
 
+    @Provides @Singleton StatusApi provideStatusApi(MockBackend loader) {
+        return new MockStatusApi(loader);
+    }
+
 }

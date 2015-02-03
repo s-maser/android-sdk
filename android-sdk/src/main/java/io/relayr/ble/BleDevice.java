@@ -81,7 +81,7 @@ public class BleDevice {
     }
 
     public Observable<BleDevice> disconnect() {
-        mDeviceManager.removeDevice(BleDevice.this);
+        mDeviceManager.removeDevice(this);
         return serviceObservable
                 .flatMap(new Func1<BaseService, Observable<BleDevice>>() {
                     @Override

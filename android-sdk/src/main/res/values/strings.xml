@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="network_error">Please connect to the Internet before trying to log in.</string>
+    <string name="platform_error">Relayr platform is not available at the moment. Please try again later.</string>
+
+    <string name="permission_error">"To be able to use RelayrSdk please add %s to AndroidManifest.</string>
+
+    <string name="retry">Retry</string>
+    <string name="cancel">Cancel</string>
+
+</resources>

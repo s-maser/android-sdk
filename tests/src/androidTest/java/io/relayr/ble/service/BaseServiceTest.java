@@ -23,6 +23,7 @@ import rx.Observable;
 import rx.Observer;
 import rx.functions.Func1;
 
+import static android.bluetooth.BluetoothDevice.BOND_NONE;
 import static android.bluetooth.BluetoothGatt.GATT_SUCCESS;
 import static android.bluetooth.BluetoothProfile.STATE_CONNECTED;
 import static android.bluetooth.BluetoothProfile.STATE_DISCONNECTED;
@@ -84,6 +85,7 @@ public class BaseServiceTest {
 
         List<BluetoothGattService> services = Arrays.asList(deviceInfoService, batteryService);
 
+        when(device.getBondState()).thenReturn(BOND_NONE);
         when(gatt.getDevice()).thenReturn(device);
         when(gatt.getServices()).thenReturn(services);
         baseService = new BaseService(bleDevice, gatt, receiver);
@@ -94,7 +96,7 @@ public class BaseServiceTest {
         Observer<BaseService> observer = mock(Observer.class);
 
         BaseService
-                .doConnect(device, receiver)
+                .doConnect(device, receiver, true)
                 .map(new Func1<BluetoothGatt, BaseService>() {
                     @Override
                     public BaseService call(BluetoothGatt gatt) {
@@ -103,8 +105,8 @@ public class BaseServiceTest {
                 })
                 .subscribe(observer);
 
-        receiver.onConnectionStateChange(mock(BluetoothGatt.class), GATT_SUCCESS, STATE_CONNECTED);
-        receiver.onServicesDiscovered(mock(BluetoothGatt.class), GATT_SUCCESS);
+        receiver.onConnectionStateChange(gatt, GATT_SUCCESS, STATE_CONNECTED);
+        receiver.onServicesDiscovered(gatt, GATT_SUCCESS);
 
         verify(observer, times(1)).onNext(any(BaseService.class));
     }
@@ -114,7 +116,7 @@ public class BaseServiceTest {
         Observer<BleDevice> observer = mock(Observer.class);
 
         BaseService
-                .doConnect(device, receiver)
+                .doConnect(device, receiver, true)
                 .map(new Func1<BluetoothGatt, BaseService>() {
                     @Override
                     public BaseService call(BluetoothGatt g) {
@@ -130,9 +132,9 @@ public class BaseServiceTest {
                 })
                 .subscribe(observer);
 
-        receiver.onConnectionStateChange(mock(BluetoothGatt.class), GATT_SUCCESS, STATE_CONNECTED);
-        receiver.onServicesDiscovered(mock(BluetoothGatt.class), GATT_SUCCESS);
-        receiver.onConnectionStateChange(mock(BluetoothGatt.class), GATT_SUCCESS, STATE_DISCONNECTED);
+        receiver.onConnectionStateChange(gatt, GATT_SUCCESS, STATE_CONNECTED);
+        receiver.onServicesDiscovered(gatt, GATT_SUCCESS);
+        receiver.onConnectionStateChange(gatt, GATT_SUCCESS, STATE_DISCONNECTED);
 
         verify(observer, times(1)).onNext(bleDevice);
     }

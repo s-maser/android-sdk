@@ -18,4 +18,13 @@ public class TransmitterDevice extends Transmitter {
         return DeviceModel.from(model);
     }
 
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return o instanceof TransmitterDevice && ((TransmitterDevice) o).id.equals(id);
+    }
 }
