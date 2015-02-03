@@ -14,12 +14,13 @@ import static org.fest.assertions.api.Assertions.assertThat;
 public class DataStorageTest {
 
     @Before
-    public void init(){
+    public void init() {
         RelayrSdk.initInMockMode(Robolectric.application.getApplicationContext());
+        DataStorage.logOut();
     }
 
     @Test
-    public void storageSaveTest(){
+    public void storageSaveTest() {
         DataStorage.saveUserId("user");
 
         assertThat(DataStorage.getUserId()).isNotNull();
@@ -27,13 +28,11 @@ public class DataStorageTest {
     }
 
     @Test
-    public void storageLogInTest(){
+    public void storageLogInTest() {
         DataStorage.saveUserId("user");
-
         assertThat(DataStorage.isUserLoggedIn()).isFalse();
 
         DataStorage.saveUserToken("token");
-
         assertThat(DataStorage.isUserLoggedIn()).isTrue();
     }
 }

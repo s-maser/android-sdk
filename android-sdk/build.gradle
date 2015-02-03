@@ -1,5 +1,6 @@
 buildscript {
     repositories {
+        maven { url 'https://repo.eclipse.org/content/repositories/paho-releases' }
         mavenCentral()
     }
 
@@ -46,9 +47,6 @@ dependencies {
     compile 'com.squareup.okhttp:okhttp:2.2.0'
     compile 'com.squareup.okhttp:okhttp-urlconnection:2.2.0'
     compile 'com.squareup.retrofit:retrofit:1.8.0'
-    compile('com.pubnub:pubnub:3.7.1') {
-        exclude group: 'org.json'
-    }
 }
 
 android.libraryVariants.all { variant ->
@@ -104,7 +102,7 @@ task makeJar(type: Copy) {
     from('build/intermediates/bundles/release/')
     into('build/libs/')
     include('classes.jar')
-    rename ('classes.jar', 'android-sdk-code.jar')
+    rename('classes.jar', 'android-sdk-code.jar')
 }
 
 makeJar.dependsOn(clearJar, build)
