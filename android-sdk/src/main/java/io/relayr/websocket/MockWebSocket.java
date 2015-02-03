@@ -57,7 +57,7 @@ class MockWebSocket extends WebSocket<MqttChannel> {
     }
 
     @Override
-    boolean unSubscribe(String topic) {
+    boolean unSubscribe(MqttChannel topic) {
         return false;
     }
 }

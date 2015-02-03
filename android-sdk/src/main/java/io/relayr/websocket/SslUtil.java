@@ -135,7 +135,7 @@ public class SslUtil {
         return mCertificate;
     }
 
-    private Certificate loadCertificate() {
+    Certificate loadCertificate() {
         FileInputStream fis;
         try {
             fis = mContext.openFileInput(CERTIFICATE_FILE_NAME);

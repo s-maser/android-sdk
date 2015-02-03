@@ -30,5 +30,3 @@ proguard/
 /.idea/*
 /local.properties
 .metadata
-
-android-sdk/src/main/assets/ssl.properties

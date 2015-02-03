@@ -29,6 +29,7 @@ public class WebSocketClient implements SocketClient {
     private final WebSocket mWebSocket;
     private final SubscriptionApi mSubscriptionApi;
     private final Map<String, PublishSubject<Object>> mWebSocketConnections = new HashMap<>();
+    private final Map<String, MqttChannel> mDeviceChannels = new HashMap<>();
 
     @Inject
     public WebSocketClient(SubscriptionApi subscriptionApi, WebSocketFactory factory) {
@@ -38,8 +39,10 @@ public class WebSocketClient implements SocketClient {
 
     public Observable<Object> subscribe(TransmitterDevice device) {
         if (mWebSocketConnections.containsKey(device.id)) {
+            Log.i("WSC", "device " + device.id + " found.");
             return mWebSocketConnections.get(device.id);
         } else {
+            Log.i("WSC", "device " + device.id + " not found. Creating subscription");
             return start(device);
         }
     }
@@ -56,7 +59,6 @@ public class WebSocketClient implements SocketClient {
                     }
                 })
                 .subscribeOn(Schedulers.newThread())
-                .observeOn(Schedulers.newThread())
                 .subscribe(new Subscriber<MqttChannel>() {
                     @Override
                     public void onCompleted() {
@@ -70,7 +72,6 @@ public class WebSocketClient implements SocketClient {
 
                     @Override
                     public void onNext(MqttChannel credentials) {
-                        Log.e("WebSocketClient", credentials.toString());
                         mWebSocket.createClient(credentials.getCredentials().getClientId());
                         subscribeToChannel(credentials, device.id, subject);
                     }
@@ -85,20 +86,22 @@ public class WebSocketClient implements SocketClient {
                 });
     }
 
-    private void subscribeToChannel(MqttChannel credentials,
+    private void subscribeToChannel(final MqttChannel channel,
                                     final String deviceId,
                                     final PublishSubject<Object> subject) {
 
-        mWebSocket.subscribe(credentials, new WebSocketCallback() {
+        mWebSocket.subscribe(channel, new WebSocketCallback() {
             @Override
             public void connectCallback(Object message) {
-                Log.i("WebSocketClient", "Connected: " + message.toString());
+                mDeviceChannels.put(deviceId, channel);
+                Log.i("WebSocketClient", message.toString());
             }
 
             @Override
             public void disconnectCallback(Object message) {
                 subject.onCompleted();
                 mWebSocketConnections.remove(deviceId);
+                mDeviceChannels.remove(deviceId);
             }
 
             @Override
@@ -114,6 +117,7 @@ public class WebSocketClient implements SocketClient {
             public void errorCallback(Throwable e) {
                 subject.onError(e);
                 mWebSocketConnections.clear();
+                mDeviceChannels.clear();
             }
         });
     }
@@ -125,7 +129,8 @@ public class WebSocketClient implements SocketClient {
             mWebSocketConnections.remove(deviceId);
         }
 
-//        mWebSocket.unSubscribe(deviceId);
+        Log.i("WebSocketClient", "Device " + deviceId + " unsubscribed.");
+        mWebSocket.unSubscribe(mDeviceChannels.get(deviceId));
 
         RelayrSdk.getRelayrApi()
                 .getAppInfo()

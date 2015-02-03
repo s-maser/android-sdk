@@ -5,6 +5,7 @@ import com.pubnub.api.Pubnub;
 import com.pubnub.api.PubnubError;
 import com.pubnub.api.PubnubException;
 
+import io.relayr.model.MqttChannel;
 import io.relayr.model.WebSocketConfig;
 
 /**
@@ -70,8 +71,8 @@ class PubNubWebSocket extends WebSocket<String> {
      * Stop getting notifications from a specific sensor.
      * @param channel
      */
-    boolean unSubscribe(String channel) {
-        mPubnub.unsubscribe(channel);
+    boolean unSubscribe(MqttChannel channel) {
+        mPubnub.unsubscribe("");
         return false;
     }
 

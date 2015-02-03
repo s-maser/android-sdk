@@ -59,8 +59,7 @@ public class SslUtilTest {
 
     @Test
     public void createCertificateTest_ShouldFail() {
-        Certificate certificate = SslUtil.instance().downloadCertificate(CERT_URL + "fake");
-
+        final Certificate certificate = SslUtil.instance().loadCertificate();
         assertThat(certificate).isNull();
     }
 

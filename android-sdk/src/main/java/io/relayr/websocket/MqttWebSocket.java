@@ -17,36 +17,36 @@ import io.relayr.model.MqttChannel;
 
 class MqttWebSocket extends WebSocket<MqttChannel> {
 
-    private MqttAsyncClient mClient;
-    private Map<String, MqttChannel> deviceChannels = new HashMap<>();
+    private Map<String, MqttAsyncClient> mClients = new HashMap<>();
 
     public MqttWebSocket() {
-        Log.d("MqttWebSocket", "Creating WebSocket");
+        Log.i("WS", "Creating WebSocket");
         SslUtil.init(RelayrApp.get());
     }
 
     public void createClient(String clientId) {
-        Log.d("MqttWebSocket", "ClientId: " + clientId);
-
         if (clientId == null || clientId.isEmpty()) {
-            Log.e("MqttWebSocket", "ClientId '" + clientId + "' not valid!");
+            Log.e("WS", "ClientId '" + clientId + "' not valid!");
             return;
         }
 
-        if (mClient != null && clientId.equals(mClient.getClientId())) return;
-
+        if (mClients.containsKey(clientId)) {
+            Log.i("WS", "Client " + clientId + " already exist.");
+            return;
+        }
         try {
-            mClient = new MqttAsyncClient(SslUtil.instance().getBroker(), clientId, null);
+            mClients.put(clientId, new MqttAsyncClient(SslUtil.instance().getBroker(), clientId, null));
+            Log.i("WS", "Client for " + clientId + " created.");
         } catch (MqttException e) {
             e.printStackTrace();
         }
     }
 
     @Override
-    public boolean unSubscribe(String topic) {
+    public boolean unSubscribe(MqttChannel channel) {
+        final MqttAsyncClient client = mClients.get(channel.getCredentials().getClientId());
         try {
-            final IMqttToken unsubscribeToken = mClient.unsubscribe(topic);
-            unsubscribeToken.waitForCompletion();
+            client.unsubscribe(channel.getCredentials().getTopic());
             return true;
         } catch (MqttException e) {
             e.printStackTrace();
@@ -55,7 +55,8 @@ class MqttWebSocket extends WebSocket<MqttChannel> {
     }
 
     void subscribe(MqttChannel channel, final WebSocketCallback webSocketCallback) {
-        mClient.setCallback(new MqttCallback() {
+        final MqttAsyncClient client = mClients.get(channel.getCredentials().getClientId());
+        client.setCallback(new MqttCallback() {
             @Override
             public void connectionLost(Throwable cause) {
                 webSocketCallback.disconnectCallback(cause);
@@ -72,15 +73,15 @@ class MqttWebSocket extends WebSocket<MqttChannel> {
         });
 
         try {
-            final IMqttToken connectToken = mClient.connect(SslUtil.instance().getConnectOptions
+            final IMqttToken connectToken = client.connect(SslUtil.instance().getConnectOptions
                     (channel.getCredentials()));
             connectToken.waitForCompletion();
-            webSocketCallback.connectCallback("Connected");
+            webSocketCallback.connectCallback("Connected to channel " + channel.getChannelId());
 
             try {
-                final IMqttToken subscribeToken = mClient.subscribe(channel.getCredentials().getTopic(), 1);
+                final IMqttToken subscribeToken = client.subscribe(channel.getCredentials().getTopic(), 1);
                 subscribeToken.waitForCompletion();
-                webSocketCallback.connectCallback("Subscribed");
+                webSocketCallback.connectCallback("Subscribed to channel " + channel.getChannelId());
             } catch (MqttException e) {
                 webSocketCallback.errorCallback(e);
                 e.printStackTrace();
