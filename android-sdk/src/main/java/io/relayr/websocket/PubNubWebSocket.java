@@ -61,11 +61,18 @@ class PubNubWebSocket extends WebSocket<String> {
         } catch (PubnubException e) { /* Never happens: Thrown when the callback is null */ }
     }
 
+    @Override
+    void createClient(String clientId) {
+
+    }
+
     /**
      * Stop getting notifications from a specific sensor.
+     * @param channel
      */
-    void unSubscribe(String channel) {
+    boolean unSubscribe(String channel) {
         mPubnub.unsubscribe(channel);
+        return false;
     }
 
     /**

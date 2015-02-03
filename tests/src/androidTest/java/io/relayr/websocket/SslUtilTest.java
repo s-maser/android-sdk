@@ -46,7 +46,7 @@ public class SslUtilTest {
 
         assertThat(broker).doesNotContain("null");
         assertThat(broker).containsOnlyOnce("ssl://");
-        assertThat(broker).containsOnlyOnce("relayr.io");
+        assertThat(broker).containsOnlyOnce("test.com");
     }
 
     @Test
@@ -89,7 +89,7 @@ public class SslUtilTest {
 
     @Test
     public void createConnectionOptions() throws KeyStoreException {
-        MqttChannel.MqttCredentials credentials = new MqttChannel.MqttCredentials("u", "p", "t");
+        MqttChannel.MqttCredentials credentials = new MqttChannel.MqttCredentials("u", "p", "t", "cId");
         MqttConnectOptions options = SslUtil.instance().getConnectOptions(credentials);
 
         assertThat(options.getUserName()).isEqualTo("u");

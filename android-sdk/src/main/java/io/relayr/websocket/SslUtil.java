@@ -33,10 +33,10 @@ public class SslUtil {
     private static final String PROPERTIES_FILE_NAME = "ssl.properties";
     private static final String CERTIFICATE_FILE_NAME = "relayr.crt";
 
-    private final Properties properties = new Properties();
-
     private static SslUtil sslUtil;
     private static Certificate mCertificate;
+
+    private final Properties properties = new Properties();
     private final Context mContext;
 
     static SslUtil instance() {
@@ -44,7 +44,8 @@ public class SslUtil {
     }
 
     static void init(Context context) {
-        sslUtil = new SslUtil(context);
+        if (sslUtil == null)
+            sslUtil = new SslUtil(context);
     }
 
     private SslUtil(Context context) {
@@ -70,13 +71,14 @@ public class SslUtil {
 
         connOpts.setCleanSession(true);
         connOpts.setConnectionTimeout(3);
-        connOpts.setKeepAliveInterval(10);
+        connOpts.setKeepAliveInterval(60);
 
         connOpts.setSocketFactory(createSocketFactory());
 
         connOpts.setUserName(credentials.getUser());
         connOpts.setPassword(credentials.getPassword().toCharArray());
 
+        connOpts.setServerURIs(new String[]{});
         return connOpts;
     }
 

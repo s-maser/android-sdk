@@ -33,7 +33,6 @@ public class WebSocketClient implements SocketClient {
     @Inject
     public WebSocketClient(SubscriptionApi subscriptionApi, WebSocketFactory factory) {
         mSubscriptionApi = subscriptionApi;
-
         mWebSocket = factory.createWebSocket();
     }
 
@@ -71,6 +70,8 @@ public class WebSocketClient implements SocketClient {
 
                     @Override
                     public void onNext(MqttChannel credentials) {
+                        Log.e("WebSocketClient", credentials.toString());
+                        mWebSocket.createClient(credentials.getCredentials().getClientId());
                         subscribeToChannel(credentials, device.id, subject);
                     }
                 });
@@ -118,20 +119,20 @@ public class WebSocketClient implements SocketClient {
     }
 
     @Override
-    public void unSubscribe(final String sensorId) {
-        if (mWebSocketConnections.containsKey(sensorId)) {
-            mWebSocketConnections.get(sensorId).onCompleted();
-            mWebSocketConnections.remove(sensorId);
+    public void unSubscribe(final String deviceId) {
+        if (mWebSocketConnections.containsKey(deviceId)) {
+            mWebSocketConnections.get(deviceId).onCompleted();
+            mWebSocketConnections.remove(deviceId);
         }
 
-        // mWebSocket.unSubscribe(sensorId);
+//        mWebSocket.unSubscribe(deviceId);
 
         RelayrSdk.getRelayrApi()
                 .getAppInfo()
                 .flatMap(new Func1<App, Observable<Void>>() {
                     @Override
                     public Observable<Void> call(App app) {
-                        return mSubscriptionApi.unSubscribe(app.id, sensorId);
+                        return mSubscriptionApi.unSubscribe(app.id, deviceId);
                     }
                 })
                 .subscribeOn(Schedulers.newThread())

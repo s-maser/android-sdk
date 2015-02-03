@@ -51,4 +51,13 @@ class MockWebSocket extends WebSocket<MqttChannel> {
                 });
 
     }
+
+    @Override
+    void createClient(String clientId) {
+    }
+
+    @Override
+    boolean unSubscribe(String topic) {
+        return false;
+    }
 }

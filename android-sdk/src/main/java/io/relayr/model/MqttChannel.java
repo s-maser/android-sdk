@@ -32,11 +32,13 @@ public class MqttChannel implements Serializable {
         private String user;
         private String password;
         private String topic;
+        private String clientId;
 
-        public MqttCredentials(String user, String password, String topic) {
+        public MqttCredentials(String user, String password, String topic, String clientId) {
             this.user = user;
             this.password = password;
             this.topic = topic;
+            this.clientId = clientId;
         }
 
         public String getUser() {
@@ -51,12 +53,17 @@ public class MqttChannel implements Serializable {
             return topic;
         }
 
+        public String getClientId() {
+            return clientId;
+        }
+
         @Override
         public String toString() {
             return "Credentials{" +
                     "user='" + user + '\'' +
                     ", password='" + password + '\'' +
                     ", topic='" + topic + '\'' +
+                    ", clientId='" + clientId + '\'' +
                     '}';
         }
     }
