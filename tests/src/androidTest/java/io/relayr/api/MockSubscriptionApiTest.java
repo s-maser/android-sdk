@@ -15,6 +15,7 @@ import javax.inject.Inject;
 import dagger.ObjectGraph;
 import io.relayr.TestEnvironment;
 import io.relayr.model.MqttChannel;
+import io.relayr.model.MqttDefinition;
 import io.relayr.model.Status;
 import rx.Observer;
 
@@ -41,7 +42,7 @@ public class MockSubscriptionApiTest extends TestEnvironment {
     @Test
     @SuppressWarnings("unchecked")
     public void getMqttData() throws Exception {
-        subscriptionApi.subscribeToMqtt("shiny_id", "dev_id")
+        subscriptionApi.subscribeToMqtt(new MqttDefinition("shiny_id", "dev_id"))
                 .subscribe(new Observer<MqttChannel>() {
                     @Override
                     public void onCompleted() {

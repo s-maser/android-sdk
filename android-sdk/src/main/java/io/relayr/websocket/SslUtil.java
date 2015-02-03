@@ -4,9 +4,14 @@ import android.content.Context;
 
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 
-import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.URL;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
@@ -26,11 +31,13 @@ import io.relayr.model.MqttChannel;
 public class SslUtil {
 
     private static final String PROPERTIES_FILE_NAME = "ssl.properties";
+    private static final String CERTIFICATE_FILE_NAME = "relayr.crt";
 
     private final Properties properties = new Properties();
 
     private static SslUtil sslUtil;
-    private static Certificate certificate;
+    private static Certificate mCertificate;
+    private final Context mContext;
 
     static SslUtil instance() {
         return sslUtil;
@@ -41,7 +48,9 @@ public class SslUtil {
     }
 
     private SslUtil(Context context) {
-        certificate = null;
+        mContext = context;
+        mCertificate = null;
+        mCertificate = loadCertificate();
 
         try {
             properties.load(context.getAssets().open(PROPERTIES_FILE_NAME));
@@ -93,7 +102,7 @@ public class SslUtil {
 
         try {
             tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-            tmf.init(createKeyStore(loadCertificate(properties.getProperty("cert_url"))));
+            tmf.init(createKeyStore(downloadCertificate(properties.getProperty("cert_url"))));
         } catch (NoSuchAlgorithmException | KeyStoreException e) {
             e.printStackTrace();
         }
@@ -101,8 +110,8 @@ public class SslUtil {
         return tmf;
     }
 
-    Certificate loadCertificate(String url) {
-        if(certificate != null) return certificate;
+    Certificate downloadCertificate(String url) {
+        if (mCertificate != null) return mCertificate;
 
         CertificateFactory cf = null;
         try {
@@ -115,12 +124,46 @@ public class SslUtil {
 
         try {
             InputStream caInput = new URL(url).openStream();
-            certificate = cf.generateCertificate(caInput);
+            mCertificate = cf.generateCertificate(caInput);
+            persistCertificate(mCertificate);
         } catch (CertificateException | IOException e) {
             e.printStackTrace();
         }
 
-        return certificate;
+        return mCertificate;
+    }
+
+    private Certificate loadCertificate() {
+        FileInputStream fis;
+        try {
+            fis = mContext.openFileInput(CERTIFICATE_FILE_NAME);
+            ObjectInputStream is = new ObjectInputStream(fis);
+            return (Certificate) is.readObject();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    void persistCertificate(Certificate certificate) {
+        FileOutputStream fos;
+        try {
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            new ObjectOutputStream(out).writeObject(certificate);
+
+            fos = mContext.openFileOutput(CERTIFICATE_FILE_NAME, Context.MODE_PRIVATE);
+            fos.write(out.toByteArray());
+            fos.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     KeyStore createKeyStore(Certificate certificate) {

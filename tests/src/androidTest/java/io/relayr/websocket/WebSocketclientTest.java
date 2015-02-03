@@ -11,6 +11,7 @@ import io.relayr.TestEnvironment;
 import io.relayr.api.MockBackend;
 import io.relayr.api.SubscriptionApi;
 import io.relayr.model.MqttChannel;
+import io.relayr.model.MqttDefinition;
 import io.relayr.model.TransmitterDevice;
 import rx.Observable;
 
@@ -28,12 +29,15 @@ public class WebSocketClientTest extends TestEnvironment {
     @Mock private WebSocket<MqttChannel> webSocket;
 
     private WebSocketClient socketClient;
+    private MqttDefinition mqttDefinition;
 
     @Before
     public void init() {
         super.init();
 
         initSdk();
+
+        mqttDefinition = new MqttDefinition(USER_ID, APP_NAME);
     }
 
     @Test
@@ -43,7 +47,7 @@ public class WebSocketClientTest extends TestEnvironment {
                 }, MockBackend.MQTT_CREDENTIALS);
 
         when(webSocketFactory.createWebSocket()).thenReturn(webSocket);
-        when(subscriptionApi.subscribeToMqtt(anyString(), anyString())).thenReturn(observable);
+        when(subscriptionApi.subscribeToMqtt(any(MqttDefinition.class))).thenReturn(observable);
 
         socketClient = new WebSocketClient(subscriptionApi, webSocketFactory);
         socketClient.subscribe(createTransmitterDevice());
@@ -51,14 +55,14 @@ public class WebSocketClientTest extends TestEnvironment {
         await();
 
         verify(webSocketFactory, times(1)).createWebSocket();
-        verify(subscriptionApi, times(1)).subscribeToMqtt(USER_ID, APP_NAME);
+        verify(subscriptionApi, times(1)).subscribeToMqtt(mqttDefinition);
 
         await();
 
         verify(webSocket, times(1)).subscribe(any(MqttChannel.class),
                 any(WebSocketCallback.class));
     }
-    
+
     @Test
     public void webSocketClientUnSubscribeTest() {
         when(subscriptionApi.unSubscribe(anyString(), anyString())).thenReturn(Observable.<Void>empty());
@@ -75,17 +79,17 @@ public class WebSocketClientTest extends TestEnvironment {
     public void webSocketClientFlowTest() {
         socketClient = new WebSocketClient(subscriptionApi, webSocketFactory);
 
-        verify(subscriptionApi, never()).subscribeToMqtt(USER_ID, APP_NAME);
+        verify(subscriptionApi, never()).subscribeToMqtt(mqttDefinition);
 
         socketClient.subscribe(createTransmitterDevice());
 
         await();
-        verify(subscriptionApi, times(1)).subscribeToMqtt(USER_ID, APP_NAME);
+        verify(subscriptionApi, times(1)).subscribeToMqtt(mqttDefinition);
 
         socketClient.subscribe(createTransmitterDevice());
 
         await();
-        verify(subscriptionApi, times(1)).subscribeToMqtt(USER_ID, APP_NAME);
+        verify(subscriptionApi, times(1)).subscribeToMqtt(mqttDefinition);
 
         socketClient.unSubscribe(APP_NAME);
 
@@ -95,7 +99,7 @@ public class WebSocketClientTest extends TestEnvironment {
         socketClient.subscribe(createTransmitterDevice());
 
         await();
-        verify(subscriptionApi, times(2)).subscribeToMqtt(USER_ID, APP_NAME);
+        verify(subscriptionApi, times(2)).subscribeToMqtt(mqttDefinition);
     }
 
     private TransmitterDevice createTransmitterDevice() {

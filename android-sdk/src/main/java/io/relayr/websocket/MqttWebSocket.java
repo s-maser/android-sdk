@@ -1,7 +1,11 @@
 package io.relayr.websocket;
 
+import android.util.Log;
+
 import org.eclipse.paho.client.mqttv3.IMqttClient;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
+import org.eclipse.paho.client.mqttv3.IMqttToken;
+import org.eclipse.paho.client.mqttv3.MqttAsyncClient;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -12,12 +16,12 @@ import io.relayr.model.MqttChannel;
 
 class MqttWebSocket extends WebSocket<MqttChannel> {
 
-    private IMqttClient mClient;
+    private MqttAsyncClient mClient;
 
     public MqttWebSocket() {
         SslUtil.init(RelayrApp.get());
         try {
-            mClient = new MqttClient(SslUtil.instance().getBroker(), "relayr", null);
+            mClient = new MqttAsyncClient(SslUtil.instance().getBroker(), "relayr", null);
         } catch (MqttException e) {
             e.printStackTrace();
         }
@@ -37,19 +41,22 @@ class MqttWebSocket extends WebSocket<MqttChannel> {
 
             @Override
             public void deliveryComplete(IMqttDeliveryToken token) {
+                Log.e("TAG", "deliveryComplete");
             }
         });
 
         try {
-            mClient.connect(SslUtil.instance().getConnectOptions(channel.getCredentials()));
-            webSocketCallback.connectCallback("");
-        } catch (MqttException e) {
-            webSocketCallback.errorCallback(e);
-            e.printStackTrace();
-        }
+            final IMqttToken token = mClient.connect(SslUtil.instance().getConnectOptions(channel
+                    .getCredentials()));
+            token.waitForCompletion();
+            webSocketCallback.connectCallback("Connected");
 
-        try {
-            mClient.subscribe(channel.getCredentials().getTopic());
+//            try {
+//                mClient.subscribe(channel.getCredentials().getTopic());
+//            } catch (MqttException e) {
+//                webSocketCallback.errorCallback(e);
+//                e.printStackTrace();
+//            }
         } catch (MqttException e) {
             webSocketCallback.errorCallback(e);
             e.printStackTrace();

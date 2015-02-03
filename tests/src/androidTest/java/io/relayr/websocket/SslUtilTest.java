@@ -51,7 +51,7 @@ public class SslUtilTest {
 
     @Test
     public void createCertificateTest() {
-        Certificate certificate = SslUtil.instance().loadCertificate(CERT_URL);
+        Certificate certificate = SslUtil.instance().downloadCertificate(CERT_URL);
 
         assertThat(certificate).isNotNull();
         assertThat(certificate.getType()).isEqualTo("X.509");
@@ -59,14 +59,14 @@ public class SslUtilTest {
 
     @Test
     public void createCertificateTest_ShouldFail() {
-        Certificate certificate = SslUtil.instance().loadCertificate(CERT_URL + "fake");
+        Certificate certificate = SslUtil.instance().downloadCertificate(CERT_URL + "fake");
 
         assertThat(certificate).isNull();
     }
 
     @Test
     public void createKeyStoreTest() throws KeyStoreException {
-        Certificate certificate = SslUtil.instance().loadCertificate(CERT_URL);
+        Certificate certificate = SslUtil.instance().downloadCertificate(CERT_URL);
         KeyStore keyStore = SslUtil.instance().createKeyStore(certificate);
 
         assertThat(keyStore).isNotNull();

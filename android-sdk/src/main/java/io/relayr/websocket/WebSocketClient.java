@@ -1,5 +1,7 @@
 package io.relayr.websocket;
 
+import android.util.Log;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,6 +13,7 @@ import io.relayr.SocketClient;
 import io.relayr.api.SubscriptionApi;
 import io.relayr.model.App;
 import io.relayr.model.MqttChannel;
+import io.relayr.model.MqttDefinition;
 import io.relayr.model.TransmitterDevice;
 import rx.Observable;
 import rx.Subscriber;
@@ -46,14 +49,11 @@ public class WebSocketClient implements SocketClient {
         final PublishSubject<Object> subject = PublishSubject.create();
         mWebSocketConnections.put(device.id, subject);
 
-        // if mWebSocket.isSubscribedToAnyone: subscribeToChannel(device.getId(), subject);
-        // else: mRelayrSDK.subscribe(...)
-
         RelayrSdk.getRelayrApi().getAppInfo()
                 .flatMap(new Func1<App, Observable<MqttChannel>>() {
                     @Override
                     public Observable<MqttChannel> call(App app) {
-                        return mSubscriptionApi.subscribeToMqtt(app.id, device.id);
+                        return mSubscriptionApi.subscribeToMqtt(new MqttDefinition(device.id, "mqtt"));
                     }
                 })
                 .subscribeOn(Schedulers.newThread())
@@ -91,6 +91,7 @@ public class WebSocketClient implements SocketClient {
         mWebSocket.subscribe(credentials, new WebSocketCallback() {
             @Override
             public void connectCallback(Object message) {
+                Log.i("WebSocketClient", "Connected: " + message.toString());
             }
 
             @Override

@@ -5,6 +5,7 @@ import com.google.gson.reflect.TypeToken;
 import javax.inject.Inject;
 
 import io.relayr.model.MqttChannel;
+import io.relayr.model.MqttDefinition;
 import io.relayr.model.WebSocketConfig;
 import rx.Observable;
 import rx.Subscriber;
@@ -39,7 +40,7 @@ public class MockSubscriptionApi implements SubscriptionApi {
     }
 
     @Override
-    public Observable<MqttChannel> subscribeToMqtt(String appId,  String deviceId) {
+    public Observable<MqttChannel> subscribeToMqtt(MqttDefinition mqttDefinition) {
         return mMockBackend.createObservable(new TypeToken<MqttChannel>() { },
                 MQTT_CREDENTIALS);
     }
