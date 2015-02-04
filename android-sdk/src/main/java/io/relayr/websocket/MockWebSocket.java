@@ -42,7 +42,9 @@ class MockWebSocket extends WebSocket<MqttChannel> {
                     }
 
                     @Override
-                    public void onError(Throwable throwable) { callback.errorCallback(throwable); }
+                    public void onError(Throwable throwable) {
+                        callback.errorCallback(throwable);
+                    }
 
                     @Override
                     public void onNext(Object o) {
@@ -59,6 +61,6 @@ class MockWebSocket extends WebSocket<MqttChannel> {
 
     @Override
     boolean unSubscribe(MqttChannel topic) {
-        return false;
+        return true;
     }
 }

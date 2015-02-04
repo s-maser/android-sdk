@@ -17,6 +17,10 @@ import io.relayr.model.MqttChannel;
 
 class MqttWebSocket extends WebSocket<MqttChannel> {
 
+    private static final int CONNECT_TIMEOUT = 2000;
+    private static final int SUBSCRIBE_TIMEOUT = 2000;
+    private static final int UNSUBSCRIBE_TIMEOUT = 2000;
+
     private Map<String, MqttAsyncClient> mClients = new HashMap<>();
 
     public MqttWebSocket() {
@@ -25,12 +29,12 @@ class MqttWebSocket extends WebSocket<MqttChannel> {
 
     public boolean createClient(String clientId) {
         if (clientId == null || clientId.isEmpty()) {
-            Log.e("WS", "ClientId '" + clientId + "' not valid!");
+            Log.e("WebSocket", "ClientId '" + clientId + "' not valid!");
             return false;
         }
 
         if (clientExist(clientId)) {
-            Log.i("WS", "Client " + clientId + " already exist.");
+            Log.i("WebSocket", "Client " + clientId + " already exist.");
             return true;
         }
 
@@ -46,7 +50,9 @@ class MqttWebSocket extends WebSocket<MqttChannel> {
         if (!clientExist(clientId)) return false;
 
         try {
-            mClients.get(clientId).unsubscribe(channel.getCredentials().getTopic());
+            final MqttAsyncClient client = mClients.get(clientId);
+            final IMqttToken unSubscribeToken = client.unsubscribe(channel.getCredentials().getTopic());
+            unSubscribeToken.waitForCompletion(UNSUBSCRIBE_TIMEOUT);
             return true;
         } catch (MqttException e) {
             e.printStackTrace();
@@ -66,7 +72,7 @@ class MqttWebSocket extends WebSocket<MqttChannel> {
 
         MqttAsyncClient client = addClient(channel.getCredentials().getClientId());
         if (client == null) {
-            callback.errorCallback(new IllegalArgumentException("Create MqttClient failed!"));
+            callback.disconnectCallback(new IllegalArgumentException("MqttClient creation failed!"));
             return;
         }
 
@@ -77,7 +83,7 @@ class MqttWebSocket extends WebSocket<MqttChannel> {
             }
 
             @Override
-            public void messageArrived(String topic, MqttMessage message) throws Exception {
+            public void messageArrived(String topic, MqttMessage message) {
                 callback.successCallback(message);
             }
 
@@ -89,19 +95,19 @@ class MqttWebSocket extends WebSocket<MqttChannel> {
         try {
             final IMqttToken connectToken = client.connect(SslUtil.instance().getConnectOptions
                     (channel.getCredentials()));
-            connectToken.waitForCompletion();
+            connectToken.waitForCompletion(CONNECT_TIMEOUT);
             callback.connectCallback("Connected to channel " + channel.getChannelId());
 
             try {
                 final IMqttToken subscribeToken = client.subscribe(channel.getCredentials().getTopic(), 1);
-                subscribeToken.waitForCompletion();
+                subscribeToken.waitForCompletion(SUBSCRIBE_TIMEOUT);
                 callback.connectCallback("Subscribed to channel " + channel.getChannelId());
             } catch (MqttException e) {
-                callback.errorCallback(e);
+                callback.disconnectCallback(e);
                 e.printStackTrace();
             }
         } catch (MqttException e) {
-            callback.errorCallback(e);
+            callback.disconnectCallback(e);
             e.printStackTrace();
         }
     }
@@ -117,7 +123,7 @@ class MqttWebSocket extends WebSocket<MqttChannel> {
         try {
             mClients.put(clientId, new MqttAsyncClient(SslUtil.instance().getBroker(), clientId, null));
         } catch (MqttException e) {
-            Log.e("MqttWebSocket", "Client with clientId " + clientId + " can't be created!");
+            Log.e("WebSocket", "Client with clientId " + clientId + " can't be created!");
             e.printStackTrace();
             return null;
         }

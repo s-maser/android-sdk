@@ -145,8 +145,7 @@ public class SslUtil {
         } catch (FileNotFoundException e) {
             Log.w("SslUtil", "Certificate not found.");
         } catch (IOException e) {
-            RelayrSdk.logMessage("Can not read certificate object from local storage.");
-            Log.w("SslUtil", "");
+            Log.e("SslUtil", "Certificate can't be read ");
         } catch (ClassNotFoundException e) {
             Log.e("SslUtil", "Can not cast certificate object!");
         }
