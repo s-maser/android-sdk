@@ -53,7 +53,8 @@ class MockWebSocket extends WebSocket<MqttChannel> {
     }
 
     @Override
-    void createClient(String clientId) {
+    boolean createClient(String clientId) {
+        return true;
     }
 
     @Override

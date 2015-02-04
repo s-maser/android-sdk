@@ -42,7 +42,7 @@ public class MockSubscriptionApiTest extends TestEnvironment {
     @Test
     @SuppressWarnings("unchecked")
     public void getMqttData() throws Exception {
-        subscriptionApi.subscribeToMqtt(new MqttDefinition("shiny_id", "dev_id"))
+        subscriptionApi.subscribe(new MqttDefinition("shiny_id", "dev_id"))
                 .subscribe(new Observer<MqttChannel>() {
                     @Override
                     public void onCompleted() {

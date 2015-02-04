@@ -1,7 +1,5 @@
 package io.relayr.websocket;
 
-import android.util.Log;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,8 +26,9 @@ public class WebSocketClient implements SocketClient {
 
     private final WebSocket mWebSocket;
     private final SubscriptionApi mSubscriptionApi;
-    private final Map<String, PublishSubject<Object>> mWebSocketConnections = new HashMap<>();
+
     private final Map<String, MqttChannel> mDeviceChannels = new HashMap<>();
+    private final Map<String, PublishSubject<Object>> mWebSocketConnections = new HashMap<>();
 
     @Inject
     public WebSocketClient(SubscriptionApi subscriptionApi, WebSocketFactory factory) {
@@ -38,13 +37,10 @@ public class WebSocketClient implements SocketClient {
     }
 
     public Observable<Object> subscribe(TransmitterDevice device) {
-        if (mWebSocketConnections.containsKey(device.id)) {
-            Log.i("WSC", "device " + device.id + " found.");
+        if (mWebSocketConnections.containsKey(device.id))
             return mWebSocketConnections.get(device.id);
-        } else {
-            Log.i("WSC", "device " + device.id + " not found. Creating subscription");
+        else
             return start(device);
-        }
     }
 
     private Observable<Object> start(final TransmitterDevice device) {
@@ -55,7 +51,7 @@ public class WebSocketClient implements SocketClient {
                 .flatMap(new Func1<App, Observable<MqttChannel>>() {
                     @Override
                     public Observable<MqttChannel> call(App app) {
-                        return mSubscriptionApi.subscribeToMqtt(new MqttDefinition(device.id, "mqtt"));
+                        return mSubscriptionApi.subscribe(new MqttDefinition(device.id, "mqtt"));
                     }
                 })
                 .subscribeOn(Schedulers.newThread())
@@ -94,7 +90,6 @@ public class WebSocketClient implements SocketClient {
             @Override
             public void connectCallback(Object message) {
                 mDeviceChannels.put(deviceId, channel);
-                Log.i("WebSocketClient", message.toString());
             }
 
             @Override
@@ -129,7 +124,6 @@ public class WebSocketClient implements SocketClient {
             mWebSocketConnections.remove(deviceId);
         }
 
-        Log.i("WebSocketClient", "Device " + deviceId + " unsubscribed.");
         mWebSocket.unSubscribe(mDeviceChannels.get(deviceId));
 
         RelayrSdk.getRelayrApi()

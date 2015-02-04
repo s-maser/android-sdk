@@ -11,14 +11,10 @@ import rx.Observable;
 
 public interface SubscriptionApi {
 
-    @POST("/apps/{appId}/devices/{deviceId}")
-    Observable<WebSocketConfig> subscribe(@Path("appId") String appId,
-                                          @Path("deviceId") String deviceId);
-
+    @POST("/channels")
+    Observable<MqttChannel> subscribe(@Body MqttDefinition mqttDefinition);
+    
     @DELETE("/apps/{appId}/devices/{deviceId}")
     Observable<Void> unSubscribe(@Path("appId") String appId,
                                  @Path("deviceId") String deviceId);
-
-    @POST("/channels")
-    Observable<MqttChannel> subscribeToMqtt(@Body MqttDefinition mqttDefinition);
 }

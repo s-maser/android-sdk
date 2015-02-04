@@ -1,6 +1,7 @@
 package io.relayr.websocket;
 
 import android.content.Context;
+import android.util.Log;
 
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 
@@ -26,6 +27,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManagerFactory;
 
+import io.relayr.RelayrSdk;
 import io.relayr.model.MqttChannel;
 
 public class SslUtil {
@@ -50,7 +52,6 @@ public class SslUtil {
 
     private SslUtil(Context context) {
         mContext = context;
-        mCertificate = null;
         mCertificate = loadCertificate();
 
         try {
@@ -142,11 +143,12 @@ public class SslUtil {
             ObjectInputStream is = new ObjectInputStream(fis);
             return (Certificate) is.readObject();
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            Log.w("SslUtil", "Certificate not found.");
         } catch (IOException e) {
-            e.printStackTrace();
+            RelayrSdk.logMessage("Can not read certificate object from local storage.");
+            Log.w("SslUtil", "");
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            Log.e("SslUtil", "Can not cast certificate object!");
         }
 
         return null;

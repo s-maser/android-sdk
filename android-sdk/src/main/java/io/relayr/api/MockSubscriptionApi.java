@@ -23,9 +23,9 @@ public class MockSubscriptionApi implements SubscriptionApi {
     }
 
     @Override
-    public Observable<WebSocketConfig> subscribe(String appId, String deviceId) {
-        return mMockBackend.createObservable(new TypeToken<WebSocketConfig>() { },
-                APPS_DEVICES_START);
+    public Observable<MqttChannel> subscribe(MqttDefinition mqttDefinition) {
+        return mMockBackend.createObservable(new TypeToken<MqttChannel>() {
+        }, MQTT_CREDENTIALS);
     }
 
     @Override
@@ -37,12 +37,6 @@ public class MockSubscriptionApi implements SubscriptionApi {
                 subscriber.onCompleted();
             }
         });
-    }
-
-    @Override
-    public Observable<MqttChannel> subscribeToMqtt(MqttDefinition mqttDefinition) {
-        return mMockBackend.createObservable(new TypeToken<MqttChannel>() { },
-                MQTT_CREDENTIALS);
     }
 
 }
