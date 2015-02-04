@@ -43,16 +43,27 @@ class MqttWebSocket extends WebSocket<MqttChannel> {
 
     @Override
     public boolean unSubscribe(MqttChannel channel) {
-        if (channel == null) return false;
-        if (mClients == null || mClients.isEmpty()) return false;
+        if (channel == null) {
+            Log.e("WebSocket", "MqttChannel can't be null!");
+            return false;
+        }
+
+        if (mClients == null || mClients.isEmpty()) {
+            Log.w("WebSocket", "No existing MQTT clients.");
+            return false;
+        }
 
         final String clientId = channel.getCredentials().getClientId();
-        if (!clientExist(clientId)) return false;
+        if (!clientExist(clientId)) {
+            Log.w("WebSocket", "MqttClient for clientId " + clientId + " not found!");
+            return false;
+        }
 
         try {
             final MqttAsyncClient client = mClients.get(clientId);
             final IMqttToken unSubscribeToken = client.unsubscribe(channel.getCredentials().getTopic());
             unSubscribeToken.waitForCompletion(UNSUBSCRIBE_TIMEOUT);
+            mClients.remove(clientId);
             return true;
         } catch (MqttException e) {
             e.printStackTrace();
