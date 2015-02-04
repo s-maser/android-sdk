@@ -9,11 +9,11 @@ public class Reading {
     public Readings readings = new Readings();
 
     public class Readings {
-        public float humidity;
+        public int humidity;
         public float temperature;
-        public float noiseLevel;
-        public float luminosity;
-        public float proximity;
+        public int noiseLevel;
+        public int luminosity;
+        public int proximity;
         public LightColorProx.Color color;
         public AccelGyroscope.Accelerometer acceleration;
         public AccelGyroscope.Gyroscope angularSpeed;

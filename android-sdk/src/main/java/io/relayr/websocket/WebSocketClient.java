@@ -27,9 +27,8 @@ import rx.subjects.PublishSubject;
 @Singleton
 public class WebSocketClient implements SocketClient {
 
-    private final WebSocket mWebSocket;
     private final ChannelApi mChannelApi;
-
+    private final WebSocket<MqttChannel> mWebSocket;
     private final Map<String, MqttChannel> mDeviceChannels = new HashMap<>();
     private final Map<String, PublishSubject<Object>> mWebSocketConnections = new HashMap<>();
 
@@ -96,8 +95,8 @@ public class WebSocketClient implements SocketClient {
             @Override
             public void disconnectCallback(Object message) {
                 subject.onError((Throwable) message);
-                mWebSocketConnections.remove(deviceId);
                 mDeviceChannels.remove(deviceId);
+                mWebSocketConnections.remove(deviceId);
             }
 
             @Override
@@ -112,8 +111,8 @@ public class WebSocketClient implements SocketClient {
             @Override
             public void errorCallback(Throwable e) {
                 subject.onError(e);
-                mDeviceChannels.clear();
-                mWebSocketConnections.clear();
+                mDeviceChannels.remove(deviceId);
+                mWebSocketConnections.remove(deviceId);
             }
         });
     }
@@ -125,10 +124,9 @@ public class WebSocketClient implements SocketClient {
             mWebSocketConnections.remove(deviceId);
         }
 
-        if (mDeviceChannels.isEmpty() || mDeviceChannels.get(deviceId) == null) return;
-        
-        if (mWebSocket.unSubscribe(mDeviceChannels.get(deviceId)))
-            mDeviceChannels.remove(deviceId);
+        if (!mDeviceChannels.isEmpty() && mDeviceChannels.get(deviceId) != null)
+            if (mWebSocket.unSubscribe(mDeviceChannels.get(deviceId)))
+                mDeviceChannels.remove(deviceId);
     }
 }
 

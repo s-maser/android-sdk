@@ -28,18 +28,18 @@ public abstract class BleDataParser {
         }
     }
 
-	private static String getLIGHTSensorData(byte[] value) {
+    private static String getLIGHTSensorData(byte[] value) {
         Reading reading = new Reading();
         reading.readings.color = new LightColorProx.Color();
         reading.readings.luminosity = (byteToUnsignedInt(value[1]) << 8) | byteToUnsignedInt(value[0]);
-        reading.readings.color.red = (byteToUnsignedInt(value[3]) << 8) | byteToUnsignedInt (value[2]);
+        reading.readings.color.red = (byteToUnsignedInt(value[3]) << 8) | byteToUnsignedInt(value[2]);
         reading.readings.color.green = (byteToUnsignedInt(value[5]) << 8) | byteToUnsignedInt(value[4]);
         reading.readings.color.blue = (byteToUnsignedInt(value[7]) << 8) | byteToUnsignedInt(value[6]);
         reading.readings.proximity = (byteToUnsignedInt(value[9]) << 8) | byteToUnsignedInt(value[8]);
-		return new Gson().toJson(reading);
-	}
+        return new Gson().toJson(reading);
+    }
 
-	private static String getGYROSensorData(byte[] value) {
+    private static String getGYROSensorData(byte[] value) {
         Reading reading = new Reading();
         int gyroscopeX = byteToUnsignedInt(value[0]) |
                 (byteToUnsignedInt(value[1]) << 8) |
@@ -68,25 +68,25 @@ public abstract class BleDataParser {
         reading.readings.angularSpeed.y = (float) gyroscopeY / 100.0f;
         reading.readings.angularSpeed.z = (float) gyroscopeZ / 100.0f;
         return new Gson().toJson(reading);
-	}
+    }
 
-	private static String getHTUSensorData(byte[] value) {
+    private static String getHTUSensorData(byte[] value) {
         Reading reading = new Reading();
         int temperature = (byteToUnsignedInt(value[1]) << 8) | byteToUnsignedInt(value[0]);
         int humidity = (byteToUnsignedInt(value[3]) << 8) | byteToUnsignedInt(value[2]);
 
-        reading.readings.humidity = (float) humidity / 100.0f;
+        reading.readings.humidity = (int) ((float) humidity / 100.0f);
         reading.readings.temperature = (float) temperature / 100.0f;
         return new Gson().toJson(reading);
-	}
+    }
 
-	private static String getMICSensorData(byte[] value) {
+    private static String getMICSensorData(byte[] value) {
         Reading reading = new Reading();
         reading.readings.noiseLevel = (byteToUnsignedInt(value[1]) << 8) | byteToUnsignedInt(value[0]);
         return new Gson().toJson(reading);
-	}
+    }
 
-	private static int byteToUnsignedInt(byte b) {
-	    return (int) b & 0xff;
-	}
+    private static int byteToUnsignedInt(byte b) {
+        return (int) b & 0xff;
+    }
 }
