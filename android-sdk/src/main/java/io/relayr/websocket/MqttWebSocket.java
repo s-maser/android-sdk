@@ -115,11 +115,12 @@ class MqttWebSocket extends WebSocket<MqttChannel> {
                 callback.connectCallback("Subscribed to channel " + channel.getChannelId());
             } catch (MqttException e) {
                 callback.disconnectCallback(e);
-                e.printStackTrace();
+                Log.e("WebSocket", "Subscribe to MQTT channel failed: " + e.getMessage());
             }
         } catch (MqttException e) {
+            SslUtil.instance().refreshCertificate();
             callback.disconnectCallback(e);
-            e.printStackTrace();
+            Log.e("WebSocket", "Connect to MQTT channel failed: " + e.getMessage());
         }
     }
 

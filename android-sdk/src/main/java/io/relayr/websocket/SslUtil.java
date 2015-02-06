@@ -27,7 +27,6 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManagerFactory;
 
-import io.relayr.RelayrSdk;
 import io.relayr.model.MqttChannel;
 
 public class SslUtil {
@@ -35,24 +34,24 @@ public class SslUtil {
     private static final String PROPERTIES_FILE_NAME = "ssl.properties";
     private static final String CERTIFICATE_FILE_NAME = "relayr.crt";
 
-    private static SslUtil sslUtil;
-    private static Certificate mCertificate;
+    private static SslUtil sSslUtil;
+    private static Certificate sCertificate;
+    private static boolean sCertRefreshed = false;
 
-    private final Properties properties = new Properties();
     private final Context mContext;
+    private final Properties properties = new Properties();
 
     static SslUtil instance() {
-        return sslUtil;
+        return sSslUtil;
     }
 
     static void init(Context context) {
-        if (sslUtil == null)
-            sslUtil = new SslUtil(context);
+        sSslUtil = new SslUtil(context);
     }
 
     private SslUtil(Context context) {
         mContext = context;
-        mCertificate = loadCertificate();
+        sCertificate = loadCertificate();
 
         try {
             properties.load(context.getAssets().open(PROPERTIES_FILE_NAME));
@@ -84,7 +83,13 @@ public class SslUtil {
     }
 
     SSLSocketFactory createSocketFactory() {
-        TrustManagerFactory tmf = createTrustManagerFactory();
+        TrustManagerFactory tmf = null;
+        try {
+            tmf = createTrustManagerFactory();
+        } catch (CertificateException e) {
+            e.printStackTrace();
+        }
+        
         if (tmf == null) return null;
 
         SSLContext sslContext = null;
@@ -100,12 +105,14 @@ public class SslUtil {
         return sslContext.getSocketFactory();
     }
 
-    TrustManagerFactory createTrustManagerFactory() {
+    TrustManagerFactory createTrustManagerFactory() throws CertificateException {
         TrustManagerFactory tmf = null;
 
         try {
             tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-            tmf.init(createKeyStore(downloadCertificate(properties.getProperty("cert_url"))));
+            if (sCertificate == null)
+                sCertificate = downloadCertificate(properties.getProperty("cert_url"));
+            tmf.init(createKeyStore(sCertificate));
         } catch (NoSuchAlgorithmException | KeyStoreException e) {
             e.printStackTrace();
         }
@@ -113,9 +120,16 @@ public class SslUtil {
         return tmf;
     }
 
-    Certificate downloadCertificate(String url) {
-        if (mCertificate != null) return mCertificate;
+    void refreshCertificate() {
+        if (sCertificate == null || !sCertRefreshed)
+            try {
+                downloadCertificate(properties.getProperty("cert_url"));
+            } catch (CertificateException e) {
+                e.printStackTrace();
+            }
+    }
 
+    Certificate downloadCertificate(String url) throws CertificateException {
         CertificateFactory cf = null;
         try {
             cf = CertificateFactory.getInstance("X.509");
@@ -123,17 +137,19 @@ public class SslUtil {
             e.printStackTrace();
         }
 
-        if (cf == null) return null;
+        if (cf == null) throw new CertificateException("CertificateFactory creation failed!");
 
         try {
             InputStream caInput = new URL(url).openStream();
-            mCertificate = cf.generateCertificate(caInput);
-            persistCertificate(mCertificate);
+            sCertificate = cf.generateCertificate(caInput);
+            sCertRefreshed = true;
+            persistCertificate(sCertificate);
         } catch (CertificateException | IOException e) {
+            sCertRefreshed = false;
             e.printStackTrace();
         }
 
-        return mCertificate;
+        return sCertificate;
     }
 
     Certificate loadCertificate() {
@@ -143,11 +159,11 @@ public class SslUtil {
             ObjectInputStream is = new ObjectInputStream(fis);
             return (Certificate) is.readObject();
         } catch (FileNotFoundException e) {
-            Log.w("SslUtil", "Certificate not found.");
+            Log.w("SslUtil", "Certificate not found: " + e.getMessage());
         } catch (IOException e) {
-            Log.e("SslUtil", "Certificate can't be read ");
+            Log.e("SslUtil", "Certificate can't be read: " + e.getMessage());
         } catch (ClassNotFoundException e) {
-            Log.e("SslUtil", "Can not cast certificate object!");
+            Log.e("SslUtil", "Can not cast certificate object: " + e.getMessage());
         }
 
         return null;
@@ -163,9 +179,9 @@ public class SslUtil {
             fos.write(out.toByteArray());
             fos.close();
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            Log.w("SslUtil", "Certificate file not found: " + e.getMessage());
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.e("SslUtil", "Certificate can't be written: " + e.getMessage());
         }
     }
 

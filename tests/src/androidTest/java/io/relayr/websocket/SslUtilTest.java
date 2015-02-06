@@ -11,6 +11,7 @@ import org.robolectric.RobolectricTestRunner;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
 import java.util.Properties;
 
 import javax.net.ssl.SSLSocketFactory;
@@ -50,7 +51,7 @@ public class SslUtilTest {
     }
 
     @Test
-    public void createCertificateTest() {
+    public void createCertificateTest() throws CertificateException {
         Certificate certificate = SslUtil.instance().downloadCertificate(CERT_URL);
 
         assertThat(certificate).isNotNull();
@@ -64,7 +65,7 @@ public class SslUtilTest {
     }
 
     @Test
-    public void createKeyStoreTest() throws KeyStoreException {
+    public void createKeyStoreTest() throws KeyStoreException, CertificateException {
         Certificate certificate = SslUtil.instance().downloadCertificate(CERT_URL);
         KeyStore keyStore = SslUtil.instance().createKeyStore(certificate);
 
@@ -73,7 +74,7 @@ public class SslUtilTest {
     }
 
     @Test
-    public void createTrustManagerTest() {
+    public void createTrustManagerTest() throws CertificateException {
         TrustManagerFactory trustManagerFactory = SslUtil.instance().createTrustManagerFactory();
 
         assertThat(trustManagerFactory).isNotNull();

@@ -90,6 +90,7 @@ public class MockBackend {
             }, WEB_SOCKET_READINGS);
             return readings.toArray(new Reading[readings.size()]);
         } catch (Exception e) {
+            e.printStackTrace();
             return null;
         }
     }
@@ -102,6 +103,7 @@ public class MockBackend {
                     subscriber.onNext(load(typeToken, asset));
                     subscriber.onCompleted();
                 } catch (Exception e) {
+                    e.printStackTrace();
                     subscriber.onError(e);
                 }
             }

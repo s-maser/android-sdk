@@ -2,7 +2,6 @@ package io.relayr.websocket;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -10,11 +9,9 @@ import javax.inject.Singleton;
 import io.relayr.RelayrSdk;
 import io.relayr.SocketClient;
 import io.relayr.api.ChannelApi;
-import io.relayr.api.SubscriptionApi;
 import io.relayr.model.App;
 import io.relayr.model.MqttChannel;
 import io.relayr.model.MqttDefinition;
-import io.relayr.model.MqttExistingChannel;
 import io.relayr.model.TransmitterDevice;
 import rx.Observable;
 import rx.Subscriber;
@@ -27,10 +24,10 @@ import rx.subjects.PublishSubject;
 @Singleton
 public class WebSocketClient implements SocketClient {
 
-    private final ChannelApi mChannelApi;
-    private final WebSocket<MqttChannel> mWebSocket;
-    private final Map<String, MqttChannel> mDeviceChannels = new HashMap<>();
-    private final Map<String, PublishSubject<Object>> mWebSocketConnections = new HashMap<>();
+    final ChannelApi mChannelApi;
+    final WebSocket<MqttChannel> mWebSocket;
+    final Map<String, MqttChannel> mDeviceChannels = new HashMap<>();
+    final Map<String, PublishSubject<Object>> mSocketConnections = new HashMap<>();
 
     @Inject
     public WebSocketClient(ChannelApi channelApi, WebSocketFactory factory) {
@@ -39,15 +36,15 @@ public class WebSocketClient implements SocketClient {
     }
 
     public Observable<Object> subscribe(TransmitterDevice device) {
-        if (mWebSocketConnections.containsKey(device.id))
-            return mWebSocketConnections.get(device.id);
+        if (mSocketConnections.containsKey(device.id))
+            return mSocketConnections.get(device.id);
         else
             return start(device);
     }
 
     private synchronized Observable<Object> start(final TransmitterDevice device) {
         final PublishSubject<Object> subject = PublishSubject.create();
-        mWebSocketConnections.put(device.id, subject);
+        mSocketConnections.put(device.id, subject);
 
         RelayrSdk.getRelayrApi().getAppInfo()
                 .flatMap(new Func1<App, Observable<MqttChannel>>() {
@@ -65,7 +62,7 @@ public class WebSocketClient implements SocketClient {
                     @Override
                     public void onError(Throwable e) {
                         e.printStackTrace();
-                        mWebSocketConnections.remove(device.id);
+                        mSocketConnections.remove(device.id);
                     }
 
                     @Override
@@ -89,14 +86,15 @@ public class WebSocketClient implements SocketClient {
         mWebSocket.subscribe(channel, new WebSocketCallback() {
             @Override
             public void connectCallback(Object message) {
-                mDeviceChannels.put(deviceId, channel);
+                if (!mDeviceChannels.containsKey(deviceId))
+                    mDeviceChannels.put(deviceId, channel);
             }
 
             @Override
             public void disconnectCallback(Object message) {
                 subject.onError((Throwable) message);
                 mDeviceChannels.remove(deviceId);
-                mWebSocketConnections.remove(deviceId);
+                mSocketConnections.remove(deviceId);
             }
 
             @Override
@@ -112,19 +110,19 @@ public class WebSocketClient implements SocketClient {
             public void errorCallback(Throwable e) {
                 subject.onError(e);
                 mDeviceChannels.remove(deviceId);
-                mWebSocketConnections.remove(deviceId);
+                mSocketConnections.remove(deviceId);
             }
         });
     }
 
     @Override
     public void unSubscribe(final String deviceId) {
-        if (mWebSocketConnections.containsKey(deviceId)) {
-            mWebSocketConnections.get(deviceId).onCompleted();
-            mWebSocketConnections.remove(deviceId);
+        if (mSocketConnections.containsKey(deviceId)) {
+            mSocketConnections.get(deviceId).onCompleted();
+            mSocketConnections.remove(deviceId);
         }
 
-        if (!mDeviceChannels.isEmpty() && mDeviceChannels.get(deviceId) != null)
+        if (!mDeviceChannels.isEmpty() && mDeviceChannels.containsKey(deviceId))
             if (mWebSocket.unSubscribe(mDeviceChannels.get(deviceId)))
                 mDeviceChannels.remove(deviceId);
     }
