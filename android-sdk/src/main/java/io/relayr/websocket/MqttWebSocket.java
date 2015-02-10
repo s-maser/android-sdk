@@ -9,6 +9,7 @@ import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -144,7 +145,7 @@ class MqttWebSocket extends WebSocket<MqttChannel> {
         }
 
         try {
-            subscribe(channel);
+            subscribe(topic);
             addCallback(topic, callback);
             callback.connectCallback("Subscribed to " + channel.getChannelId());
         } catch (MqttException e) {
@@ -175,8 +176,16 @@ class MqttWebSocket extends WebSocket<MqttChannel> {
         }
     }
 
-    private void subscribe(MqttChannel channel) throws MqttException {
-            final IMqttToken subscribeToken = mClient.subscribe(channel.getCredentials().getTopic(), 1);
-            subscribeToken.waitForCompletion(SUBSCRIBE_TIMEOUT);
+    private void subscribe(String topic) throws MqttException {
+        List<String> topics = new ArrayList<>();
+        topics.add(topic);
+        topics.addAll(mTopicCallbacks.keySet());
+
+        int[] qos = new int[topics.size()];
+        Arrays.fill(qos, 1);
+
+        final IMqttToken subscribeToken = mClient.subscribe(topics.toArray(new String[topics.size()]), qos);
+
+        subscribeToken.waitForCompletion(SUBSCRIBE_TIMEOUT);
     }
 }
