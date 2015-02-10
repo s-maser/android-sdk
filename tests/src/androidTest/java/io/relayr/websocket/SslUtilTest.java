@@ -47,7 +47,7 @@ public class SslUtilTest {
 
         assertThat(broker).doesNotContain("null");
         assertThat(broker).containsOnlyOnce("ssl://");
-        assertThat(broker).containsOnlyOnce("test.com");
+        assertThat(broker).containsOnlyOnce("relayr.io");
     }
 
     @Test

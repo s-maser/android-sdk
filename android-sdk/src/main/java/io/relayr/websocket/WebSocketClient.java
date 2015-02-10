@@ -10,10 +10,12 @@ import io.relayr.RelayrSdk;
 import io.relayr.SocketClient;
 import io.relayr.api.ChannelApi;
 import io.relayr.model.App;
+import io.relayr.model.Bookmark;
 import io.relayr.model.MqttChannel;
 import io.relayr.model.MqttDefinition;
 import io.relayr.model.TransmitterDevice;
 import rx.Observable;
+import rx.Observer;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
@@ -54,7 +56,7 @@ public class WebSocketClient implements SocketClient {
                     }
                 })
                 .subscribeOn(Schedulers.newThread())
-                .subscribe(new Subscriber<MqttChannel>() {
+                .subscribe(new Observer<MqttChannel>() {
                     @Override
                     public void onCompleted() {
                     }
@@ -66,9 +68,24 @@ public class WebSocketClient implements SocketClient {
                     }
 
                     @Override
-                    public void onNext(MqttChannel channel) {
-                        mWebSocket.createClient(channel.getCredentials().getClientId());
-                        subscribeToChannel(channel, device.id, subject);
+                    public void onNext(final MqttChannel channel) {
+                        mWebSocket.createClient(channel, new Subscriber<Void>() {
+                            @Override
+                            public void onCompleted() {
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                e.printStackTrace();
+                                mSocketConnections.remove(device.id);
+                            }
+
+                            @Override
+                            public void onNext(Void o) {
+                                subscribeToChannel(channel, device.id, subject);
+                            }
+                        });
+
                     }
                 });
 

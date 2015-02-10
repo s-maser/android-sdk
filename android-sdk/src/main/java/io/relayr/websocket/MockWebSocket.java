@@ -22,7 +22,7 @@ class MockWebSocket extends WebSocket<MqttChannel> {
     }
 
     @Override
-    public void subscribe(MqttChannel channel, final WebSocketCallback callback) {
+    public boolean subscribe(MqttChannel channel, final WebSocketCallback callback) {
         callback.connectCallback("");
         Observable.from(mMockBackend.getWebSocketReadings())
                 .delay(1, TimeUnit.SECONDS)
@@ -51,12 +51,12 @@ class MockWebSocket extends WebSocket<MqttChannel> {
                         callback.successCallback(o);
                     }
                 });
-
+        return true;
     }
 
     @Override
-    boolean createClient(String clientId) {
-        return true;
+    void createClient(MqttChannel channel, Subscriber<Void> subscriber) {
+        subscriber.onNext(null);
     }
 
     @Override

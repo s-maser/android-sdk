@@ -14,6 +14,7 @@ import io.relayr.model.MqttChannel;
 import io.relayr.model.MqttDefinition;
 import io.relayr.model.TransmitterDevice;
 import rx.Observable;
+import rx.Subscriber;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
@@ -56,8 +57,7 @@ public class WebSocketClientTest extends TestEnvironment {
         verify(channelApi, times(1)).create(any(MqttDefinition.class));
         await();
 
-        verify(webSocket, times(1)).subscribe(any(MqttChannel.class),
-                any(WebSocketCallback.class));
+        verify(webSocket, times(1)).createClient(any(MqttChannel.class), any(Subscriber.class));
     }
 
     @Test

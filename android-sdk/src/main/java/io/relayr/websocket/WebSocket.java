@@ -1,12 +1,13 @@
 package io.relayr.websocket;
 
 import io.relayr.model.MqttChannel;
+import rx.Subscriber;
 
 abstract class WebSocket<T> {
 
-    abstract void subscribe(T channel, WebSocketCallback webSocketCallback);
+    abstract boolean subscribe(T channel, WebSocketCallback webSocketCallback);
 
-    abstract boolean createClient(String clientId);
+    abstract void createClient(MqttChannel channel, Subscriber<Void> subscriber);
 
     abstract boolean unSubscribe(MqttChannel channel);
 }

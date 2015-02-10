@@ -9,36 +9,54 @@ import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import io.relayr.RelayrApp;
 import io.relayr.model.MqttChannel;
+import rx.Subscriber;
 
 class MqttWebSocket extends WebSocket<MqttChannel> {
 
+    private static final Object mLock = new Object();
+
     private static final int CONNECT_TIMEOUT = 2000;
     private static final int SUBSCRIBE_TIMEOUT = 2000;
-    private static final int UNSUBSCRIBE_TIMEOUT = 2000;
+    private static final int UNSUBSCRIBE_TIMEOUT = 1000;
 
-    private Map<String, MqttAsyncClient> mClients = new HashMap<>();
+    private MqttAsyncClient mClient = null;
+    private Map<String, List<WebSocketCallback>> mTopicCallbacks = new HashMap<>();
 
     public MqttWebSocket() {
         SslUtil.init(RelayrApp.get());
     }
 
-    public boolean createClient(String clientId) {
-        if (clientId == null || clientId.isEmpty()) {
-            Log.e("WebSocket", "ClientId '" + clientId + "' not valid!");
-            return false;
-        }
+    @Override
+    public void createClient(final MqttChannel channel, Subscriber<Void> subscriber) {
+        synchronized (mLock) {
+            if (mClient != null && mClient.isConnected()) {
+                subscriber.onNext(null);
+                return;
+            }
 
-        if (clientExist(clientId)) {
-            Log.i("WebSocket", "Client " + clientId + " already exist.");
-            return true;
-        }
+            if (channel == null) {
+                subscriber.onError(new Throwable("MqttChannel data can't be null"));
+                return;
+            }
 
-        return addClient(clientId) != null;
+            if (createMqttClient(channel.getCredentials().getClientId())) {
+                try {
+                    connect(channel.getCredentials());
+                    subscriber.onNext(null);
+                } catch (MqttException e) {
+                    subscriber.onError(e);
+                }
+            } else {
+                subscriber.onError(new Throwable("Client not created!"));
+            }
+        }
     }
 
     @Override
@@ -48,22 +66,15 @@ class MqttWebSocket extends WebSocket<MqttChannel> {
             return false;
         }
 
-        if (mClients == null || mClients.isEmpty()) {
-            Log.w("WebSocket", "No existing MQTT clients.");
-            return false;
-        }
-
-        final String clientId = channel.getCredentials().getClientId();
-        if (!clientExist(clientId)) {
-            Log.w("WebSocket", "MqttClient for clientId " + clientId + " not found!");
+        if (mClient == null) {
+            Log.w("WebSocket", "MqttClient not found!");
             return false;
         }
 
         try {
-            final MqttAsyncClient client = mClients.get(clientId);
-            final IMqttToken unSubscribeToken = client.unsubscribe(channel.getCredentials().getTopic());
+            final IMqttToken unSubscribeToken = mClient.unsubscribe(channel.getCredentials().getTopic());
             unSubscribeToken.waitForCompletion(UNSUBSCRIBE_TIMEOUT);
-            mClients.remove(clientId);
+            mTopicCallbacks.remove(channel.getCredentials().getTopic());
             return true;
         } catch (MqttException e) {
             e.printStackTrace();
@@ -71,75 +82,101 @@ class MqttWebSocket extends WebSocket<MqttChannel> {
         }
     }
 
-    void subscribe(MqttChannel channel, final WebSocketCallback callback) {
-        if (callback == null) {
-            Log.e("WebSocket", "Argument WebSocketCallback can not be null!");
-            return;
+    private boolean createMqttClient(String clientId) {
+        if (mClient != null) {
+            return true;
         }
-        if (channel == null) {
-            callback.errorCallback(new IllegalArgumentException("MqttChannel can't be null!"));
-            return;
-        }
-
-        MqttAsyncClient client = addClient(channel.getCredentials().getClientId());
-        if (client == null) {
-            callback.disconnectCallback(new IllegalArgumentException("MqttClient creation failed!"));
-            return;
-        }
-
-        client.setCallback(new MqttCallback() {
-            @Override
-            public void connectionLost(Throwable cause) {
-                callback.disconnectCallback(cause);
-            }
-
-            @Override
-            public void messageArrived(String topic, MqttMessage message) {
-                callback.successCallback(message);
-            }
-
-            @Override
-            public void deliveryComplete(IMqttDeliveryToken token) {
-            }
-        });
 
         try {
-            final IMqttToken connectToken = client.connect(SslUtil.instance().getConnectOptions
-                    (channel.getCredentials()));
-            connectToken.waitForCompletion(CONNECT_TIMEOUT);
-            callback.connectCallback("Connected to channel " + channel.getChannelId());
+            mClient = new MqttAsyncClient(SslUtil.instance().getBroker(), clientId, null);
+            mClient.setCallback(new MqttCallback() {
+                @Override
+                public void connectionLost(Throwable cause) {
+                    if (mTopicCallbacks == null || mTopicCallbacks.isEmpty()) return;
 
-            try {
-                final IMqttToken subscribeToken = client.subscribe(channel.getCredentials().getTopic(), 1);
-                subscribeToken.waitForCompletion(SUBSCRIBE_TIMEOUT);
-                callback.connectCallback("Subscribed to channel " + channel.getChannelId());
-            } catch (MqttException e) {
-                callback.disconnectCallback(e);
-                Log.e("WebSocket", "Subscribe to MQTT channel failed: " + e.getMessage());
+                    for (List<WebSocketCallback> callbacks : mTopicCallbacks.values())
+                        for (WebSocketCallback socketCallback : callbacks)
+                            socketCallback.disconnectCallback(cause);
+                }
+
+                @Override
+                public void messageArrived(String topic, MqttMessage message) {
+                    if (mTopicCallbacks == null || mTopicCallbacks.isEmpty()) return;
+
+                    final List<WebSocketCallback> callbacks = mTopicCallbacks.get(topic);
+                    for (WebSocketCallback socketCallback : callbacks)
+                        socketCallback.successCallback(message);
+                }
+
+                @Override
+                public void deliveryComplete(IMqttDeliveryToken token) {
+                }
+            });
+
+            return true;
+        } catch (MqttException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
+    public boolean subscribe(final MqttChannel channel, final WebSocketCallback callback) {
+        if (callback == null) {
+            Log.e("WebSocket", "Argument WebSocketCallback can not be null!");
+            return false;
+        }
+
+        if (channel == null) {
+            callback.errorCallback(new IllegalArgumentException("MqttChannel can't be null!"));
+            return false;
+        }
+
+        if (mClient == null) {
+            callback.disconnectCallback(new IllegalArgumentException("MqttClient creation failed!"));
+            return false;
+        }
+
+        final String topic = channel.getCredentials().getTopic();
+        if (mTopicCallbacks.containsKey(topic)) {
+            addCallback(topic, callback);
+            return true;
+        }
+
+        try {
+            subscribe(channel);
+            addCallback(topic, callback);
+            callback.connectCallback("Subscribed to " + channel.getChannelId());
+        } catch (MqttException e) {
+            callback.disconnectCallback(e);
+            return false;
+        }
+
+        return true;
+    }
+
+    private void addCallback(String topic, WebSocketCallback callback) {
+        final List<WebSocketCallback> callbacks = mTopicCallbacks.get(topic);
+        if (callbacks == null)
+            mTopicCallbacks.put(topic, Arrays.asList(callback));
+        else
+            callbacks.add(callback);
+    }
+
+    private void connect(MqttChannel.MqttCredentials credentials) throws MqttException {
+        try {
+            if (!mClient.isConnected()) {
+                final IMqttToken connectToken = mClient.connect(SslUtil.instance().getConnectOptions(credentials));
+                connectToken.waitForCompletion(CONNECT_TIMEOUT);
             }
         } catch (MqttException e) {
             SslUtil.instance().refreshCertificate();
-            callback.disconnectCallback(e);
-            Log.e("WebSocket", "Connect to MQTT channel failed: " + e.getMessage());
+            throw e;
         }
     }
 
-    private boolean clientExist(String clientId) {
-        final MqttAsyncClient client = mClients.get(clientId);
-        return client != null;
-    }
-
-    private MqttAsyncClient addClient(String clientId) {
-        if (clientExist(clientId)) return mClients.get(clientId);
-
-        try {
-            mClients.put(clientId, new MqttAsyncClient(SslUtil.instance().getBroker(), clientId, null));
-        } catch (MqttException e) {
-            Log.e("WebSocket", "Client with clientId " + clientId + " can't be created!");
-            e.printStackTrace();
-            return null;
-        }
-
-        return mClients.get(clientId);
+    private void subscribe(MqttChannel channel) throws MqttException {
+            final IMqttToken subscribeToken = mClient.subscribe(channel.getCredentials().getTopic(), 1);
+            subscribeToken.waitForCompletion(SUBSCRIBE_TIMEOUT);
     }
 }
