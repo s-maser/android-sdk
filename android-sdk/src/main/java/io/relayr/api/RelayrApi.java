@@ -39,7 +39,6 @@ public interface RelayrApi {
 
     @POST("/devices/{device_id}/cmd")
     Observable<Void> sendCommand(@Path("device_id") String deviceId,
-                                 @Path("command_name") String commandName,
                                  @Body Command command);
 
     /** Api call to tell the backend to create WunderBar.

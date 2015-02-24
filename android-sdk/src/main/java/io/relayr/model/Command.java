@@ -3,12 +3,12 @@ package io.relayr.model;
 public class Command {
 
     final public String path;
-    final public String meaning;
+    final public String command;
     final public Object value;
 
-    public Command(String path, String meaning, Object value) {
+    public Command(String path, String command, Object value) {
         this.path = path;
-        this.meaning = meaning;
+        this.command = command;
         this.value = value;
     }
 }
