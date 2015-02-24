@@ -20,7 +20,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import io.relayr.model.Reading;
 import rx.Observable;
 import rx.Subscriber;
 
@@ -84,11 +83,11 @@ public class MockBackend {
         return gson.fromJson(load(resource), typeToken.getType());
     }
 
-    public Reading[] getWebSocketReadings() {
+    public Object[] getWebSocketReadings() {
         try {
-            List<Reading> readings = load(new TypeToken<List<Reading>>() {
+            List<Object> readings = load(new TypeToken<List<Object>>() {
             }, WEB_SOCKET_READINGS);
-            return readings.toArray(new Reading[readings.size()]);
+            return readings.toArray(new Object[readings.size()]);
         } catch (Exception e) {
             e.printStackTrace();
             return null;

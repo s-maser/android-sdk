@@ -4,8 +4,8 @@ import com.google.gson.Gson;
 
 import io.relayr.ble.BleDeviceType;
 import io.relayr.model.AccelGyroscope;
+import io.relayr.model.BleReading;
 import io.relayr.model.LightColorProx;
-import io.relayr.model.Reading;
 
 public abstract class BleDataParser {
 
@@ -29,7 +29,7 @@ public abstract class BleDataParser {
     }
 
     private static String getLIGHTSensorData(byte[] value) {
-        Reading reading = new Reading();
+        BleReading reading = new BleReading();
         reading.readings.color = new LightColorProx.Color();
         reading.readings.luminosity = (byteToUnsignedInt(value[1]) << 8) | byteToUnsignedInt(value[0]);
         reading.readings.color.red = (byteToUnsignedInt(value[3]) << 8) | byteToUnsignedInt(value[2]);
@@ -40,7 +40,7 @@ public abstract class BleDataParser {
     }
 
     private static String getGYROSensorData(byte[] value) {
-        Reading reading = new Reading();
+        BleReading reading = new BleReading();
         int gyroscopeX = byteToUnsignedInt(value[0]) |
                 (byteToUnsignedInt(value[1]) << 8) |
                 (byteToUnsignedInt(value[2]) << 16) |
@@ -71,7 +71,7 @@ public abstract class BleDataParser {
     }
 
     private static String getHTUSensorData(byte[] value) {
-        Reading reading = new Reading();
+        BleReading reading = new BleReading();
         int temperature = (byteToUnsignedInt(value[1]) << 8) | byteToUnsignedInt(value[0]);
         int humidity = (byteToUnsignedInt(value[3]) << 8) | byteToUnsignedInt(value[2]);
 
@@ -81,7 +81,7 @@ public abstract class BleDataParser {
     }
 
     private static String getMICSensorData(byte[] value) {
-        Reading reading = new Reading();
+        BleReading reading = new BleReading();
         reading.readings.noiseLevel = (byteToUnsignedInt(value[1]) << 8) | byteToUnsignedInt(value[0]);
         return new Gson().toJson(reading);
     }

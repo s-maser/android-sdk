@@ -37,7 +37,7 @@ public interface RelayrApi {
     @GET("/oauth2/user-info")
     Observable<User> getUserInfo();
 
-    @POST("/devices/{device_id}/cmd/{command_name}")
+    @POST("/devices/{device_id}/cmd")
     Observable<Void> sendCommand(@Path("device_id") String deviceId,
                                  @Path("command_name") String commandName,
                                  @Body Command command);

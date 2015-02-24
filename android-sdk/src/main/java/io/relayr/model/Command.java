@@ -2,9 +2,13 @@ package io.relayr.model;
 
 public class Command {
 
-    final public int cmd;
+    final public String path;
+    final public String meaning;
+    final public Object value;
 
-    public Command(int cmd) {
-        this.cmd = cmd;
+    public Command(String path, String meaning, Object value) {
+        this.path = path;
+        this.meaning = meaning;
+        this.value = value;
     }
 }

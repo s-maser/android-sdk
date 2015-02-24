@@ -67,11 +67,6 @@ class MqttWebSocket extends WebSocket<MqttChannel> {
             return false;
         }
 
-        if (mClient == null) {
-            Log.w("WebSocket", "MqttClient not found!");
-            return false;
-        }
-
         try {
             final IMqttToken unSubscribeToken = mClient.unsubscribe(channel.getCredentials().getTopic());
             unSubscribeToken.waitForCompletion(UNSUBSCRIBE_TIMEOUT);
@@ -84,9 +79,7 @@ class MqttWebSocket extends WebSocket<MqttChannel> {
     }
 
     private boolean createMqttClient(String clientId) {
-        if (mClient != null) {
-            return true;
-        }
+        if (mClient != null) return true;
 
         try {
             mClient = new MqttAsyncClient(SslUtil.instance().getBroker(), clientId, null);
@@ -130,11 +123,6 @@ class MqttWebSocket extends WebSocket<MqttChannel> {
 
         if (channel == null) {
             callback.errorCallback(new IllegalArgumentException("MqttChannel can't be null!"));
-            return false;
-        }
-
-        if (mClient == null) {
-            callback.disconnectCallback(new IllegalArgumentException("MqttClient creation failed!"));
             return false;
         }
 
