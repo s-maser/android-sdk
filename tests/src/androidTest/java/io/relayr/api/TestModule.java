@@ -6,7 +6,7 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import io.relayr.websocket.WebSocketNewClientTest;
+import io.relayr.websocket.WebSocketClientTest;
 
 @Module(
         complete = false,
@@ -17,7 +17,7 @@ import io.relayr.websocket.WebSocketNewClientTest;
                 MockRelayrApiTest.class,
                 MockStatusApiTest.class,
                 MockSubscriptionApiTest.class,
-                WebSocketNewClientTest.class
+                WebSocketClientTest.class
         }
 )
 public class TestModule {

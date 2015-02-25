@@ -22,7 +22,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class WebSocketNewClientTest extends TestEnvironment {
+public class WebSocketClientTest extends TestEnvironment {
 
     @Mock private ChannelApi channelApi;
     @Mock private WebSocketFactory webSocketFactory;
