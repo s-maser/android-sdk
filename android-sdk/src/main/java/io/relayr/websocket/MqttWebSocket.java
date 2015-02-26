@@ -97,8 +97,7 @@ class MqttWebSocket extends WebSocket<MqttChannel> {
                 public void messageArrived(String topic, MqttMessage message) {
                     if (mTopicCallbacks == null || mTopicCallbacks.isEmpty()) return;
 
-                    final List<WebSocketCallback> callbacks = mTopicCallbacks.get(topic);
-                    for (WebSocketCallback socketCallback : callbacks)
+                    for (WebSocketCallback socketCallback :  mTopicCallbacks.get(topic))
                         socketCallback.successCallback(message);
                 }
 
@@ -145,11 +144,10 @@ class MqttWebSocket extends WebSocket<MqttChannel> {
     }
 
     private void addCallback(String topic, WebSocketCallback callback) {
-        final List<WebSocketCallback> callbacks = mTopicCallbacks.get(topic);
-        if (callbacks == null)
-            mTopicCallbacks.put(topic, Arrays.asList(callback));
+        if (mTopicCallbacks.get(topic) == null)
+            mTopicCallbacks.put(topic, new ArrayList<>(Arrays.asList(callback)));
         else
-            callbacks.add(callback);
+            mTopicCallbacks.get(topic).add(callback);
     }
 
     private void connect(MqttChannel.MqttCredentials credentials) throws MqttException {
