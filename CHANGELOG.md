@@ -1,6 +1,19 @@
 Change Log
 ==========
 
+Version 0.0.9 *(2015-02-26)*
+----------------------------
+ * Add configure-devices scope to login URL.
+ * Fix non-resizable list bug.
+
+Version 0.0.8 *(2015-02-25)*
+----------------------------
+ * Replace PubNub with MQTT protocol for streaming data from devices. 
+ * Breaking changes: 
+    * sendCommand API call url and parameters.
+    * Move Reading model to BleReading.
+    * New Reading model structure.
+ 
 Version 0.0.7 *(2015-01-16)*
 ----------------------------
  * Fix mock method isPlatformReachable in reachability utils to be always reachable.

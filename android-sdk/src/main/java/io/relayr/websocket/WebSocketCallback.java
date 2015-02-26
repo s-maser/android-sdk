@@ -1,6 +1,6 @@
 package io.relayr.websocket;
 
-interface WebSocketCallback {
+public interface WebSocketCallback {
 
     void connectCallback(Object message);
 
