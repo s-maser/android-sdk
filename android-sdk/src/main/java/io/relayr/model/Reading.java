@@ -14,7 +14,7 @@ public class Reading {
     public String modelId;
     public List<Data> readings = new ArrayList<>();
 
-    class Data {
+    public class Data {
         public long recorded;
         public String meaning;
         public String path;
