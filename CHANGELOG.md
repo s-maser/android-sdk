@@ -4,6 +4,7 @@ Change Log
 Version 0.0.9 *(2015-02-26)*
 ----------------------------
  * Add configure-devices scope to login URL.
+ * Fix non-resizable list bug.
 
 Version 0.0.8 *(2015-02-25)*
 ----------------------------
