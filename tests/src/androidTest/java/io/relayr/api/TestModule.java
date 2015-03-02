@@ -6,15 +6,18 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import io.relayr.websocket.WebSocketClientTest;
 
 @Module(
         complete = false,
         library = true,
         overrides = true,
         injects = {
-                MockStatusApiTest.class,
+                MockBackendTest.class,
                 MockRelayrApiTest.class,
-                MockBackendTest.class
+                MockStatusApiTest.class,
+                MockSubscriptionApiTest.class,
+                WebSocketClientTest.class
         }
 )
 public class TestModule {
@@ -32,13 +35,20 @@ public class TestModule {
     }
 
     @Provides
+    @Singleton
     RelayrApi provideRelayrApi(MockBackend mockBackend) {
         return new MockRelayrApi(mockBackend);
     }
 
     @Provides
+    @Singleton
     StatusApi provideStatusApi(MockBackend loader) {
         return new MockStatusApi(loader);
     }
 
+    @Provides
+    @Singleton
+    SubscriptionApi provideSubscriptionApi(MockBackend loader) {
+        return new MockSubscriptionApi(loader);
+    }
 }

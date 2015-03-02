@@ -69,6 +69,10 @@ afterEvaluate { project ->
                             id 'yerraycallero'
                             name 'Yeray Callero'
                         }
+                        developer {
+                            id 'bernardpletikosa'
+                            name 'Bernard Pletikosa'
+                        }
                     }
                 }
             }

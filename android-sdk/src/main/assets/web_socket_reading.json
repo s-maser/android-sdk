@@ -1,90 +1,210 @@
 [
     {
-        "ts":111,
-        "hum":32.33,
-        "temp":24.33,
-        "snd_level":34,
-        "light":2522,
-        "prox":41,
-        "clr":{"r":1000,"g":300,"b":200},
-        "accel":{"x":-0.623,"y":13.02,"z":-02.96},
-        "gyro":{"x":14.3,"y":132.2,"z":44.1}
+        "received": 111,
+        "recorded": 222,
+        "readings": {
+            "humidity": 32,
+            "temperature": 24.33,
+            "noiseLevel": 34,
+            "luminosity": 2522,
+            "proximity": 41,
+            "color": {
+                "red": 1000,
+                "green": 300,
+                "blue": 200
+            },
+            "acceleration": {
+                "x": -0.623,
+                "y": 13.02,
+                "z": -2.96
+            },
+            "angularSpeed": {
+                "x": 14.3,
+                "y": 132.2,
+                "z": 44.1
+            }
+        }
     },
     {
-        "ts":111,
-        "hum":32.0,
-        "temp":100,
-        "snd_level":35,
-        "light":3039,
-        "prox":42,
-        "clr":{"r":1000,"g":1,"b":1},
-        "accel":{"x":-10.63,"y":1.02,"z":-0.96},
-        "gyro":{"x":12.3,"y":12.2,"z":24.1}
+        "received": 111,
+        "recorded": 222,
+        "readings": {
+            "humidity": 32,
+            "temperature": 100,
+            "noiseLevel": 35,
+            "light": 3039,
+            "proximity": 42,
+            "color": {
+                "red": 1000,
+                "green": 1,
+                "b": 1
+            },
+            "acceleration": {
+                "x": -10.63,
+                "y": 1.02,
+                "z": -0.96
+            },
+            "angularSpeed": {
+                "x": 12.3,
+                "y": 12.2,
+                "z": 24.1
+            }
+        }
     },
     {
-        "ts":111,
-        "hum":3,
-        "temp":22.33,
-        "snd_level":36,
-        "light":4080,
-        "prox":44,
-        "clr":{"r":1000,"g":300,"b":200},
-        "accel":{"x":-0.63,"y":1.02,"z":-0.96},
-        "gyro":{"x":124.3,"y":12.2,"z":94.1}
+        "received": 111,
+        "recorded": 222,
+        "readings": {
+            "humidity": 3,
+            "temperature": 22.33,
+            "noiseLevel": 36,
+            "light": 4080,
+            "proximity": 44,
+            "color": {
+                "red": 1000,
+                "green": 300,
+                "b": 200
+            },
+            "acceleration": {
+                "x": -0.63,
+                "y": 1.02,
+                "z": -0.96
+            },
+            "angularSpeed": {
+                "x": 124.3,
+                "y": 12.2,
+                "z": 94.1
+            }
+        }
     },
     {
-        "ts":111,
-        "hum":100,
-        "temp":-27.00,
-        "snd_level":37,
-        "light":2222,
-        "prox":45,
-        "clr":{"r":1000,"g":300,"b":200},
-        "accel":{"x":-80.63,"y":1.02,"z":-0.96},
-        "gyro":{"x":124.3,"y":32.2,"z":34.1}
+        "received": 111,
+        "recorded": 222,
+        "readings": {
+            "humidity": 100,
+            "temperature": -27,
+            "noiseLevel": 37,
+            "light": 2222,
+            "proximity": 45,
+            "color": {
+                "red": 1000,
+                "green": 300,
+                "b": 200
+            },
+            "acceleration": {
+                "x": -80.63,
+                "y": 1.02,
+                "z": -0.96
+            },
+            "angularSpeed": {
+                "x": 124.3,
+                "y": 32.2,
+                "z": 34.1
+            }
+        }
     },
     {
-        "ts":111,
-        "hum":3.4,
-        "temp":29,
-        "snd_level":39,
-        "light":3922,
-        "prox":49,
-        "clr":{"r":1000,"g":300,"b":200},
-        "accel":{"x":-60.63,"y":1.02,"z":-0.96},
-        "gyro":{"x":124.3,"y":52.2,"z":34.1}
+        "received": 111,
+        "recorded": 222,
+        "readings": {
+            "humidity": 34,
+            "temperature": 29,
+            "noiseLevel": 39,
+            "light": 3922,
+            "proximity": 49,
+            "color": {
+                "red": 1000,
+                "green": 300,
+                "b": 200
+            },
+            "acceleration": {
+                "x": -60.63,
+                "y": 1.02,
+                "z": -0.96
+            },
+            "angularSpeed": {
+                "x": 124.3,
+                "y": 52.2,
+                "z": 34.1
+            }
+        }
     },
     {
-        "ts":111,
-        "hum":34,
-        "temp":27,
-        "snd_level":38,
-        "light":1522,
-        "prox":53,
-        "clr":{"r":1000,"g":300,"b":200},
-        "accel":{"x":-50.63,"y":1.02,"z":-0.96},
-        "gyro":{"x":124.3,"y":12.2,"z":34.1}
+        "received": 111,
+        "recorded": 222,
+        "readings": {
+            "humidity": 35,
+            "temperature": 27,
+            "noiseLevel": 38,
+            "light": 1522,
+            "proximity": 53,
+            "color": {
+                "red": 1000,
+                "green": 300,
+                "b": 200
+            },
+            "acceleration": {
+                "x": -50.63,
+                "y": 1.02,
+                "z": -0.96
+            },
+            "angularSpeed": {
+                "x": 124.3,
+                "y": 12.2,
+                "z": 34.1
+            }
+        }
     },
     {
-        "ts":111,
-        "hum":33.34,
-        "temp":26,
-        "snd_level":36,
-        "light":2542,
-        "prox":55,
-        "clr":{"r":1000,"g":300,"b":200},
-        "accel":{"x":-40.63,"y":1.02,"z":-0.96},
-        "gyro":{"x":124.3,"y":82.2,"z":34.1}
+        "received": 111,
+        "recorded": 222,
+        "readings": {
+            "humidity": 36,
+            "temperature": 26,
+            "noiseLevel": 36,
+            "light": 2542,
+            "proximity": 55,
+            "color": {
+                "red": 1000,
+                "green": 300,
+                "b": 200
+            },
+            "acceleration": {
+                "x": -40.63,
+                "y": 1.02,
+                "z": -0.96
+            },
+            "angularSpeed": {
+                "x": 124.3,
+                "y": 82.2,
+                "z": 34.1
+            }
+        }
     },
     {
-        "ts":111,
-        "hum":33,
-        "temp":23,
-        "snd_level":35,
-        "light":3333,
-        "prox":59,
-        "clr":{"r":1000,"g":300,"b":200},
-        "accel":{"x":-20.63,"y":1.02,"z":-0.96},
-        "gyro":{"x":34.3,"y":12.2,"z":34.1}
+        "received": 111,
+        "recorded": 222,
+        "readings": {
+            "humidity": 33,
+            "temperature": 23,
+            "noiseLevel": 35,
+            "light": 3333,
+            "proximity": 59,
+            "color": {
+                "red": 1000,
+                "green": 300,
+                "blue": 200
+            },
+            "acceleration": {
+                "x": -20.63,
+                "y": 1.02,
+                "z": -0.96
+            },
+            "angularSpeed": {
+                "x": 34.3,
+                "y": 12.2,
+                "z": 34.1
+            }
+        }
     }
 ]

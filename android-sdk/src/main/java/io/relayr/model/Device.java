@@ -75,6 +75,10 @@ public class Device implements Serializable {
         this.firmwareVersion = firmwareVersion;
     }
 
+    public TransmitterDevice toTransmitterDevice(){
+        return new TransmitterDevice(id, secret, owner, name, model.getId());
+    }
+    
     @Override
     public String toString() {
         return "Relayr_Device{" +

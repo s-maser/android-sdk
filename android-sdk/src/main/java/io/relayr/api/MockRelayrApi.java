@@ -58,7 +58,7 @@ public class MockRelayrApi implements RelayrApi {
     }
 
     @Override
-    public Observable<Void> sendCommand(String deviceId, String commandName, Command command) {
+    public Observable<Void> sendCommand(String deviceId, Command command) {
         return Observable.create(new Observable.OnSubscribe<Void>() {
             @Override
             public void call(Subscriber<? super Void> subscriber) {

@@ -1,7 +1,5 @@
 package io.relayr.websocket;
 
-import android.util.Log;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,11 +8,14 @@ import javax.inject.Singleton;
 
 import io.relayr.RelayrSdk;
 import io.relayr.SocketClient;
-import io.relayr.api.SubscriptionApi;
+import io.relayr.api.ChannelApi;
 import io.relayr.model.App;
+import io.relayr.model.Bookmark;
+import io.relayr.model.MqttChannel;
+import io.relayr.model.MqttDefinition;
 import io.relayr.model.TransmitterDevice;
-import io.relayr.model.WebSocketConfig;
 import rx.Observable;
+import rx.Observer;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
@@ -25,162 +26,96 @@ import rx.subjects.PublishSubject;
 @Singleton
 public class WebSocketClient implements SocketClient {
 
-    private static final String TAG = WebSocketClient.class.getSimpleName();
-    private final SubscriptionApi mSubscriptionApi;
-    private final WebSocketFactory mWebSocketFactory;
-    private final Map<String, PublishSubject<Object>> mWebSocketConnections = new HashMap<>();
-    private WebSocket mWebSocket = new UnInitializedWebSocket();
+    final ChannelApi mChannelApi;
+    final WebSocket<MqttChannel> mWebSocket;
+    final Map<String, MqttChannel> mDeviceChannels = new HashMap<>();
+    final Map<String, PublishSubject<Object>> mSocketConnections = new HashMap<>();
 
-    private static class UnInitializedWebSocket extends WebSocket {
-
-        public UnInitializedWebSocket() {
-            super(new WebSocketConfig("", "", "", ""));
-        }
-    }
-
-    @Inject WebSocketClient(SubscriptionApi subscriptionApi, WebSocketFactory factory) {
-        mSubscriptionApi = subscriptionApi;
-        mWebSocketFactory = factory;
+    @Inject
+    public WebSocketClient(ChannelApi channelApi, WebSocketFactory factory) {
+        mChannelApi = channelApi;
+        mWebSocket = factory.createWebSocket();
     }
 
     public Observable<Object> subscribe(TransmitterDevice device) {
-        if (mWebSocketConnections.containsKey(device.id)) {
-            return mWebSocketConnections.get(device.id);
-        } else {
+        if (mSocketConnections.containsKey(device.id))
+            return mSocketConnections.get(device.id);
+        else
             return start(device);
-        }
     }
 
-    private Observable<Object> start(final TransmitterDevice device) {
+    private synchronized Observable<Object> start(final TransmitterDevice device) {
         final PublishSubject<Object> subject = PublishSubject.create();
+        mSocketConnections.put(device.id, subject);
 
-        // if mWebSocket.isSubscribedToAnyone: subscribeToChannel(device.getId(), subject);
-        // else: mRelayrSDK.subscribe(...)
-
-        RelayrSdk.getRelayrApi()
-                .getAppInfo()
-                .flatMap(new Func1<App, Observable<WebSocketConfig>>() {
+        RelayrSdk.getRelayrApi().getAppInfo()
+                .flatMap(new Func1<App, Observable<MqttChannel>>() {
                     @Override
-                    public Observable<WebSocketConfig> call(App app) {
-                        return mSubscriptionApi.subscribe(app.id, device.id);
+                    public Observable<MqttChannel> call(App app) {
+                        return mChannelApi.create(new MqttDefinition(device.id, "mqtt"));
                     }
                 })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<WebSocketConfig>() {
-
+                .subscribeOn(Schedulers.newThread())
+                .subscribe(new Observer<MqttChannel>() {
                     @Override
                     public void onCompleted() {
-
                     }
 
                     @Override
-                    public void onError(Throwable error) {
-                        Log.e(TAG, error.getMessage());
-                        mWebSocketConnections.remove(device.id);
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                        mSocketConnections.remove(device.id);
                     }
 
                     @Override
-                    public void onNext(WebSocketConfig webSocketConfig) {
-                        initWebSocket(webSocketConfig);
-                        subscribeToChannel(webSocketConfig.channel, device.id, subject);
+                    public void onNext(final MqttChannel channel) {
+                        mWebSocket.createClient(channel, new Subscriber<Void>() {
+                            @Override
+                            public void onCompleted() {
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                e.printStackTrace();
+                                mSocketConnections.remove(device.id);
+                            }
+
+                            @Override
+                            public void onNext(Void o) {
+                                subscribeToChannel(channel, device.id, subject);
+                            }
+                        });
+
                     }
                 });
 
-        mWebSocketConnections.put(device.id, subject);
-        return subject
+        return subject.observeOn(AndroidSchedulers.mainThread())
                 .doOnError(new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
                         unSubscribe(device.id);
                     }
-                })
-                .observeOn(AndroidSchedulers.mainThread());
-    }
-
-    /*public void unSubscribeAll() {
-        mWebSocket.unSubscribeAll();
-        // mSubscriptionApi.unSubscribeAll();
-        Observable
-                .from(mWebSocketConnections.keySet())
-                .flatMap(new Func1<String, Observable<?>>() {
-                    @Override
-                    public Observable<?> call(String deviceId) {
-                        return mSubscriptionApi.unSubscribe(appId, deviceId);
-                    }
-                })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<Object>() {
-                    @Override
-                    public void onCompleted() {
-
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-
-                    }
-
-                    @Override
-                    public void onNext(Object o) {
-
-                    }
-                });
-    }*/
-
-    public void unSubscribe(final String sensorId) {
-        if (mWebSocketConnections.containsKey(sensorId)) {
-            mWebSocketConnections.get(sensorId).onCompleted();
-            mWebSocketConnections.remove(sensorId);
-        }
-
-        // mWebSocket.unSubscribe(sensorId);
-
-        RelayrSdk.getRelayrApi()
-                .getAppInfo()
-                .flatMap(new Func1<App, Observable<Void>>() {
-                    @Override
-                    public Observable<Void> call(App app) {
-                        return mSubscriptionApi.unSubscribe(app.id, sensorId);
-                    }
-                })
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<Void>() {
-                    @Override
-                    public void call(Void pubnubConfig) {
-                        /* success! */
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable error) {
-                    }
                 });
     }
 
-    private void initWebSocket(WebSocketConfig config) {
-        /* It should just be one instance since the authKey and cipherKey will always be the same */
-        mWebSocket = mWebSocketFactory.createWebSocket(config);
-    }
-
-    private void subscribeToChannel(String channel, final String deviceId,
+    private void subscribeToChannel(final MqttChannel channel, final String deviceId,
                                     final PublishSubject<Object> subject) {
         mWebSocket.subscribe(channel, new WebSocketCallback() {
             @Override
             public void connectCallback(Object message) {
-
+                if (!mDeviceChannels.containsKey(deviceId))
+                    mDeviceChannels.put(deviceId, channel);
             }
 
             @Override
             public void disconnectCallback(Object message) {
-                subject.onCompleted();
-                mWebSocketConnections.remove(deviceId);
+                subject.onError((Throwable) message);
+                mDeviceChannels.remove(deviceId);
+                mSocketConnections.remove(deviceId);
             }
 
             @Override
             public void reconnectCallback(Object message) {
-
             }
 
             @Override
@@ -189,10 +124,24 @@ public class WebSocketClient implements SocketClient {
             }
 
             @Override
-            public void errorCallback(Throwable error) {
-                subject.onError(error);
-                mWebSocketConnections.clear();
+            public void errorCallback(Throwable e) {
+                subject.onError(e);
+                mDeviceChannels.remove(deviceId);
+                mSocketConnections.remove(deviceId);
             }
         });
     }
+
+    @Override
+    public void unSubscribe(final String deviceId) {
+        if (mSocketConnections.containsKey(deviceId)) {
+            mSocketConnections.get(deviceId).onCompleted();
+            mSocketConnections.remove(deviceId);
+        }
+
+        if (!mDeviceChannels.isEmpty() && mDeviceChannels.containsKey(deviceId))
+            if (mWebSocket.unSubscribe(mDeviceChannels.get(deviceId)))
+                mDeviceChannels.remove(deviceId);
+    }
 }
+

@@ -1,22 +1,23 @@
 package io.relayr.model;
 
-/** A reading is the information gathered by the device. */
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * A reading is the information gathered by the device.
+ * Use modelId to make sense of readings data.
+ */
 public class Reading {
 
-    public float hum;
-    public float temp;
-    public float snd_level;
-    public float light;
-    public float prox;
-    public LightColorProx.Color clr;
-    public AccelGyroscope.Accelerometer accel;
-    public AccelGyroscope.Gyroscope gyro;
+    public long received;
+    public String deviceId;
+    public String modelId;
+    public List<Data> readings = new ArrayList<>();
 
-    /*public final String timestamp;
-    public final Map<String, String> value;
-
-    public Reading(String timestamp, Map<String, String> value) {
-        this.timestamp = timestamp;
-        this.value = value;
-    }*/
+    public class Data {
+        public long recorded;
+        public String meaning;
+        public String path;
+        public Object value;
+    }
 }

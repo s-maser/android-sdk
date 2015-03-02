@@ -3,7 +3,6 @@ package io.relayr.websocket;
 import javax.inject.Inject;
 
 import io.relayr.api.MockBackend;
-import io.relayr.model.WebSocketConfig;
 
 class MockWebSocketFactory extends WebSocketFactory {
 
@@ -14,8 +13,8 @@ class MockWebSocketFactory extends WebSocketFactory {
         mMockBackend = mockBackend;
     }
 
-    WebSocket createWebSocket(WebSocketConfig webSocketConfig) {
-        return new MockWebSocket(webSocketConfig, mMockBackend);
+    public WebSocket createWebSocket() {
+        return new MockWebSocket(mMockBackend);
     }
 
 }

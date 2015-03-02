@@ -19,27 +19,37 @@ public class DebugApiModule {
         app = context;
     }
 
-    @Provides @Singleton MockBackend provideMockBackend() {
+    @Provides @Singleton
+    MockBackend provideMockBackend() {
         return new MockBackend(app);
     }
 
-    @Provides @Singleton OauthApi provideOauthApi(MockBackend loader) {
+    @Provides @Singleton
+    OauthApi provideOauthApi(MockBackend loader) {
         return new MockOauthApi(loader);
     }
 
-    @Provides @Singleton RelayrApi provideRelayrApi(MockBackend loader) {
+    @Provides @Singleton
+    RelayrApi provideRelayrApi(MockBackend loader) {
         return new MockRelayrApi(loader);
     }
 
-    @Provides @Singleton SubscriptionApi provideSubscriptionApi(MockBackend loader) {
+    @Provides @Singleton
+    SubscriptionApi provideSubscriptionApi(MockBackend loader) {
         return new MockSubscriptionApi(loader);
     }
 
-    @Provides @Singleton CloudApi provideCloudApi() {
+    @Provides @Singleton ChannelApi provideChannelApi(MockBackend loader) {
+        return new MockChannelApi(loader);
+    }
+
+    @Provides @Singleton
+    CloudApi provideCloudApi() {
         return new MockCloudApi();
     }
 
-    @Provides @Singleton StatusApi provideStatusApi(MockBackend loader) {
+    @Provides @Singleton
+    StatusApi provideStatusApi(MockBackend loader) {
         return new MockStatusApi(loader);
     }
 

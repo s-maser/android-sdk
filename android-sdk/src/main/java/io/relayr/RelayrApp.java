@@ -16,10 +16,16 @@ public class RelayrApp {
         buildObjectGraphAndInject(mockMode);
     }
 
+    /**
+     * Condition (sRelayrApp == null || mockMode) is used when Relayr app is already initialized
+     * but you need to recreate it with another set of Dagger modules (e.g. while testing)
+     * @param context
+     * @param mockMode true for debug mode and tests
+     */
     public static void init(Context context, boolean mockMode) {
-        if (sRelayrApp == null) {
+        if (sRelayrApp == null || mockMode) {
             synchronized (new Object()) {
-                if (sRelayrApp == null) {
+                if (sRelayrApp == null || mockMode) {
                     new RelayrApp(context, mockMode);
                 }
             }
