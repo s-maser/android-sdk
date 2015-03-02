@@ -7,9 +7,15 @@ public class LightColorProx {
     public long prox;   //"prox":65535
 
     public static class Color {
-        public int red;
-        public int green;
-        public int blue;
+        public final int red;
+        public final int green;
+        public final int blue;
+
+        public Color(int red, int green, int blue) {
+            this.red = red;
+            this.green = green;
+            this.blue = blue;
+        }
 
         /**
          * Return a color-int from red, green, blue components.
