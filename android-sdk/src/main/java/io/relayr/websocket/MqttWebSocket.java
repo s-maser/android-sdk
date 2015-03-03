@@ -68,9 +68,9 @@ class MqttWebSocket extends WebSocket<MqttChannel> {
         }
 
         try {
+            mTopicCallbacks.remove(channel.getCredentials().getTopic());
             final IMqttToken unSubscribeToken = mClient.unsubscribe(channel.getCredentials().getTopic());
             unSubscribeToken.waitForCompletion(UNSUBSCRIBE_TIMEOUT);
-            mTopicCallbacks.remove(channel.getCredentials().getTopic());
             return true;
         } catch (MqttException e) {
             e.printStackTrace();
