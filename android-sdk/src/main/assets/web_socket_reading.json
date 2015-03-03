@@ -37,7 +37,7 @@
             "color": {
                 "red": 1000,
                 "green": 1,
-                "b": 1
+                "blue": 1
             },
             "acceleration": {
                 "x": -10.63,
@@ -63,7 +63,7 @@
             "color": {
                 "red": 1000,
                 "green": 300,
-                "b": 200
+                "blue": 200
             },
             "acceleration": {
                 "x": -0.63,
@@ -89,7 +89,7 @@
             "color": {
                 "red": 1000,
                 "green": 300,
-                "b": 200
+                "blue": 200
             },
             "acceleration": {
                 "x": -80.63,
@@ -115,7 +115,7 @@
             "color": {
                 "red": 1000,
                 "green": 300,
-                "b": 200
+                "blue": 200
             },
             "acceleration": {
                 "x": -60.63,
@@ -141,7 +141,7 @@
             "color": {
                 "red": 1000,
                 "green": 300,
-                "b": 200
+                "blue": 200
             },
             "acceleration": {
                 "x": -50.63,
@@ -167,7 +167,7 @@
             "color": {
                 "red": 1000,
                 "green": 300,
-                "b": 200
+                "blue": 200
             },
             "acceleration": {
                 "x": -40.63,

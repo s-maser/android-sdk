@@ -1,6 +1,11 @@
 Change Log
 ==========
 
+Version 0.0.10 *(2015-02-27)*
+----------------------------
+ * Change Model and DeviceModel entities to support new readings and commands.
+ * Fix connection lost problem.
+
 Version 0.0.9 *(2015-02-26)*
 ----------------------------
  * Add configure-devices scope to login URL.

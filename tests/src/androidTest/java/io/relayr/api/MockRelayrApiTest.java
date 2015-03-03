@@ -171,9 +171,19 @@ public class MockRelayrApiTest extends TestEnvironment {
 
         verify(subscriber).onNext(modelsCaptor.capture());
 
+        final Model model = modelsCaptor.getValue().get(0);
+
         assertThat(modelsCaptor.getValue().size()).isEqualTo(1);
-        assertThat(modelsCaptor.getValue().get(0).getName()).isEqualTo("Wunderbar Thermometer");
-        assertThat(modelsCaptor.getValue().get(0).getReadings()).isNotNull();
+        assertThat(model.getName()).isEqualTo("Wunderbar Thermometer & Humidity Sensor");
+
+        assertThat(model.getReadings()).isNotNull();
+        assertThat(model.getReadings().size()).isEqualTo(2);
+
+        assertThat(model.getFirmwareVersions().get(0).version).isEqualTo("1.0.0");
+        assertThat(model.getFirmwareVersions().get(0).configuration).isNotNull();
+
+        assertThat(model.getCommands()).isNotNull();
+        assertThat(model.getCommands().size()).isEqualTo(2);
     }
 
     @Test

@@ -68,9 +68,9 @@ class MqttWebSocket extends WebSocket<MqttChannel> {
         }
 
         try {
+            mTopicCallbacks.remove(channel.getCredentials().getTopic());
             final IMqttToken unSubscribeToken = mClient.unsubscribe(channel.getCredentials().getTopic());
             unSubscribeToken.waitForCompletion(UNSUBSCRIBE_TIMEOUT);
-            mTopicCallbacks.remove(channel.getCredentials().getTopic());
             return true;
         } catch (MqttException e) {
             e.printStackTrace();
@@ -97,7 +97,7 @@ class MqttWebSocket extends WebSocket<MqttChannel> {
                 public void messageArrived(String topic, MqttMessage message) {
                     if (mTopicCallbacks == null || mTopicCallbacks.isEmpty()) return;
 
-                    for (WebSocketCallback socketCallback :  mTopicCallbacks.get(topic))
+                    for (WebSocketCallback socketCallback : mTopicCallbacks.get(topic))
                         socketCallback.successCallback(message);
                 }
 
@@ -108,7 +108,11 @@ class MqttWebSocket extends WebSocket<MqttChannel> {
 
             return true;
         } catch (MqttException e) {
-            e.printStackTrace();
+            if (mTopicCallbacks == null || mTopicCallbacks.isEmpty()) return false;
+            for (List<WebSocketCallback> callbacks : mTopicCallbacks.values())
+                for (WebSocketCallback socketCallback : callbacks)
+                    socketCallback.disconnectCallback(e);
+            
             return false;
         }
     }

@@ -7,11 +7,16 @@ import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.os.Build;
 
+import com.google.gson.Gson;
+
 import java.util.UUID;
 
 import io.relayr.ble.BleDevice;
 import io.relayr.ble.service.error.CharacteristicNotFoundException;
+import io.relayr.model.DataPackage;
+import io.relayr.model.Reading;
 import rx.Observable;
+import rx.Subscriber;
 import rx.functions.Func1;
 
 import static io.relayr.ble.parser.BleDataParser.getFormattedValue;
@@ -51,7 +56,7 @@ public class DirectConnectionService extends BaseService {
                 });
     }
 
-    public Observable<String> getReadings() {
+    public Observable<Reading> getReadings() {
         BluetoothGattCharacteristic characteristic = getCharacteristicInServices(
                 mBluetoothGatt.getServices(), SERVICE_DIRECT_CONNECTION, CHARACTERISTIC_SENSOR_DATA);
         if (characteristic == null) {
@@ -65,6 +70,21 @@ public class DirectConnectionService extends BaseService {
                     @Override
                     public String call(BluetoothGattCharacteristic characteristic) {
                         return getFormattedValue(mBleDevice.getType(), characteristic.getValue());
+                    }
+                })
+                .flatMap(new Func1<String, Observable<Reading>>() {
+                    @Override
+                    public Observable<Reading> call(final String s) {
+                        return Observable.create(new Observable.OnSubscribe<Reading>() {
+                            @Override
+                            public void call(Subscriber<? super Reading> subscriber) {
+                                DataPackage data = new Gson().fromJson(s, DataPackage.class);
+                                for (DataPackage.Data dataPoint : data.readings) {
+                                    subscriber.onNext(new Reading(data.received, dataPoint.recorded,
+                                            dataPoint.meaning, dataPoint.path, dataPoint.value));
+                                }
+                            }
+                        });
                     }
                 });
     }

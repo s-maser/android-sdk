@@ -23,6 +23,7 @@ public class RelayrApp {
      * @param mockMode true for debug mode and tests
      */
     public static void init(Context context, boolean mockMode) {
+        reset();
         if (sRelayrApp == null || mockMode) {
             synchronized (new Object()) {
                 if (sRelayrApp == null || mockMode) {
@@ -47,7 +48,7 @@ public class RelayrApp {
         return sApplicationContext;
     }
 
-    public static void reset() {
+    private static void reset() {
         sApplicationContext = null;
         sRelayrApp = null;
         sObjectGraph = null;

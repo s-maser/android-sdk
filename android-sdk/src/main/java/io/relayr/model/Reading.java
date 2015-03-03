@@ -1,23 +1,22 @@
 package io.relayr.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * A reading is the information gathered by the device.
- * Use modelId to make sense of readings data.
  */
 public class Reading {
 
-    public long received;
-    public String deviceId;
-    public String modelId;
-    public List<Data> readings = new ArrayList<>();
+    public final long received;
+    public final long recorded;
+    public final String meaning;
+    public final String path;
+    public final Object value;
 
-    public class Data {
-        public long recorded;
-        public String meaning;
-        public String path;
-        public Object value;
+    public Reading(long received, long recorded, String meaning, String path, Object value) {
+        this.received = received;
+        this.recorded = recorded;
+        this.meaning = meaning;
+        this.path = path;
+        this.value = value;
     }
+
 }
