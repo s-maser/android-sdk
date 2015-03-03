@@ -39,5 +39,10 @@ public class TransmitterDevice extends Transmitter {
     public void unSubscribeToCloudReadings() {
         RelayrSdk.getWebSocketClient().unSubscribe(id);
     }
+
+    /** Sends a command to the this device */
+    public Observable<Void> sendCommand(Command command) {
+        return RelayrSdk.getRelayrApi().sendCommand(id, command);
+    }
     
 }
