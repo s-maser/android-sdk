@@ -75,10 +75,6 @@ public class Device implements Serializable {
         this.firmwareVersion = firmwareVersion;
     }
 
-    public TransmitterDevice toTransmitterDevice(){
-        return new TransmitterDevice(id, secret, owner, name, model.getId());
-    }
-    
     @Override
     public String toString() {
         return "Relayr_Device{" +
@@ -99,7 +95,7 @@ public class Device implements Serializable {
     /**
      * Subscribes an app to a device channel. Enables the app to receive data from the device.
      */
-    public Observable<Object> subscribeToCloudReadings() {
+    public Observable<Reading> subscribeToCloudReadings() {
         return RelayrSdk.getWebSocketClient().subscribe(toTransmitterDevice());
     }
 
@@ -117,8 +113,8 @@ public class Device implements Serializable {
     }
 
     /** Sends a command to the this device */
-    public Observable<Void> sendCommand(String commandName, Command command) {
-        return RelayrSdk.getRelayrApi().sendCommand(id, commandName, command);
+    public Observable<Void> sendCommand(Command command) {
+        return RelayrSdk.getRelayrApi().sendCommand(id, command);
     }
     
 }

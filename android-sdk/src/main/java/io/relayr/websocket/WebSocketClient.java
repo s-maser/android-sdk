@@ -1,5 +1,7 @@
 package io.relayr.websocket;
 
+import com.google.gson.Gson;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,9 +12,10 @@ import io.relayr.RelayrSdk;
 import io.relayr.SocketClient;
 import io.relayr.api.ChannelApi;
 import io.relayr.model.App;
-import io.relayr.model.Bookmark;
+import io.relayr.model.DataPackage;
 import io.relayr.model.MqttChannel;
 import io.relayr.model.MqttDefinition;
+import io.relayr.model.Reading;
 import io.relayr.model.TransmitterDevice;
 import rx.Observable;
 import rx.Observer;
@@ -29,7 +32,7 @@ public class WebSocketClient implements SocketClient {
     final ChannelApi mChannelApi;
     final WebSocket<MqttChannel> mWebSocket;
     final Map<String, MqttChannel> mDeviceChannels = new HashMap<>();
-    final Map<String, PublishSubject<Object>> mSocketConnections = new HashMap<>();
+    final Map<String, PublishSubject<Reading>> mSocketConnections = new HashMap<>();
 
     @Inject
     public WebSocketClient(ChannelApi channelApi, WebSocketFactory factory) {
@@ -37,15 +40,15 @@ public class WebSocketClient implements SocketClient {
         mWebSocket = factory.createWebSocket();
     }
 
-    public Observable<Object> subscribe(TransmitterDevice device) {
+    public Observable<Reading> subscribe(TransmitterDevice device) {
         if (mSocketConnections.containsKey(device.id))
             return mSocketConnections.get(device.id);
         else
             return start(device);
     }
 
-    private synchronized Observable<Object> start(final TransmitterDevice device) {
-        final PublishSubject<Object> subject = PublishSubject.create();
+    private synchronized Observable<Reading> start(final TransmitterDevice device) {
+        final PublishSubject<Reading> subject = PublishSubject.create();
         mSocketConnections.put(device.id, subject);
 
         RelayrSdk.getRelayrApi().getAppInfo()
@@ -99,7 +102,7 @@ public class WebSocketClient implements SocketClient {
     }
 
     private void subscribeToChannel(final MqttChannel channel, final String deviceId,
-                                    final PublishSubject<Object> subject) {
+                                    final PublishSubject<Reading> subject) {
         mWebSocket.subscribe(channel, new WebSocketCallback() {
             @Override
             public void connectCallback(Object message) {
@@ -120,7 +123,11 @@ public class WebSocketClient implements SocketClient {
 
             @Override
             public void successCallback(Object message) {
-                subject.onNext(message);
+                DataPackage dataPackage = new Gson().fromJson(message.toString(), DataPackage.class);
+                for (DataPackage.Data dataPoint: dataPackage.readings) {
+                    subject.onNext(new Reading(dataPackage.received, dataPoint.recorded, 
+                            dataPoint.meaning, dataPoint.path, dataPoint.value));
+                }
             }
 
             @Override

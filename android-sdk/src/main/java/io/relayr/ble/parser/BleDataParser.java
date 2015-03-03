@@ -6,7 +6,7 @@ import io.relayr.ble.BleDeviceType;
 import io.relayr.model.AccelGyroscope;
 import io.relayr.model.DeviceModel;
 import io.relayr.model.LightColorProx;
-import io.relayr.model.Reading;
+import io.relayr.model.DataPackage;
 
 public abstract class BleDataParser {
 
@@ -30,29 +30,29 @@ public abstract class BleDataParser {
     }
 
     private static String getLIGHTSensorData(byte[] value) {
-        Reading reading = new Reading();
-        reading.modelId = DeviceModel.LIGHT_PROX_COLOR.getId();
-        reading.received = System.currentTimeMillis();
+        DataPackage dataPackage = new DataPackage();
+        dataPackage.modelId = DeviceModel.LIGHT_PROX_COLOR.getId();
+        dataPackage.received = System.currentTimeMillis();
 
         int red = (byteToUnsignedInt(value[3]) << 8) | byteToUnsignedInt(value[2]);
         int green = (byteToUnsignedInt(value[5]) << 8) | byteToUnsignedInt(value[4]);
         int blue = (byteToUnsignedInt(value[7]) << 8) | byteToUnsignedInt(value[6]);
         LightColorProx.Color color = new LightColorProx.Color(red, green, blue);
-        reading.readings.add(new Reading.Data(reading.received, "color", "", color));
+        dataPackage.readings.add(new DataPackage.Data(dataPackage.received, "color", "", color));
 
         int proximity = (byteToUnsignedInt(value[9]) << 8) | byteToUnsignedInt(value[8]);
-        reading.readings.add(new Reading.Data(reading.received, "proximity", "", proximity));
+        dataPackage.readings.add(new DataPackage.Data(dataPackage.received, "proximity", "", proximity));
         
         int luminosity = (byteToUnsignedInt(value[1]) << 8) | byteToUnsignedInt(value[0]);
-        reading.readings.add(new Reading.Data(reading.received, "luminosity", "", luminosity));
+        dataPackage.readings.add(new DataPackage.Data(dataPackage.received, "luminosity", "", luminosity));
         
-        return new Gson().toJson(reading);
+        return new Gson().toJson(dataPackage);
     }
 
     private static String getGYROSensorData(byte[] value) {
-        Reading reading = new Reading();
-        reading.modelId = DeviceModel.ACCELEROMETER_GYROSCOPE.getId();
-        reading.received = System.currentTimeMillis();
+        DataPackage dataPackage = new DataPackage();
+        dataPackage.modelId = DeviceModel.ACCELEROMETER_GYROSCOPE.getId();
+        dataPackage.received = System.currentTimeMillis();
         
         int gyroscopeX = byteToUnsignedInt(value[0]) |
                 (byteToUnsignedInt(value[1]) << 8) |
@@ -75,39 +75,39 @@ public abstract class BleDataParser {
         acceleration.x = (float) accelerationX / 100.0f;
         acceleration.y = (float) accelerationY / 100.0f;
         acceleration.z = (float) accelerationZ / 100.0f;
-        reading.readings.add(new Reading.Data(reading.received, "acceleration", "", acceleration));
+        dataPackage.readings.add(new DataPackage.Data(dataPackage.received, "acceleration", "", acceleration));
 
         AccelGyroscope.AngularSpeed angularSpeed = new AccelGyroscope.AngularSpeed();
         angularSpeed.x = (float) gyroscopeX / 100.0f;
         angularSpeed.y = (float) gyroscopeY / 100.0f;
         angularSpeed.z = (float) gyroscopeZ / 100.0f;
-        reading.readings.add(new Reading.Data(reading.received, "angularSpeed", "", angularSpeed));
+        dataPackage.readings.add(new DataPackage.Data(dataPackage.received, "angularSpeed", "", angularSpeed));
         
-        return new Gson().toJson(reading);
+        return new Gson().toJson(dataPackage);
     }
 
     private static String getHTUSensorData(byte[] value) {
-        Reading reading = new Reading();
-        reading.modelId = DeviceModel.TEMPERATURE_HUMIDITY.getId();
-        reading.received = System.currentTimeMillis();
+        DataPackage dataPackage = new DataPackage();
+        dataPackage.modelId = DeviceModel.TEMPERATURE_HUMIDITY.getId();
+        dataPackage.received = System.currentTimeMillis();
 
         int temperature = (byteToUnsignedInt(value[1]) << 8) | byteToUnsignedInt(value[0]);
         int humidity = (byteToUnsignedInt(value[3]) << 8) | byteToUnsignedInt(value[2]);
 
-        reading.readings.add(new Reading.Data(reading.received, "humidity", "", (int) ((float) humidity / 100.0f)));
-        reading.readings.add(new Reading.Data(reading.received, "temperature", "", (float) temperature / 100.0f));
-        return new Gson().toJson(reading);
+        dataPackage.readings.add(new DataPackage.Data(dataPackage.received, "humidity", "", (int) ((float) humidity / 100.0f)));
+        dataPackage.readings.add(new DataPackage.Data(dataPackage.received, "temperature", "", (float) temperature / 100.0f));
+        return new Gson().toJson(dataPackage);
     }
 
     private static String getMICSensorData(byte[] value) {
-        Reading reading = new Reading();
-        reading.modelId = DeviceModel.MICROPHONE.getId();
-        reading.received = System.currentTimeMillis();
+        DataPackage dataPackage = new DataPackage();
+        dataPackage.modelId = DeviceModel.MICROPHONE.getId();
+        dataPackage.received = System.currentTimeMillis();
 
         int noiseLevel = (byteToUnsignedInt(value[1]) << 8) | byteToUnsignedInt(value[0]);
 
-        reading.readings.add(new Reading.Data(reading.received, "noiseLevel", "", noiseLevel));
-        return new Gson().toJson(reading);
+        dataPackage.readings.add(new DataPackage.Data(dataPackage.received, "noiseLevel", "", noiseLevel));
+        return new Gson().toJson(dataPackage);
     }
 
     private static int byteToUnsignedInt(byte b) {

@@ -32,7 +32,7 @@ public class TransmitterDevice extends Transmitter {
                 o instanceof Device && ((Device) o).id.equals(id);
     }
 
-    public Observable<Object> subscribeToCloudReadings() {
+    public Observable<Reading> subscribeToCloudReadings() {
         return RelayrSdk.getWebSocketClient().subscribe(this);
     }
 
