@@ -39,29 +39,31 @@ public class RelayrSdk {
     private static Subscriber<? super User> mLoginSubscriber;
 
     /**
-     * Initializes the SDK. Should be called when the {@link android.app.Application} is
+     * Initializes the SDK. Should be built when the {@link android.app.Application} is
      * created.
      */
-    public static void init(Context context) {
-        RelayrApp.init(context, false);
-    }
+    public static class Builder {
+        
+        private final Context mContext;
+        private boolean mInMockMode;
+        
+        public Builder(Context context) {
+            mContext = context;
+        }
 
-    /**
-     * Initializes the SDK in Mock Mode.
-     * In this mode, mock reading values are generated.
-     * Used for testing purposes, without the need of a WunderBar or an internet connection.
-     * Should be called when the *{@link android.app.Application}* is created.
-     */
-    public static void initInMockMode(Context context) {
-        RelayrApp.init(context, true);
-    }
-
-    /**
-     * Resets the SDK throwing away the graph holding all the dependencies. Make sure to
-     * call {@link #init(android.content.Context)} before trying to do anything else.
-     */
-    public static void reset() {
-        RelayrApp.reset();
+        /**
+         * Initializes the SDK in Mock Mode.
+         * In this mode, mock reading values are generated.
+         * Used for testing purposes, without the need of a WunderBar or an internet connection.
+         */
+        public Builder inMockMode(boolean inMockMode) {
+            mInMockMode = inMockMode;
+            return this;
+        }
+        
+        public void build() {
+            RelayrApp.init(mContext, mInMockMode);
+        }
     }
 
     /**
