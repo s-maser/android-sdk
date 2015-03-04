@@ -1,6 +1,10 @@
 Change Log
 ==========
 
+Version 0.0.12 *(2015-03-04)*
+----------------------------
+ * Fix problem with debug data parsing and incomplete test.
+
 Version 0.0.11 *(2015-03-04)*
 ----------------------------
  * Use the RelayrSdk.Builder to initialise the SDK.
