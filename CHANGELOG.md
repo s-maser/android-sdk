@@ -1,6 +1,14 @@
 Change Log
 ==========
 
+Version 0.0.11 *(2015-03-04)*
+----------------------------
+ * Use the RelayrSdk.Builder to initialise the SDK.
+ * Reset SDK automatically every time it's rebuilt.
+ * Make API calls directly from models to reduce verbosity.
+ * Change Readings structure.
+ * Remove BleReadings and always use Readings instead.
+
 Version 0.0.10 *(2015-02-27)*
 ----------------------------
  * Change Model and DeviceModel entities to support new readings and commands.
