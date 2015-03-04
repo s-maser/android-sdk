@@ -1,210 +1,82 @@
 [
     {
-        "received": 111,
-        "recorded": 222,
-        "readings": {
-            "humidity": 32,
-            "temperature": 24.33,
-            "noiseLevel": 34,
-            "luminosity": 2522,
-            "proximity": 41,
-            "color": {
-                "red": 1000,
-                "green": 300,
-                "blue": 200
-            },
-            "acceleration": {
-                "x": -0.623,
-                "y": 13.02,
-                "z": -2.96
-            },
-            "angularSpeed": {
-                "x": 14.3,
-                "y": 132.2,
-                "z": 44.1
-            }
-        }
+       "deviceId":"52359c7b-fee2-4b5c-8e38-3d524f943467",
+       "modelId":"a7ec1b21-8582-4304-b1cf-15a1fc66d1e8",
+       "readings":[
+          {
+             "meaning":"luminosity",
+             "value":29,
+             "recorded":1425489865656
+          },
+          {
+             "meaning":"proximity",
+             "value":68,
+             "recorded":1425489865656
+          },
+          {
+             "meaning":"color",
+             "value":{
+                "red":0,
+                "green":0,
+                "blue":0
+             },
+             "recorded":1425489865656
+          }
+       ],
+       "received":1425489864060
     },
     {
-        "received": 111,
-        "recorded": 222,
-        "readings": {
-            "humidity": 32,
-            "temperature": 100,
-            "noiseLevel": 35,
-            "light": 3039,
-            "proximity": 42,
-            "color": {
-                "red": 1000,
-                "green": 1,
-                "blue": 1
-            },
-            "acceleration": {
-                "x": -10.63,
-                "y": 1.02,
-                "z": -0.96
-            },
-            "angularSpeed": {
-                "x": 12.3,
-                "y": 12.2,
-                "z": 24.1
-            }
-        }
+       "deviceId":"52359c7b-fee2-4b5c-8e38-3d524f943467",
+       "modelId":"ecf6cf94-cb07-43ac-a85e-dccf26b48c86",
+       "readings":[
+          {
+             "meaning":"temperature",
+             "value":22,
+             "recorded":1425489865656
+          },
+          {
+             "meaning":"humidity",
+             "value":68,
+             "recorded":1425489865656
+          }
+       ],
+       "received":1425489864060
     },
     {
-        "received": 111,
-        "recorded": 222,
-        "readings": {
-            "humidity": 3,
-            "temperature": 22.33,
-            "noiseLevel": 36,
-            "light": 4080,
-            "proximity": 44,
-            "color": {
-                "red": 1000,
-                "green": 300,
-                "blue": 200
-            },
-            "acceleration": {
-                "x": -0.63,
-                "y": 1.02,
-                "z": -0.96
-            },
-            "angularSpeed": {
-                "x": 124.3,
-                "y": 12.2,
-                "z": 94.1
-            }
-        }
+       "deviceId":"b0241094-ac02-4911-9aab-230426984bf5",
+       "modelId":"173c44b5-334e-493f-8eb8-82c8cc65d29f",
+       "readings":[
+          {
+             "meaning":"angularSpeed",
+             "value":{
+                "x":-16.47,
+                "y":17.37,
+                "z":-1.52
+             },
+             "recorded":1425491457750
+          },
+          {
+             "meaning":"acceleration",
+             "value":{
+                "x":0.0,
+                "y":0.01,
+                "z":1.03
+             },
+             "recorded":1425491457750
+          }
+       ],
+       "received":1425491456021
     },
     {
-        "received": 111,
-        "recorded": 222,
-        "readings": {
-            "humidity": 100,
-            "temperature": -27,
-            "noiseLevel": 37,
-            "light": 2222,
-            "proximity": 45,
-            "color": {
-                "red": 1000,
-                "green": 300,
-                "blue": 200
-            },
-            "acceleration": {
-                "x": -80.63,
-                "y": 1.02,
-                "z": -0.96
-            },
-            "angularSpeed": {
-                "x": 124.3,
-                "y": 32.2,
-                "z": 34.1
-            }
-        }
-    },
-    {
-        "received": 111,
-        "recorded": 222,
-        "readings": {
-            "humidity": 34,
-            "temperature": 29,
-            "noiseLevel": 39,
-            "light": 3922,
-            "proximity": 49,
-            "color": {
-                "red": 1000,
-                "green": 300,
-                "blue": 200
-            },
-            "acceleration": {
-                "x": -60.63,
-                "y": 1.02,
-                "z": -0.96
-            },
-            "angularSpeed": {
-                "x": 124.3,
-                "y": 52.2,
-                "z": 34.1
-            }
-        }
-    },
-    {
-        "received": 111,
-        "recorded": 222,
-        "readings": {
-            "humidity": 35,
-            "temperature": 27,
-            "noiseLevel": 38,
-            "light": 1522,
-            "proximity": 53,
-            "color": {
-                "red": 1000,
-                "green": 300,
-                "blue": 200
-            },
-            "acceleration": {
-                "x": -50.63,
-                "y": 1.02,
-                "z": -0.96
-            },
-            "angularSpeed": {
-                "x": 124.3,
-                "y": 12.2,
-                "z": 34.1
-            }
-        }
-    },
-    {
-        "received": 111,
-        "recorded": 222,
-        "readings": {
-            "humidity": 36,
-            "temperature": 26,
-            "noiseLevel": 36,
-            "light": 2542,
-            "proximity": 55,
-            "color": {
-                "red": 1000,
-                "green": 300,
-                "blue": 200
-            },
-            "acceleration": {
-                "x": -40.63,
-                "y": 1.02,
-                "z": -0.96
-            },
-            "angularSpeed": {
-                "x": 124.3,
-                "y": 82.2,
-                "z": 34.1
-            }
-        }
-    },
-    {
-        "received": 111,
-        "recorded": 222,
-        "readings": {
-            "humidity": 33,
-            "temperature": 23,
-            "noiseLevel": 35,
-            "light": 3333,
-            "proximity": 59,
-            "color": {
-                "red": 1000,
-                "green": 300,
-                "blue": 200
-            },
-            "acceleration": {
-                "x": -20.63,
-                "y": 1.02,
-                "z": -0.96
-            },
-            "angularSpeed": {
-                "x": 34.3,
-                "y": 12.2,
-                "z": 34.1
-            }
-        }
+       "deviceId":"52359c7b-fee2-4b5c-8e38-3d524f943467",
+       "modelId":"4f38b6c6-a8e9-4f93-91cd-2ac4064b7b5a",
+       "readings":[
+          {
+             "meaning":"noiseLevel",
+             "value":22,
+             "recorded":1425489865656
+          }
+       ],
+       "received":1425489864060
     }
 ]
