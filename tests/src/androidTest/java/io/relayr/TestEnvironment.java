@@ -36,8 +36,7 @@ public class TestEnvironment {
     }
 
     public void initSdk(boolean mock) {
-        if (mock) RelayrSdk.initInMockMode(Robolectric.application.getApplicationContext());
-        else RelayrSdk.init(Robolectric.application.getApplicationContext());
+        new RelayrSdk.Builder(Robolectric.application).inMockMode(mock).build();
     }
 
     public void await() {

@@ -1,6 +1,5 @@
 package io.relayr;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,7 +11,7 @@ import org.robolectric.RobolectricTestRunner;
 public class RelayrSdk_InMockMode_Test {
 
     @Before public void initInMockMode() {
-        RelayrSdk.initInMockMode(Robolectric.application);
+        new RelayrSdk.Builder(Robolectric.application).inMockMode(true).build();
     }
 
     @Test public void getRelayrBleSdk_testStaticInjection() {
@@ -29,10 +28,6 @@ public class RelayrSdk_InMockMode_Test {
 
     @Test public void isBleSupported_shouldBeTrue() {
         Assert.assertTrue(RelayrSdk.isBleSupported());
-    }
-
-    @After public void resetRelayrSdk() {
-        RelayrSdk.reset();
     }
 
 }

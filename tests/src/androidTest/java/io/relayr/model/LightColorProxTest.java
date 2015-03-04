@@ -9,10 +9,7 @@ import org.robolectric.RobolectricTestRunner;
 public class LightColorProxTest {
 
     @Test public void toRgbTest() {
-        LightColorProx.Color color = new LightColorProx.Color();
-        color.red = 1000;
-        color.green = 300;
-        color.blue = 200;
+        LightColorProx.Color color = new LightColorProx.Color(1000, 300, 200);
         Assert.assertEquals(-36276, color.toRgb());
     }
 

@@ -2,7 +2,6 @@ package io.relayr;
 
 import android.app.Activity;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,7 +13,7 @@ import org.robolectric.RobolectricTestRunner;
 public class RelayrSdkTest {
 
     @Before public void init() {
-        RelayrSdk.init(Robolectric.application);
+        new RelayrSdk.Builder(Robolectric.application).build();
     }
 
     @Test public void getRelayrBleSdk_testStaticInjection() {
@@ -45,10 +44,6 @@ public class RelayrSdkTest {
 
     @Test public void getVersion_shouldBeVersionName() {
         Assert.assertEquals(BuildConfig.VERSION_NAME, RelayrSdk.getVersion());
-    }
-
-    @After public void resetRelayrSdk() {
-        RelayrSdk.reset();
     }
 
 }

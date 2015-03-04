@@ -15,8 +15,7 @@ import java.util.concurrent.TimeUnit;
 import io.relayr.RelayrSdk;
 import io.relayr.api.CloudApi;
 import io.relayr.api.StatusApi;
-import io.relayr.log.*;
-import io.relayr.storage.*;
+import io.relayr.storage.DataStorage;
 import io.relayr.util.ReachabilityUtils;
 import rx.Observable;
 import rx.Subscriber;
@@ -44,7 +43,7 @@ public class LoggerTest {
 
         DataStorage.saveUserToken("ut");
         MockitoAnnotations.initMocks(this);
-        RelayrSdk.initInMockMode(Robolectric.application.getApplicationContext());
+        new RelayrSdk.Builder(Robolectric.application).inMockMode(true).build();
 
         Observable<Boolean> mockObservable = Observable.create(new Observable.OnSubscribe<Boolean>() {
             @Override
@@ -75,13 +74,13 @@ public class LoggerTest {
 
     @Test
     public void logMessage_RelayrSdkTest() {
-        RelayrSdk.initInMockMode(Robolectric.application.getApplicationContext());
+        new RelayrSdk.Builder(Robolectric.application).inMockMode(true).build();
         assertThat(RelayrSdk.logMessage("1")).isTrue();
     }
 
     @Test
     public void logNullMessage_RelayrSdkTest() {
-        RelayrSdk.initInMockMode(Robolectric.application.getApplicationContext());
+        new RelayrSdk.Builder(Robolectric.application).inMockMode(true).build();
         assertThat(RelayrSdk.logMessage(null)).isFalse();
     }
 

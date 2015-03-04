@@ -27,13 +27,13 @@ public class LoginActivityTest {
     }
 
     @Test public void oautApi_testInjection() {
-        RelayrSdk.init(Robolectric.application);
+        new RelayrSdk.Builder(Robolectric.application).build();
         LoginActivity activity = Robolectric.buildActivity(LoginActivity.class).create().get();
         Assert.assertNotNull(activity.mOauthApi);
     }
 
     @Test public void relayrApi_testInjection() {
-        RelayrSdk.init(Robolectric.application);
+        new RelayrSdk.Builder(Robolectric.application).build();
         LoginActivity activity = Robolectric.buildActivity(LoginActivity.class).create().get();
         Assert.assertNotNull(activity.mRelayrApi);
     }

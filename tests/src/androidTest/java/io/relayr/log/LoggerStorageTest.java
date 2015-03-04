@@ -14,11 +14,10 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import static org.fest.assertions.api.Assertions.assertThat;
-
 import io.relayr.RelayrSdk;
-import io.relayr.log.LoggerStorage;
 import io.relayr.model.LogEvent;
+
+import static org.fest.assertions.api.Assertions.assertThat;
 
 @RunWith(RobolectricTestRunner.class)
 public class LoggerStorageTest {
@@ -27,7 +26,7 @@ public class LoggerStorageTest {
 
     @Before
     public void before() {
-        RelayrSdk.initInMockMode(Robolectric.application.getApplicationContext());
+        new RelayrSdk.Builder(Robolectric.application).inMockMode(true).build();
         LoggerStorage.init(3);
 
         lock = new CountDownLatch(1);

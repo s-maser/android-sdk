@@ -15,7 +15,7 @@ public class DataStorageTest {
 
     @Before
     public void init() {
-        RelayrSdk.initInMockMode(Robolectric.application.getApplicationContext());
+        new RelayrSdk.Builder(Robolectric.application).inMockMode(true).build();
         DataStorage.logOut();
     }
 
