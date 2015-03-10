@@ -25,6 +25,7 @@ import static io.relayr.ble.service.ShortUUID.CHARACTERISTIC_SENSOR_DATA;
 import static io.relayr.ble.service.ShortUUID.CHARACTERISTIC_SENSOR_FREQUENCY;
 import static io.relayr.ble.service.ShortUUID.CHARACTERISTIC_SENSOR_ID;
 import static io.relayr.ble.service.ShortUUID.CHARACTERISTIC_SENSOR_LED_STATE;
+import static io.relayr.ble.service.ShortUUID.CHARACTERISTIC_SENSOR_SEND_COMMAND;
 import static io.relayr.ble.service.ShortUUID.CHARACTERISTIC_SENSOR_THRESHOLD;
 import static io.relayr.ble.service.ShortUUID.DESCRIPTOR_DATA_NOTIFICATIONS;
 import static io.relayr.ble.service.ShortUUID.SERVICE_DIRECT_CONNECTION;
@@ -172,6 +173,20 @@ public class DirectConnectionService extends BaseService {
      */
     public Observable<BluetoothGattCharacteristic> turnLedOn() {
         return write(new byte[] {0x01}, SERVICE_DIRECT_CONNECTION, CHARACTERISTIC_SENSOR_LED_STATE);
+    }
+
+    /**
+     * Writes the command characteristic to the associated remote device. It will send the command
+     * if the operation is carried out successfully.
+     *
+     * <p>See {@link BluetoothGatt#writeCharacteristic} for details as to the actions performed in
+     * the background.
+     *
+     * @return Observable<BluetoothGattCharacteristic>, an observable of what will be written to the
+     * device
+     */
+    public Observable<BluetoothGattCharacteristic> sendCommand(byte[] bytes) {
+        return write(bytes, SERVICE_DIRECT_CONNECTION, CHARACTERISTIC_SENSOR_SEND_COMMAND);
     }
 
     /**
