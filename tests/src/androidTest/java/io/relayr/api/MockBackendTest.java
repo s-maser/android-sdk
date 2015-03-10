@@ -1,5 +1,6 @@
 package io.relayr.api;
 
+import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import org.junit.Before;
@@ -11,6 +12,7 @@ import javax.inject.Inject;
 import io.relayr.TestEnvironment;
 import io.relayr.model.App;
 import io.relayr.model.Bookmark;
+import io.relayr.model.DataPackage;
 import io.relayr.model.Device;
 import rx.Observer;
 
@@ -69,9 +71,17 @@ public class MockBackendTest extends TestEnvironment {
         Object[] webSocketReadings = backend.getWebSocketReadings();
 
         assertThat(webSocketReadings).isNotNull();
-        assertThat(webSocketReadings.length).isEqualTo(8);
-        //TODO create a real test for new readings model
-//        assertThat(webSocketReadings[0].readings.acceleration.y).isEqualTo(13.02f);
+        assertThat(webSocketReadings.length).isEqualTo(4);
+
+        DataPackage data = new Gson().fromJson(webSocketReadings[0].toString(), DataPackage.class);
+        assertThat(data.readings).isNotNull();
+        assertThat(data.readings.get(0).meaning).isEqualTo("luminosity");
+        assertThat(data.readings.get(0).value).isEqualTo(29.0);
+
+        data = new Gson().fromJson(webSocketReadings[1].toString(), DataPackage.class);
+        assertThat(data.readings).isNotNull();
+        assertThat(data.readings.get(0).meaning).isEqualTo("temperature");
+        assertThat(data.readings.get(0).value).isEqualTo(22.0);
     }
 
     @Test
