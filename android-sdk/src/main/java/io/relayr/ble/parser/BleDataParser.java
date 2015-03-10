@@ -25,6 +25,9 @@ public abstract class BleDataParser {
             case WunderbarMIC: {
                 return BleDataParser.getMICSensorData(value);
             }
+            case WunderbarBRIDG: {
+                return getBridgeSensorData(value);
+            }
             default: return "";
         }
     }
@@ -107,6 +110,15 @@ public abstract class BleDataParser {
         int noiseLevel = (byteToUnsignedInt(value[1]) << 8) | byteToUnsignedInt(value[0]);
 
         dataPackage.readings.add(new DataPackage.Data(dataPackage.received, "noiseLevel", "", noiseLevel));
+        return new Gson().toJson(dataPackage);
+    }
+
+    private static String getBridgeSensorData(byte[] value) {
+        DataPackage dataPackage = new DataPackage();
+        dataPackage.modelId = DeviceModel.GROVE.getId();
+        dataPackage.received = System.currentTimeMillis();
+
+        dataPackage.readings.add(new DataPackage.Data(dataPackage.received, "bridge", "", value));
         return new Gson().toJson(dataPackage);
     }
 
