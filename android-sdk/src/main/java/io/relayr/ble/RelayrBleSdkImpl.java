@@ -70,6 +70,7 @@ class RelayrBleSdkImpl extends RelayrBleSdk implements BleScannerFilter.BleFilte
     @Override
     public void stop() {
         mBleDeviceScanner.stop();
+        mDeviceManager.removeSubscribers();
     }
 
     @Override
