@@ -118,7 +118,7 @@ public abstract class BleDataParser {
         dataPackage.modelId = DeviceModel.GROVE.getId();
         dataPackage.received = System.currentTimeMillis();
 
-        dataPackage.readings.add(new DataPackage.Data(dataPackage.received, "bridge", "", value));
+        dataPackage.readings.add(new DataPackage.Data(dataPackage.received, "up_ch_payload", "", value));
         return new Gson().toJson(dataPackage);
     }
 
