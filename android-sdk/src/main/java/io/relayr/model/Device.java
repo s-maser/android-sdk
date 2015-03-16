@@ -5,21 +5,24 @@ import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 
 import io.relayr.RelayrSdk;
+import io.relayr.ble.BleDevicesCache;
+import io.relayr.ble.service.BaseService;
 import rx.Observable;
 
-/** The Device class is a representation of the device entity.
+/**
+ * The Device class is a representation of the device entity.
  * A device entity is any external entity capable of gathering measurements
  * or one which is capable of receiving information from the relayr platform.
  * Examples would be a thermometer, a gyroscope or an infrared sensor.
- * */
+ */
 public class Device implements Serializable {
 
-	/** Auto generated uid */
-	private static final long serialVersionUID = 1L;
-	public final String id;
-	private String name;
-	private final Model model;
-	private String owner;
+    /** Auto generated uid */
+    private static final long serialVersionUID = 1L;
+    public final String id;
+    private String name;
+    private final Model model;
+    private String owner;
     private String firmwareVersion;
     private final String secret;
     @SerializedName("public") private boolean isPublic;
@@ -35,25 +38,25 @@ public class Device implements Serializable {
         this.isPublic = isPublic;
     }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public Model getModel() {
-		return model;
-	}
+    public Model getModel() {
+        return model;
+    }
 
-	public String getOwner() {
-		return owner;
-	}
+    public String getOwner() {
+        return owner;
+    }
 
-	public void setOwner(String owner) {
-		this.owner = owner;
-	}
+    public void setOwner(String owner) {
+        this.owner = owner;
+    }
 
     public String getSecret() {
         return secret;
@@ -92,6 +95,18 @@ public class Device implements Serializable {
         return new TransmitterDevice(id, secret, owner, name, model.getId());
     }
 
+    public Observable<BaseService> getSensorForDevice(BleDevicesCache cache) {
+        return cache.getSensorForDevice(toTransmitterDevice());
+    }
+
+    /**
+     * Subscribes an app to a BLE device. Enables the app to receive data from the device over
+     * BLE through {@link io.relayr.ble.service.DirectConnectionService}
+     */
+    public Observable<Reading> subscribeToBleReadings(final BleDevicesCache cache) {
+        return toTransmitterDevice().subscribeToBleReadings(cache);
+    }
+
     /**
      * Subscribes an app to a device channel. Enables the app to receive data from the device.
      */
@@ -102,6 +117,7 @@ public class Device implements Serializable {
     /**
      * Unsubscribes an app from a device channel, stopping and cleaning up the connection.
      */
+
     public void unSubscribeToCloudReadings() {
         RelayrSdk.getWebSocketClient().unSubscribe(id);
     }
@@ -116,5 +132,5 @@ public class Device implements Serializable {
     public Observable<Void> sendCommand(Command command) {
         return RelayrSdk.getRelayrApi().sendCommand(id, command);
     }
-    
+
 }
