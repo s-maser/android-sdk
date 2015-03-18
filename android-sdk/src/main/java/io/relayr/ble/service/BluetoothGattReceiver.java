@@ -33,6 +33,11 @@ import static io.relayr.ble.service.BluetoothGattReceiver.UndocumentedBleStuff.i
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class BluetoothGattReceiver extends BluetoothGattCallback {
 
+    private static int sGattFailure = 0;
+    private static int sUndocumentedFailure = 0;
+    private static final Object gattLock = new Object();
+    private static final Object onConnectionLock = new Object();
+
     private volatile Subscriber<? super BluetoothGatt> mConnectionChangesSubscriber;
     private volatile Subscriber<? super BluetoothGatt> mDisconnectedSubscriber;
     private volatile Subscriber<? super BluetoothGatt> mBluetoothGattServiceSubscriber;
@@ -52,13 +57,15 @@ public class BluetoothGattReceiver extends BluetoothGattCallback {
             }
         });
     }
-    
+
     static class UndocumentedBleStuff {
-        
+
         static boolean isUndocumentedErrorStatus(int status) {
-            return status == 133 || status == 137;
+            // TODO: investigate status code 22 and 8
+            // https://code.google.com/p/android-developer-preview/issues/detail?id=851
+            return status == 133 || status == 137;// || status == 8 || status == 22;
         }
-        
+
         static void fixUndocumentedBleStatusProblem(BluetoothGatt gatt, BluetoothGattReceiver receiver) {
             DeviceCompatibilityUtils.refresh(gatt);
             gatt.getDevice().connectGatt(RelayrApp.get(), false, receiver);
@@ -67,27 +74,58 @@ public class BluetoothGattReceiver extends BluetoothGattCallback {
 
     @Override
     public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
-        if (isUndocumentedErrorStatus(status)) {
-            fixUndocumentedBleStatusProblem(gatt, this);
-            return;
-        }
-        if (status != GATT_SUCCESS) return;
+        synchronized (onConnectionLock) {
+            if (status == BluetoothGatt.GATT_FAILURE) {
+                if (newState == 0 && ++sGattFailure < 5) return;
+                sGattFailure = 0;
 
-        if (newState == STATE_CONNECTED) { // on connected
-            if (mConnectionChangesSubscriber != null) mConnectionChangesSubscriber.onNext(gatt);
-        } else if (newState == STATE_DISCONNECTED) {
-            if (mDisconnectedSubscriber != null) { // disconnected voluntarily
-                gatt.close(); // should stay here since you might want to reconnect if involuntarily
-                mDisconnectedSubscriber.onNext(gatt);
-                mDisconnectedSubscriber.onCompleted();
-            } else { // disconnected involuntarily because an error occurred
-                if (mConnectionChangesSubscriber != null)
-                    mConnectionChangesSubscriber.onError(new DisconnectionException(status + ""));
+                turnOffGatt(gatt);
+                fixUndocumentedBleStatusProblem(gatt, this);
+                return;
             }
-        } /*else if (BluetoothGattStatus.isFailureStatus(status)) {
-            if (mConnectionChangesSubscriber != null)  // TODO: unreachable -propagate error earlier
-                mConnectionChangesSubscriber.onError(new GattException(status + ""));
-        }*/
+
+            if (isUndocumentedErrorStatus(status)) {
+                if (++sUndocumentedFailure > 5) {
+                    sUndocumentedFailure = 0;
+                    turnOffGatt(gatt);
+                    return;
+                }
+
+                // If couple of fixUndocumentedBleStatusProblem() calls doesn't help there is
+                // sFixingErrorCounter to turn the GATT of or there will be infinite loop with
+                // the same error status
+                fixUndocumentedBleStatusProblem(gatt, this);
+                return;
+            }
+
+            if (status != GATT_SUCCESS) {
+                turnOffGatt(gatt);
+                return;
+            }
+
+            if (newState == STATE_CONNECTED) { // on connected
+                if (mConnectionChangesSubscriber != null)
+                    mConnectionChangesSubscriber.onNext(gatt);
+            } else if (newState == STATE_DISCONNECTED) {
+                turnOffGatt(gatt);
+                if (mDisconnectedSubscriber != null) { // disconnected voluntarily
+                    mDisconnectedSubscriber.onNext(gatt);
+                    mDisconnectedSubscriber.onCompleted();
+                } else { // disconnected involuntarily because an error occurred
+                    if (mConnectionChangesSubscriber != null) {
+                        mConnectionChangesSubscriber.onError(new DisconnectionException(status + ""));
+                        fixUndocumentedBleStatusProblem(gatt, this);
+                    }
+                }
+            }
+        }
+    }
+
+    public void turnOffGatt(BluetoothGatt gatt) {
+        synchronized (gattLock) {
+            gatt.disconnect();
+            gatt.close();
+        }
     }
 
     public Observable<BluetoothGatt> discoverServices(final BluetoothGatt bluetoothGatt) {
@@ -114,14 +152,14 @@ public class BluetoothGattReceiver extends BluetoothGattCallback {
             @Override
             public void call(Subscriber<? super BluetoothGatt> subscriber) {
                 mDisconnectedSubscriber = subscriber;
-                bluetoothGatt.disconnect();
+                bluetoothGatt.close();
             }
         });
     }
 
     public Observable<BluetoothGattCharacteristic>
-                            writeCharacteristic(final BluetoothGatt bluetoothGatt,
-                                                final BluetoothGattCharacteristic characteristic) {
+    writeCharacteristic(final BluetoothGatt bluetoothGatt,
+                        final BluetoothGattCharacteristic characteristic) {
         return Observable.create(new Observable.OnSubscribe<BluetoothGattCharacteristic>() {
             @Override
             public void call(Subscriber<? super BluetoothGattCharacteristic> subscriber) {
@@ -139,7 +177,7 @@ public class BluetoothGattReceiver extends BluetoothGattCallback {
                 mWriteCharacteristicsSubscriberMap.remove(characteristic.getUuid());
         if (status == GATT_SUCCESS) {
             subscriber.onNext(characteristic);
-        } else if(GATT_INSUFFICIENT_AUTHENTICATION == status || GATT_INSUFFICIENT_ENCRYPTION == status) {
+        } else if (GATT_INSUFFICIENT_AUTHENTICATION == status || GATT_INSUFFICIENT_ENCRYPTION == status) {
             Observable.just(gatt)
                     .flatMap(new BondingReceiver.BondingFunc1())
                     .map(new Func1<BluetoothGatt, Boolean>() {
@@ -155,9 +193,10 @@ public class BluetoothGattReceiver extends BluetoothGattCallback {
             subscriber.onError(new WriteCharacteristicException(characteristic, status));
         }
     }
+
     public Observable<BluetoothGattCharacteristic> readCharacteristic(
-                                                final BluetoothGatt gatt,
-                                                final BluetoothGattCharacteristic characteristic) {
+            final BluetoothGatt gatt,
+            final BluetoothGattCharacteristic characteristic) {
         return Observable.create(new Observable.OnSubscribe<BluetoothGattCharacteristic>() {
             @Override
             public void call(Subscriber<? super BluetoothGattCharacteristic> subscriber) {
@@ -175,7 +214,7 @@ public class BluetoothGattReceiver extends BluetoothGattCallback {
                 mReadCharacteristicsSubscriberMap.remove(characteristic.getUuid());
         if (status == GATT_SUCCESS) {
             subscriber.onNext(characteristic);
-        } else if(GATT_INSUFFICIENT_AUTHENTICATION == status || GATT_INSUFFICIENT_ENCRYPTION == status) {
+        } else if (GATT_INSUFFICIENT_AUTHENTICATION == status || GATT_INSUFFICIENT_ENCRYPTION == status) {
             Observable.just(gatt)
                     .flatMap(new BondingReceiver.BondingFunc1())
                     .map(new Func1<BluetoothGatt, Boolean>() {
@@ -223,7 +262,8 @@ public class BluetoothGattReceiver extends BluetoothGattCallback {
     }
 
     @Override
-    public void onDescriptorWrite(BluetoothGatt gatt, BluetoothGattDescriptor descriptor, int status) {
+    public void onDescriptorWrite(BluetoothGatt gatt, BluetoothGattDescriptor descriptor,
+                                  int status) {
         super.onDescriptorWrite(gatt, descriptor, status);
         if (mValueChangesUnSubscriber != null) {
             mValueChangesUnSubscriber.onNext(descriptor.getCharacteristic());
@@ -231,7 +271,8 @@ public class BluetoothGattReceiver extends BluetoothGattCallback {
     }
 
     @Override
-    public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
+    public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic
+            characteristic) {
         mValueChangesSubscriber.onNext(characteristic);
     }
 
