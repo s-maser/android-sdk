@@ -19,6 +19,11 @@ public abstract class RelayrBleSdk {
     public abstract Observable<List<BleDevice>> scan(Collection<BleDeviceType> deviceTypes);
 
     /**
+     * Returns BleDevice if it's paired.
+     */
+    public abstract BleDevice getPairedDevice(String macAddress);
+
+    /**
      * Stops an ongoing BLE device scan.
      */
     public abstract void stop();

@@ -17,6 +17,11 @@ class NullableRelayrBleSdk extends RelayrBleSdk {
         });
     }
 
+    @Override
+    public BleDevice getPairedDevice(String macAddress) {
+        return null;
+    }
+
     public void stop() { }
 
     public boolean isScanning() { return false; }

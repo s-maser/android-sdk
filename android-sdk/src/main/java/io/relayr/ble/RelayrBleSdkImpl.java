@@ -2,6 +2,7 @@ package io.relayr.ble;
 
 import android.annotation.TargetApi;
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.os.Build;
 
 import java.util.ArrayList;
@@ -16,10 +17,12 @@ import rx.functions.Func1;
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 class RelayrBleSdkImpl extends RelayrBleSdk implements BleScannerFilter.BleFilteredScanCallback {
 
-    private final BleDevicesScanner mBleDeviceScanner;
+    private final BluetoothAdapter mBtAdapter;
     private final BleDeviceManager mDeviceManager;
+    private final BleDevicesScanner mBleDeviceScanner;
 
     RelayrBleSdkImpl(BluetoothAdapter bluetoothAdapter, BleDeviceManager deviceManager) {
+        mBtAdapter = bluetoothAdapter;
         mDeviceManager = deviceManager;
         BleScannerFilter mScannerFilter = new BleScannerFilter(mDeviceManager, this);
         mBleDeviceScanner = new BleDevicesScanner(bluetoothAdapter, mScannerFilter);
@@ -62,6 +65,17 @@ class RelayrBleSdkImpl extends RelayrBleSdk implements BleScannerFilter.BleFilte
         });
     }
 
+    @Override
+    public BleDevice getPairedDevice(final String macAddress) {
+        for (BluetoothDevice bluetoothDevice : mBtAdapter.getBondedDevices()) {
+            if (bluetoothDevice.getAddress().equals(macAddress))
+                return new BleDevice(bluetoothDevice, macAddress,
+                        BleDeviceMode.DIRECT_CONNECTION, mDeviceManager);
+        }
+
+        return null;
+    }
+
     /*@Override
     public SocketClient getBleSocketClient() {
         return new BleSocketClient();
@@ -70,7 +84,6 @@ class RelayrBleSdkImpl extends RelayrBleSdk implements BleScannerFilter.BleFilte
     @Override
     public void stop() {
         mBleDeviceScanner.stop();
-        mDeviceManager.removeSubscribers();
     }
 
     @Override

@@ -32,6 +32,10 @@ class Service {
         mBluetoothGattReceiver = receiver;
     }
 
+    public  BluetoothGatt getGatt() {
+        return mBluetoothGatt;
+    }
+
     protected static Observable<? extends BluetoothGatt> doConnect(
             final BluetoothDevice bluetoothDevice, final BluetoothGattReceiver receiver, 
             final boolean unBond) {

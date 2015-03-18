@@ -54,15 +54,9 @@ class BleDeviceManager {
     }
 
     void removeSubscriber(Long key) {
-        mDevicesSubscriberMap.remove(key).unsubscribe();
+        mDevicesSubscriberMap.remove(key);
     }
     
-    void removeSubscribers() {
-        for (Subscriber<? super List<BleDevice>> subscriber: mDevicesSubscriberMap.values())
-            subscriber.unsubscribe();
-        mDevicesSubscriberMap.clear();
-    }
-
     boolean isThereAnySubscriber() {
         return !mDevicesSubscriberMap.isEmpty();
     }
