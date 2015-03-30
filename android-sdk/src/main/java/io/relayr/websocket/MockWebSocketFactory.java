@@ -17,4 +17,7 @@ class MockWebSocketFactory extends WebSocketFactory {
         return new MockWebSocket(mMockBackend);
     }
 
+    public WebSocket createOnBoardingWebSocket() {
+        return new MockOnBoardWebSocket();
+    }
 }

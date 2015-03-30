@@ -35,7 +35,7 @@ public class BleUtils {
     }
 
     protected boolean isSdk18() {
-        return android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2;
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2;
     }
 
     public boolean isBleSupported() {

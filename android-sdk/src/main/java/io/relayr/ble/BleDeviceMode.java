@@ -5,6 +5,7 @@ import java.util.List;
 import static io.relayr.ble.service.ShortUUID.SERVICE_CONNECTED_TO_MASTER_MODULE;
 import static io.relayr.ble.service.ShortUUID.SERVICE_DIRECT_CONNECTION;
 import static io.relayr.ble.service.ShortUUID.SERVICE_ON_BOARDING;
+
 /**
  * The modes in which a relayr Device can be.
  */
@@ -25,6 +26,11 @@ public enum BleDeviceMode {
      * in and characteristics in {@link io.relayr.ble.service.MasterModuleService}
      */
     CONNECTED_TO_MASTER_MODULE,
+    /**
+     * Connected to the WunderBar Master Module. It will be able to access the functionality
+     * in and characteristics in {@link io.relayr.ble.service.MasterModuleService}
+     */
+    MASTER_MODULE_BLE,
     UNKNOWN;
 
     public static BleDeviceMode fromUuid(String serviceUuid) {

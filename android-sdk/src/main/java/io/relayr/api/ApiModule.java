@@ -93,7 +93,8 @@ public class ApiModule {
         return restAdapter.create(SubscriptionApi.class);
     }
 
-    @Provides @Singleton ChannelApi provideChannelApi(@Named("api")
+    @Provides @Singleton
+    ChannelApi provideChannelApi(@Named("api")
                                                                 RestAdapter restAdapter) {
         return restAdapter.create(ChannelApi.class);
     }

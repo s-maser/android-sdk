@@ -132,4 +132,10 @@ public interface RelayrApi {
      * @return an empty {@link rx.Observable} */
     @DELETE("/wunderbars/{transmitterId}")
     Observable<Void> deleteWunderBar(@Path("transmitterId") String transmitterId);
+
+    /**
+     * Returns map of ble device names and their device model ids. Used with v2 onboarding.
+     */
+    @GET("/device-models/ble-names")
+    Observable<Object> getBleModels();
 }

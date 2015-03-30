@@ -39,12 +39,14 @@ public class BleModule {
         return app.getPackageManager();
     }
 
-    @Provides @Singleton BleUtils provideBleUtils(PackageManager manager) {
-        return android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2 ?
+    @Provides @Singleton
+    BleUtils provideBleUtils(PackageManager manager) {
+        return Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2 ?
                 new BleUtils(null, manager): new BleUtils(getBluetoothAdapter(), manager);
     }
 
-    @Provides @Singleton RelayrBleSdk provideRelayrBleSdk() {
+    @Provides @Singleton
+    RelayrBleSdk provideRelayrBleSdk() {
         return RelayrSdk.isBleSupported() ?
                 new RelayrBleSdkImpl(getBluetoothAdapter(), new BleDeviceManager()) :
                 new NullableRelayrBleSdk();

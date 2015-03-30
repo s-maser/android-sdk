@@ -3,6 +3,7 @@ package io.relayr.api;
 import com.google.gson.reflect.TypeToken;
 
 import java.util.List;
+import java.util.Objects;
 
 import javax.inject.Inject;
 
@@ -149,5 +150,16 @@ public class MockRelayrApi implements RelayrApi {
             public void call(Subscriber<? super Void> subscriber) {
                 subscriber.onNext(null);
             }
-        });    }
+        });
+    }
+
+    @Override
+    public Observable<Object> getBleModels() {
+        return Observable.create(new Observable.OnSubscribe<Object>() {
+            @Override
+            public void call(Subscriber<? super Object> subscriber) {
+                subscriber.onNext("\"name\" : \"modelId\"");
+            }
+        });
+    }
 }

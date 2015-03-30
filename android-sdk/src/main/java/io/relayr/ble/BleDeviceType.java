@@ -16,6 +16,7 @@ public enum BleDeviceType {
 	WunderbarBRIDG,
 	WunderbarIR,
 	WunderbarApp,
+    WunderbarMM,
 	Unknown;
 
     /** Convert the sensor name advertised in ble that into a device type */
@@ -42,6 +43,9 @@ public enum BleDeviceType {
 			if (deviceName.equals("WunderbarApp")) {
 				return WunderbarApp;
 			}
+            if (deviceName.equals("Wunderbar MM")) {
+                return WunderbarMM;
+            }
 		}
 		return Unknown;
 	}

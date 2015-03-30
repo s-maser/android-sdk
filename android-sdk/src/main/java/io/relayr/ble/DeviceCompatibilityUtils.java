@@ -13,7 +13,7 @@ public class DeviceCompatibilityUtils {
     private static final String TAG = "DeviceCompatibilityUtils";
 
     private static boolean isSdk19() {
-        return android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
     }
 
     public static boolean createBond(BluetoothDevice device) {

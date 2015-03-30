@@ -4,21 +4,25 @@ import android.annotation.TargetApi;
 import android.bluetooth.BluetoothDevice;
 import android.os.Build;
 
+import java.io.Serializable;
+
 import io.relayr.ble.service.BaseService;
 import io.relayr.ble.service.DirectConnectionService;
 import io.relayr.ble.service.MasterModuleService;
+import io.relayr.ble.service.NewOnBoardingService;
 import io.relayr.ble.service.OnBoardingService;
 import rx.Observable;
 import rx.functions.Func1;
 
 import static io.relayr.ble.BleDeviceMode.DIRECT_CONNECTION;
+import static io.relayr.ble.BleDeviceMode.MASTER_MODULE_BLE;
 import static io.relayr.ble.BleDeviceMode.ON_BOARDING;
 
 /**
  * A class representing a relayr BLE Device
  */
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
-public class BleDevice {
+public class BleDevice implements Serializable{
 
 	private final BleDeviceMode mode;
 	private final BleDeviceType type;
@@ -38,6 +42,8 @@ public class BleDevice {
                         OnBoardingService.connect(this, bluetoothDevice).cache() :
                 mode == DIRECT_CONNECTION ?
                         DirectConnectionService.connect(this, bluetoothDevice).cache() :
+                mode == MASTER_MODULE_BLE ?
+                        NewOnBoardingService.connect(this, bluetoothDevice).cache() :
                         MasterModuleService.connect(this, bluetoothDevice).cache();
 	}
 

@@ -39,7 +39,8 @@ public class DebugApiModule {
         return new MockSubscriptionApi(loader);
     }
 
-    @Provides @Singleton ChannelApi provideChannelApi(MockBackend loader) {
+    @Provides @Singleton
+    ChannelApi provideChannelApi(MockBackend loader) {
         return new MockChannelApi(loader);
     }
 

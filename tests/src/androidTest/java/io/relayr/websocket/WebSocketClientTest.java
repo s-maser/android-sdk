@@ -57,13 +57,18 @@ public class WebSocketClientTest extends TestEnvironment {
         verify(channelApi, times(1)).create(any(MqttDefinition.class));
         await();
 
-        verify(webSocket, times(1)).createClient(any(MqttChannel.class), any(Subscriber.class));
+        verify(webSocket, times(1)).createClient(any(MqttChannel.class));
     }
 
     @Test
     public void webSocketClientUnSubscribeTest() {
+        Observable<MqttChannel> observable = new MockBackend(Robolectric.application)
+                .createObservable(new TypeToken<MqttChannel>() {
+                }, MockBackend.MQTT_CREDENTIALS);
+
         when(webSocketFactory.createWebSocket()).thenReturn(webSocket);
-        when(webSocket.unSubscribe(any(MqttChannel.class))).thenReturn(true);
+        when(webSocket.unSubscribe(any(String.class))).thenReturn(true);
+        when(channelApi.create(any(MqttDefinition.class))).thenReturn(observable);
 
         socketClient = new WebSocketClient(channelApi, webSocketFactory);
         socketClient.subscribe(createTransmitterDevice());

@@ -51,7 +51,7 @@ public class BaseService extends Service {
 
     /**
      * Returns an observable of the Battery Level characteristic.
-     * <p>See {@link BluetoothGatt#readCharacteristic} for details as to the actions performed in
+     * <p>See {@link android.bluetooth.BluetoothGatt#readCharacteristic} for details as to the actions performed in
      * the background.
      * @return an observable of the Battery Level characteristic
      */
@@ -62,7 +62,7 @@ public class BaseService extends Service {
 
     /**
      * Returns an observable of the Firmware Version characteristic.
-     * <p>See {@link BluetoothGatt#readCharacteristic} for details as to the actions performed in
+     * <p>See {@link android.bluetooth.BluetoothGatt#readCharacteristic} for details as to the actions performed in
      * the background.
      * @return an observable of the Firmware Version characteristic
      */
@@ -73,7 +73,7 @@ public class BaseService extends Service {
 
     /**
      * Returns an observable of the Hardware Version characteristic.
-     * <p>See {@link BluetoothGatt#readCharacteristic} for details as to the actions performed in
+     * <p>See {@link android.bluetooth.BluetoothGatt#readCharacteristic} for details as to the actions performed in
      * the background.
      * @return an observable of the Hardware Version characteristic
      */
@@ -84,7 +84,7 @@ public class BaseService extends Service {
 
     /**
      * Returns an observable of the Manufacturer characteristic.
-     * <p>See {@link BluetoothGatt#readCharacteristic} for details as to the actions performed in
+     * <p>See {@link android.bluetooth.BluetoothGatt#readCharacteristic} for details as to the actions performed in
      * the background.
      * @return an observable of the Manufacturer characteristic
      */

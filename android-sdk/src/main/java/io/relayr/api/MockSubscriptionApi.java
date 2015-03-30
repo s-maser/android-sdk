@@ -6,11 +6,9 @@ import javax.inject.Inject;
 
 import io.relayr.model.MqttChannel;
 import io.relayr.model.MqttDefinition;
-import io.relayr.model.WebSocketConfig;
 import rx.Observable;
 import rx.Subscriber;
 
-import static io.relayr.api.MockBackend.APPS_DEVICES_START;
 import static io.relayr.api.MockBackend.MQTT_CREDENTIALS;
 
 public class MockSubscriptionApi implements SubscriptionApi {

@@ -1,6 +1,7 @@
 package io.relayr.websocket;
 
 import android.util.Log;
+import android.util.Pair;
 
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.IMqttToken;
@@ -15,43 +16,51 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import io.relayr.model.MqttChannel;
+import io.relayr.model.Transmitter;
 import rx.Observable;
 import rx.Subscriber;
 
-class MqttWebSocket extends WebSocket<MqttChannel> {
+class OnBoardWebSocket extends WebSocket<Transmitter> {
 
     private Map<String, List<WebSocketCallback>> mTopicCallbacks = new HashMap<>();
 
     @Override
-    public Observable<MqttChannel> createClient(final MqttChannel channel) {
-        return Observable.create(new Observable.OnSubscribe<MqttChannel>() {
-            @Override
-            public void call(Subscriber<? super MqttChannel> subscriber) {
-                synchronized (mLock) {
+    public Observable<Transmitter> createClient(final Transmitter transmitter) {
+        synchronized (mLock) {
+            return Observable.create(new Observable.OnSubscribe<Transmitter>() {
+                @Override
+                public void call(Subscriber<? super Transmitter> subscriber) {
                     if (mClient != null && mClient.isConnected()) {
                         subscriber.onNext(null);
                         return;
                     }
 
-                    if (channel == null) {
+                    if (transmitter == null) {
                         subscriber.onError(new Throwable("MqttChannel data can't be null"));
                         return;
                     }
 
-                    if (createMqttClient(channel.getCredentials().getClientId())) {
+                    if (createMqttClient("AndroidTestClient")) {
                         try {
-                            connect(channel.getCredentials().getUser(), channel.getCredentials().getPassword());
-                            subscriber.onNext(null);
+                            if (!mClient.isConnected()) {
+                                Log.e("OBWS", "CLIENT CREATED");
+                                final IMqttToken connectToken = mClient.connect(SslUtil.instance().
+                                        getConnectOptions(transmitter.id, transmitter.secret));
+                                connectToken.waitForCompletion(CONNECT_TIMEOUT);
+                                subscriber.onNext(null);
+                            }
                         } catch (MqttException e) {
+                            Log.e("OBWS", "Failed to connect.");
+                            e.printStackTrace();
                             subscriber.onError(e);
                         }
                     } else {
+                        Log.e("OBWS", "Client not created.");
                         subscriber.onError(new Throwable("Client not created!"));
                     }
                 }
-            }
-        });
+            });
+        }
     }
 
     @Override
@@ -72,7 +81,7 @@ class MqttWebSocket extends WebSocket<MqttChannel> {
         }
     }
 
-    private boolean createMqttClient(String clientId) {
+    boolean createMqttClient(String clientId) {
         if (mClient != null) return true;
 
         try {
@@ -85,11 +94,24 @@ class MqttWebSocket extends WebSocket<MqttChannel> {
                     for (List<WebSocketCallback> callbacks : mTopicCallbacks.values())
                         for (WebSocketCallback socketCallback : callbacks)
                             socketCallback.disconnectCallback(cause);
+
+                    Log.e("MQTT", "Connection lost.");
+                    cause.printStackTrace();
                 }
 
                 @Override
                 public void messageArrived(String topic, MqttMessage message) {
                     if (mTopicCallbacks == null || mTopicCallbacks.isEmpty()) return;
+
+                    if (mTopicCallbacks.get(topic) == null) {
+                        final String top = topic.substring(0, topic.lastIndexOf("/")) + "/#";
+                        final String data = topic.substring(topic.lastIndexOf("/") + 1, topic.length());
+                        for (Map.Entry<String, List<WebSocketCallback>> entry : mTopicCallbacks.entrySet())
+                            if (entry.getKey().equals(top))
+                                for (WebSocketCallback socketCallback : entry.getValue())
+                                    socketCallback.successCallback(new Pair<>(data, message.toString()));
+                        return;
+                    }
 
                     for (WebSocketCallback socketCallback : mTopicCallbacks.get(topic))
                         socketCallback.successCallback(message);
@@ -102,24 +124,14 @@ class MqttWebSocket extends WebSocket<MqttChannel> {
 
             return true;
         } catch (MqttException e) {
+            Log.e("OBWS", "Error creating client.");
+            e.printStackTrace();
             if (mTopicCallbacks == null || mTopicCallbacks.isEmpty()) return false;
             for (List<WebSocketCallback> callbacks : mTopicCallbacks.values())
                 for (WebSocketCallback socketCallback : callbacks)
                     socketCallback.disconnectCallback(e);
 
             return false;
-        }
-    }
-
-    private void connect(String username, String password) throws MqttException {
-        try {
-            if (!mClient.isConnected()) {
-                final IMqttToken connectToken = mClient.connect(SslUtil.instance().getConnectOptions(username, password));
-                connectToken.waitForCompletion(CONNECT_TIMEOUT);
-            }
-        } catch (MqttException e) {
-//            SslUtil.instance().refreshCertificate();
-            throw e;
         }
     }
 
@@ -143,7 +155,6 @@ class MqttWebSocket extends WebSocket<MqttChannel> {
         try {
             subscribe(topic);
             addCallback(topic, callback);
-            callback.connectCallback("Subscribed to " + channelId);
         } catch (MqttException e) {
             callback.disconnectCallback(e);
             return false;

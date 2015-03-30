@@ -39,12 +39,14 @@ public class DebugBleModule {
         return app.getPackageManager();
     }
 
-    @Provides @Singleton BleUtils provideBleUtils(PackageManager manager) {
-        return android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2 ?
+    @Provides @Singleton
+    BleUtils provideBleUtils(PackageManager manager) {
+        return Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2 ?
         new MockBleUtils(null, manager): new MockBleUtils(getBluetoothAdapter(), manager);
     }
 
-    @Provides RelayrBleSdk provideRelayrBleSdk() {
+    @Provides
+    RelayrBleSdk provideRelayrBleSdk() {
         return RelayrSdk.isBleSupported() && RelayrSdk.isBleAvailable() ?
                 new RelayrBleSdkImpl(getBluetoothAdapter(), new BleDeviceManager()) :
                 new NullableRelayrBleSdk();

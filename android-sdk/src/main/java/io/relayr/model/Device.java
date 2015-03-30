@@ -25,6 +25,7 @@ public class Device implements Serializable {
     private String owner;
     private String firmwareVersion;
     private final String secret;
+    private String integrationType;
     @SerializedName("public") private boolean isPublic;
 
     public Device(String id, String name, Model model, String owner,
@@ -36,6 +37,8 @@ public class Device implements Serializable {
         this.firmwareVersion = firmwareVersion;
         this.secret = secret;
         this.isPublic = isPublic;
+
+        setIntegrationType(IntegrationType.WUNDERBAR_1);
     }
 
     public String getName() {
@@ -76,6 +79,14 @@ public class Device implements Serializable {
 
     public void setFirmwareVersion(String firmwareVersion) {
         this.firmwareVersion = firmwareVersion;
+    }
+
+    public IntegrationType getIntegrationType() {
+        return IntegrationType.getByName(integrationType);
+    }
+
+    public void setIntegrationType(IntegrationType integrationType) {
+        this.integrationType = integrationType.getName();
     }
 
     @Override

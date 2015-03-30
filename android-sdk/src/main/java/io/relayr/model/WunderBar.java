@@ -1,51 +1,75 @@
 package io.relayr.model;
 
+import android.util.Pair;
+
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+
+import io.relayr.ble.BleDeviceType;
 
 public class WunderBar implements Serializable {
 
+    public final IntegrationType type;
     public final Transmitter masterModule;
-    public final TransmitterDevice gyroscope;
-    public final TransmitterDevice light;
-    public final TransmitterDevice microphone;
-    public final TransmitterDevice thermometer;
-    public final TransmitterDevice infrared;
-    public final TransmitterDevice bridge;
+    public List<Pair<DeviceModel, TransmitterDevice>> wbDevices = new ArrayList<>();
 
     public WunderBar(Transmitter masterModule, TransmitterDevice gyroscope,
                      TransmitterDevice light, TransmitterDevice microphone,
                      TransmitterDevice thermometer, TransmitterDevice infrared,
                      TransmitterDevice bridge) {
+        this.type = IntegrationType.WUNDERBAR_1;
         this.masterModule = masterModule;
-        this.gyroscope = gyroscope;
-        this.light = light;
-        this.microphone = microphone;
-        this.thermometer = thermometer;
-        this.infrared = infrared;
-        this.bridge = bridge;
+        this.wbDevices = Arrays.asList(new Pair<>(DeviceModel.ACCELEROMETER_GYROSCOPE, gyroscope),
+                new Pair<>(DeviceModel.LIGHT_PROX_COLOR, light),
+                new Pair<>(DeviceModel.MICROPHONE, microphone),
+                new Pair<>(DeviceModel.TEMPERATURE_HUMIDITY, thermometer),
+                new Pair<>(DeviceModel.IR_TRANSMITTER, infrared),
+                new Pair<>(DeviceModel.GROVE, bridge));
+    }
+
+    public WunderBar(Transmitter masterModule, List<TransmitterDevice> devices, IntegrationType type) {
+        this.type = type;
+        this.masterModule = masterModule;
+        for (TransmitterDevice device : devices) {
+            wbDevices.add(new Pair<>(device.getModel(), device));
+        }
+    }
+
+    public WunderBar(Transmitter masterModule) {
+        this(masterModule, new ArrayList<TransmitterDevice>(), IntegrationType.WUNDERBAR_2);
+    }
+
+    public void addDevice(TransmitterDevice device) {
+        wbDevices.add(new Pair<>(device.getModel(), device));
     }
 
     public static WunderBar from(Transmitter masterModule, List<TransmitterDevice> devices) {
-        TransmitterDevice gyroscope = null, light = null, microphone = null,
-                thermometer = null, infrared = null, bridge = null;
-        for (TransmitterDevice device : devices) {
-            if (DeviceModel.ACCELEROMETER_GYROSCOPE.getId().equals(device.model)) {
-                gyroscope = device;
-            } else if (DeviceModel.LIGHT_PROX_COLOR.getId().equals(device.model)) {
-                light = device;
-            } else if (DeviceModel.MICROPHONE.getId().equals(device.model)) {
-                microphone = device;
-            } else if (DeviceModel.TEMPERATURE_HUMIDITY.getId().equals(device.model)) {
-                thermometer = device;
-            } else if (DeviceModel.IR_TRANSMITTER.getId().equals(device.model)) {
-                infrared = device;
-            } else if (DeviceModel.GROVE.getId().equals(device.model)) {
-                bridge = device;
-            }
-        }
-        return new WunderBar(masterModule, gyroscope, light, microphone, thermometer, infrared,
-                bridge);
+        return new WunderBar(masterModule, devices, IntegrationType.WUNDERBAR_1);
     }
 
+    public TransmitterDevice getDevice(BleDeviceType type) {
+        DeviceModel model = resolveType(type);
+        for (Pair<DeviceModel, TransmitterDevice> device : wbDevices)
+            if (device.first == model) return device.second;
+
+        return null;
+    }
+
+    public TransmitterDevice getDevice(DeviceModel model) {
+        for (Pair<DeviceModel, TransmitterDevice> device : wbDevices)
+            if (device.first == model) return device.second;
+
+        return null;
+    }
+
+    private DeviceModel resolveType(BleDeviceType type) {
+        return type == BleDeviceType.WunderbarHTU ? DeviceModel.TEMPERATURE_HUMIDITY :
+                type == BleDeviceType.WunderbarGYRO ? DeviceModel.ACCELEROMETER_GYROSCOPE :
+                        type == BleDeviceType.WunderbarMIC ? DeviceModel.MICROPHONE :
+                                type == BleDeviceType.WunderbarLIGHT ? DeviceModel.LIGHT_PROX_COLOR :
+                                        type == BleDeviceType.WunderbarIR ? DeviceModel.IR_TRANSMITTER :
+                                                DeviceModel.GROVE;
+    }
 }

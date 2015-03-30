@@ -52,21 +52,21 @@ public class SslUtilTest {
 
     @Test
     public void createCertificateTest() throws CertificateException {
-        Certificate certificate = SslUtil.instance().downloadCertificate(CERT_URL);
+        Certificate certificate = SslUtil.instance().loadCertificate(Robolectric.application.getApplicationContext());
 
         assertThat(certificate).isNotNull();
         assertThat(certificate.getType()).isEqualTo("X.509");
     }
 
-    @Test
-    public void createCertificateTest_ShouldFail() {
-        final Certificate certificate = SslUtil.instance().loadCertificate();
-        assertThat(certificate).isNull();
-    }
+//    @Test
+//    public void createCertificateTest_ShouldFail() {
+//        final Certificate certificate = SslUtil.instance().loadCertificate();
+//        assertThat(certificate).isNull();
+//    }
 
     @Test
     public void createKeyStoreTest() throws KeyStoreException, CertificateException {
-        Certificate certificate = SslUtil.instance().downloadCertificate(CERT_URL);
+        Certificate certificate = SslUtil.instance().loadCertificate(Robolectric.application.getApplicationContext());
         KeyStore keyStore = SslUtil.instance().createKeyStore(certificate);
 
         assertThat(keyStore).isNotNull();
@@ -89,8 +89,7 @@ public class SslUtilTest {
 
     @Test
     public void createConnectionOptions() throws KeyStoreException {
-        MqttChannel.MqttCredentials credentials = new MqttChannel.MqttCredentials("u", "p", "t", "cId");
-        MqttConnectOptions options = SslUtil.instance().getConnectOptions(credentials);
+        MqttConnectOptions options = SslUtil.instance().getConnectOptions("u", "p");
 
         assertThat(options.getUserName()).isEqualTo("u");
         assertThat(options.getPassword()).isEqualTo("p".toCharArray());

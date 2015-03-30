@@ -4,9 +4,9 @@ import com.google.gson.Gson;
 
 import io.relayr.ble.BleDeviceType;
 import io.relayr.model.AccelGyroscope;
+import io.relayr.model.DataPackage;
 import io.relayr.model.DeviceModel;
 import io.relayr.model.LightColorProx;
-import io.relayr.model.DataPackage;
 
 public abstract class BleDataParser {
 

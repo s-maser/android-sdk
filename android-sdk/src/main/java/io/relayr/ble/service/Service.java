@@ -5,16 +5,23 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.os.Build;
+import android.util.Log;
 
+import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import io.relayr.ble.BleUtils;
 import io.relayr.ble.DeviceCompatibilityUtils;
 import io.relayr.ble.service.error.CharacteristicNotFoundException;
 import rx.Observable;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
 import rx.functions.Func1;
 
-import static android.bluetooth.BluetoothDevice.*;
+import static android.bluetooth.BluetoothDevice.BOND_NONE;
 import static android.bluetooth.BluetoothGattCharacteristic.FORMAT_SFLOAT;
 import static android.bluetooth.BluetoothGattCharacteristic.FORMAT_UINT16;
 import static io.relayr.ble.service.Utils.getCharacteristicInServices;
@@ -32,12 +39,12 @@ class Service {
         mBluetoothGattReceiver = receiver;
     }
 
-    public  BluetoothGatt getGatt() {
+    public BluetoothGatt getGatt() {
         return mBluetoothGatt;
     }
 
     protected static Observable<? extends BluetoothGatt> doConnect(
-            final BluetoothDevice bluetoothDevice, final BluetoothGattReceiver receiver, 
+            final BluetoothDevice bluetoothDevice, final BluetoothGattReceiver receiver,
             final boolean unBond) {
         return receiver
                 .connect(bluetoothDevice)
@@ -76,6 +83,100 @@ class Service {
         }
         characteristic.setValue(bytes);
         return mBluetoothGattReceiver.writeCharacteristic(mBluetoothGatt, characteristic);
+    }
+
+    private byte[] mData;
+
+    protected Observable<BluetoothGatt> longWrite(byte[] data, String serviceUuid,
+                                                  String characteristicUuid) {
+
+        final BluetoothGattCharacteristic characteristic = getCharacteristicInServices(
+                mBluetoothGatt.getServices(), serviceUuid, characteristicUuid);
+
+        this.mData = data;
+        if (characteristic == null)
+            return error(new CharacteristicNotFoundException(characteristicUuid));
+
+        return Observable
+                .create(new Observable.OnSubscribe<BluetoothGatt>() {
+                    @Override
+                    public void call(Subscriber<? super BluetoothGatt> subscriber) {
+                        final boolean beginReliableWrite = mBluetoothGatt.beginReliableWrite();
+                        Log.e("longWrite", "beginReliableWrite " + beginReliableWrite);
+
+                        sendPayload(characteristic, subscriber);
+
+                        final boolean executeReliableWrite = mBluetoothGatt.executeReliableWrite();
+                        Log.e("longWrite", "executeReliableWrite " + executeReliableWrite);
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .timeout(20, TimeUnit.SECONDS)
+                .doOnError(new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable t) {
+                        Log.e("longWrite", "onError");
+                        t.printStackTrace();
+                    }
+                });
+    }
+
+    private void sendPayload(final BluetoothGattCharacteristic characteristic,
+                             Subscriber<? super BluetoothGatt> subscriber) {
+        final byte[] data = getData();
+        if (data.length == 0) {
+            Log.e("WRITE", "final");
+            return;
+        }
+        Log.e("WRITE", "start");
+
+        characteristic.setValue(data);
+        mBluetoothGattReceiver.reliableWriteCharacteristic(mBluetoothGatt, characteristic, subscriber);
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        sendPayload(characteristic, subscriber);
+    }
+
+    private int start = 0;
+    private int end = 0;
+
+    private byte[] getData() {
+        if (end == mData.length) return new byte[]{};
+
+        byte[] chunk;
+        int chunkSize = 16;
+        int chunkOffset = 2;
+
+        byte[] offset = ByteBuffer.allocate(2).putShort((short) start).array();
+        byte[] length = new byte[0];
+
+        if (start == 0) {
+            length = ByteBuffer.allocate(2).putShort((short) mData.length).array();
+            chunkSize = 14;
+            chunkOffset = 4;
+        }
+
+        end = Math.min(start + chunkSize, mData.length);
+        chunkSize = end - start;
+        Log.e("getData", "start: " + start + " end: " + end);
+        byte[] payload = new byte[chunkSize + chunkOffset];
+        chunk = Arrays.copyOfRange(mData, start, end);
+        start += chunkSize;
+
+        System.arraycopy(offset, 0, payload, 0, offset.length);
+        if (start == 0)   System.arraycopy(length, 0, payload, 2, length.length);
+        System.arraycopy(chunk, 0, payload, chunkOffset, chunk.length);
+
+        String payloadString = "";
+        for (byte b : payload)
+            payloadString += " " + b;
+        Log.e("getData", "payload: " + payloadString);
+
+        return payload;
     }
 
     protected Observable<BluetoothGattCharacteristic> readCharacteristic(String serviceUuid,
