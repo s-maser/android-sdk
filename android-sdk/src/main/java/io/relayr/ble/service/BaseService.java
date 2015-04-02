@@ -44,6 +44,9 @@ public class BaseService extends Service {
                 .map(new Func1<BluetoothGatt, BleDevice>() {
                     @Override
                     public BleDevice call(BluetoothGatt gatt) {
+                        mBluetoothGatt.close();
+                        mBluetoothGatt = null;
+                        System.gc();
                         return mBleDevice;
                     }
                 });

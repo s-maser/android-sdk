@@ -29,6 +29,7 @@ public class MockBackend {
     public static final String USER_INFO = "user-info.json";
     public static final String APP_INFO = "app-info.json";
     public static final String USER_DEVICES = "user_devices.json";
+    public static final String USER_DEVICE = "user_device.json";
     public static final String WEB_SOCKET_READINGS = "web_socket_reading.json";
     public static final String USERS_CREATE_WUNDERBAR = "users_create_wunderbar.json";
     public static final String USERS_TRANSMITTERS = "users_transmitters.json";

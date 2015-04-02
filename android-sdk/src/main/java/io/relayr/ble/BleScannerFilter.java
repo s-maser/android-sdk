@@ -9,7 +9,7 @@ import java.util.List;
 
 import io.relayr.ble.parser.AdvertisementPacketParser;
 
-import static io.relayr.ble.BleDeviceMode.MASTER_MODULE_BLE;
+import static io.relayr.ble.BleDeviceMode.NEW_ON_BOARDING;
 import static io.relayr.ble.BleDeviceMode.UNKNOWN;
 
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
@@ -34,7 +34,7 @@ class BleScannerFilter implements BluetoothAdapter.LeScanCallback {
         String deviceName = AdvertisementPacketParser.decodeDeviceName(scanRecord);
 
         if (deviceName != null && deviceName.contains("Wunderbar MM")) {
-            BleDevice bleDevice = new BleDevice(device, deviceName, MASTER_MODULE_BLE, mDeviceManager);
+            BleDevice bleDevice = new BleDevice(device, deviceName, NEW_ON_BOARDING, mDeviceManager, rssi);
             if (mBleFilteredScanCallback != null)
                 mBleFilteredScanCallback.onLeScan(bleDevice, rssi);
             return;
@@ -44,7 +44,7 @@ class BleScannerFilter implements BluetoothAdapter.LeScanCallback {
         BleDeviceMode mode = BleDeviceMode.fromServiceUuids(serviceUuids);
         if (!isRelevant(device, deviceName, mode)) return;
 
-        BleDevice bleDevice = new BleDevice(device, deviceName, mode, mDeviceManager);
+        BleDevice bleDevice = new BleDevice(device, deviceName, mode, mDeviceManager, rssi);
         if (mBleFilteredScanCallback != null) mBleFilteredScanCallback.onLeScan(bleDevice, rssi);
     }
 

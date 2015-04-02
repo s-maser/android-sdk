@@ -70,7 +70,7 @@ class RelayrBleSdkImpl extends RelayrBleSdk implements BleScannerFilter.BleFilte
         for (BluetoothDevice bluetoothDevice : mBtAdapter.getBondedDevices()) {
             if (bluetoothDevice.getAddress().equals(macAddress))
                 return new BleDevice(bluetoothDevice, macAddress,
-                        BleDeviceMode.DIRECT_CONNECTION, mDeviceManager);
+                        BleDeviceMode.DIRECT_CONNECTION, mDeviceManager, 0);
         }
 
         return null;

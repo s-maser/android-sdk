@@ -13,6 +13,7 @@ import io.relayr.log.Logger;
 import io.relayr.model.User;
 import io.relayr.storage.DataStorage;
 import io.relayr.util.ReachabilityUtils;
+import io.relayr.websocket.OnBoardingClient;
 import io.relayr.websocket.WebSocketClient;
 import rx.Observable;
 import rx.Subscriber;
@@ -31,6 +32,7 @@ public class RelayrSdk {
 
     @Inject static RelayrApi mRelayrApi;
     @Inject static WebSocketClient mWebSocketClient;
+    @Inject static OnBoardingClient mOnBoardingClient;
     @Inject static BleUtils mBleUtils;
     @Inject static RelayrBleSdk mRelayrBleSdk;
     @Inject static Logger mLoggerUtils;
@@ -75,7 +77,7 @@ public class RelayrSdk {
 	}
 
     /** @return the handler of the Relayr API.
-     * Used as an access point to class {@link RelayrApi} */
+     * Used as an access point to class {@link io.relayr.api.RelayrApi} */
     public static RelayrApi getRelayrApi() {
         return mRelayrApi;
     }
@@ -161,11 +163,19 @@ public class RelayrSdk {
     }
 
     /**
-     * Used as an access point to the class {@link WebSocketClient}
+     * Used as an access point to the class {@link io.relayr.websocket.WebSocketClient}
      * @return the handler of the WebSocket client
      */
     public static WebSocketClient getWebSocketClient() {
         return mWebSocketClient;
+    }
+
+    /**
+     * Used as an access point to the class {@link io.relayr.websocket.WebSocketClient}
+     * @return the handler of the WebSocket client
+     */
+    public static OnBoardingClient getOnBoardingClient() {
+        return mOnBoardingClient;
     }
 
     /**

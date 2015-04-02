@@ -4,6 +4,7 @@ import java.util.List;
 
 import static io.relayr.ble.service.ShortUUID.SERVICE_CONNECTED_TO_MASTER_MODULE;
 import static io.relayr.ble.service.ShortUUID.SERVICE_DIRECT_CONNECTION;
+import static io.relayr.ble.service.ShortUUID.SERVICE_NEW_ON_BOARDING;
 import static io.relayr.ble.service.ShortUUID.SERVICE_ON_BOARDING;
 
 /**
@@ -27,17 +28,18 @@ public enum BleDeviceMode {
      */
     CONNECTED_TO_MASTER_MODULE,
     /**
-     * Connected to the WunderBar Master Module. It will be able to access the functionality
-     * in and characteristics in {@link io.relayr.ble.service.MasterModuleService}
+     * In new onboarding mode. It will be able to access the functionality
+     * in and characteristics in {@link io.relayr.ble.service.NewOnBoardingService}
      */
-    MASTER_MODULE_BLE,
+    NEW_ON_BOARDING,
     UNKNOWN;
 
     public static BleDeviceMode fromUuid(String serviceUuid) {
-        return serviceUuid.equals(SERVICE_DIRECT_CONNECTION) ? DIRECT_CONNECTION:
-                serviceUuid.equals(SERVICE_ON_BOARDING) ? ON_BOARDING:
-                serviceUuid.equals(SERVICE_CONNECTED_TO_MASTER_MODULE) ? CONNECTED_TO_MASTER_MODULE:
-                        UNKNOWN;
+        return serviceUuid.equals(SERVICE_DIRECT_CONNECTION) ? DIRECT_CONNECTION :
+                serviceUuid.equals(SERVICE_CONNECTED_TO_MASTER_MODULE) ? CONNECTED_TO_MASTER_MODULE :
+                        serviceUuid.equals(SERVICE_ON_BOARDING) ? ON_BOARDING :
+                                serviceUuid.equals(SERVICE_NEW_ON_BOARDING) ? NEW_ON_BOARDING :
+                                        UNKNOWN;
     }
 
     public static boolean containsService(String serviceUuid) {
@@ -47,7 +49,7 @@ public enum BleDeviceMode {
     public static BleDeviceMode fromServiceUuids(List<String> uuids) {
         if (uuids == null || uuids.isEmpty()) return UNKNOWN;
         BleDeviceMode mode;
-        for (String uuid: uuids) {
+        for (String uuid : uuids) {
             mode = BleDeviceMode.fromUuid(uuid);
             if (!mode.equals(UNKNOWN)) return mode;
         }
@@ -56,16 +58,15 @@ public enum BleDeviceMode {
 
     @Override
     public String toString() {
-        switch(this) {
-            case ON_BOARDING: {
+        switch (this) {
+            case ON_BOARDING:
                 return "MODE_ON_BOARDING";
-            }
-            case DIRECT_CONNECTION: {
+            case DIRECT_CONNECTION:
                 return "MODE_DIRECT_CONNECTION";
-            }
-            default: {
+            case NEW_ON_BOARDING:
+                return "MODE_NEW_ON_BOARDING";
+            default:
                 return "CONNECTED_TO_MASTER_MODULE";
-            }
         }
     }
 }

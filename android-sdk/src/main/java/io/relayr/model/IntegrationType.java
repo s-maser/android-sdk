@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 public enum IntegrationType implements Serializable{
 
-    WUNDERBAR_1("Wunderbar1"), WUNDERBAR_2("Wunderbar2"), HOME_CONNECT("HomeConnect"), UNKNOWN("");
+    WUNDERBAR_1("wunderbar1"), WUNDERBAR_2("wunderbar2"), HOME_CONNECT("homeconnect"), UNKNOWN("");
 
     private final String mTypeName;
 
@@ -18,11 +18,11 @@ public enum IntegrationType implements Serializable{
 
     public static IntegrationType getByName(String typeName){
         if (typeName != null) {
-            if (typeName.equals("Wunderbar1"))
+            if (typeName.equals("wunderbar1"))
                 return WUNDERBAR_1;
-            else if (typeName.equals("Wunderbar2"))
+            else if (typeName.equals("wunderbar2"))
                 return WUNDERBAR_2;
-            else if (typeName.equals("HomeConnect"))
+            else if (typeName.equals("homeconnect"))
                 return HOME_CONNECT;
             else
                 return UNKNOWN;

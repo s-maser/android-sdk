@@ -31,7 +31,7 @@ import static rx.Observable.just;
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 class Service {
 
-    protected final BluetoothGatt mBluetoothGatt;
+    protected BluetoothGatt mBluetoothGatt;
     protected final BluetoothGattReceiver mBluetoothGattReceiver;
 
     protected Service(BluetoothGatt gatt, BluetoothGattReceiver receiver) {
@@ -102,12 +102,12 @@ class Service {
                     @Override
                     public void call(Subscriber<? super BluetoothGatt> subscriber) {
                         final boolean beginReliableWrite = mBluetoothGatt.beginReliableWrite();
-                        Log.e("longWrite", "beginReliableWrite " + beginReliableWrite);
+                        Log.e("beginReliableWrite", "" + beginReliableWrite);
 
                         sendPayload(characteristic, subscriber);
 
                         final boolean executeReliableWrite = mBluetoothGatt.executeReliableWrite();
-                        Log.e("longWrite", "executeReliableWrite " + executeReliableWrite);
+                        Log.e("executeReliableWrite", "" + executeReliableWrite);
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
@@ -118,6 +118,15 @@ class Service {
                     public void call(Throwable t) {
                         Log.e("longWrite", "onError");
                         t.printStackTrace();
+                        start = 0;
+                        end = 0;
+                    }
+                })
+                .doOnNext(new Action1<BluetoothGatt>() {
+                    @Override
+                    public void call(BluetoothGatt bluetoothGatt) {
+                        start = 0;
+                        end = 0;
                     }
                 });
     }
@@ -125,16 +134,12 @@ class Service {
     private void sendPayload(final BluetoothGattCharacteristic characteristic,
                              Subscriber<? super BluetoothGatt> subscriber) {
         final byte[] data = getData();
-        if (data.length == 0) {
-            Log.e("WRITE", "final");
-            return;
-        }
-        Log.e("WRITE", "start");
+        if (data.length == 0) return;
 
         characteristic.setValue(data);
         mBluetoothGattReceiver.reliableWriteCharacteristic(mBluetoothGatt, characteristic, subscriber);
         try {
-            Thread.sleep(1000);
+            Thread.sleep(300);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -162,13 +167,12 @@ class Service {
 
         end = Math.min(start + chunkSize, mData.length);
         chunkSize = end - start;
-        Log.e("getData", "start: " + start + " end: " + end);
         byte[] payload = new byte[chunkSize + chunkOffset];
         chunk = Arrays.copyOfRange(mData, start, end);
         start += chunkSize;
 
         System.arraycopy(offset, 0, payload, 0, offset.length);
-        if (start == 0)   System.arraycopy(length, 0, payload, 2, length.length);
+        if (start == 0) System.arraycopy(length, 0, payload, 2, length.length);
         System.arraycopy(chunk, 0, payload, chunkOffset, chunk.length);
 
         String payloadString = "";
