@@ -101,13 +101,9 @@ class Service {
                 .create(new Observable.OnSubscribe<BluetoothGatt>() {
                     @Override
                     public void call(Subscriber<? super BluetoothGatt> subscriber) {
-                        final boolean beginReliableWrite = mBluetoothGatt.beginReliableWrite();
-                        Log.e("beginReliableWrite", "" + beginReliableWrite);
-
+                        mBluetoothGatt.beginReliableWrite();
                         sendPayload(characteristic, subscriber);
-
-                        final boolean executeReliableWrite = mBluetoothGatt.executeReliableWrite();
-                        Log.e("executeReliableWrite", "" + executeReliableWrite);
+                        mBluetoothGatt.executeReliableWrite();
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
@@ -116,7 +112,6 @@ class Service {
                 .doOnError(new Action1<Throwable>() {
                     @Override
                     public void call(Throwable t) {
-                        Log.e("longWrite", "onError");
                         t.printStackTrace();
                         start = 0;
                         end = 0;
@@ -174,11 +169,6 @@ class Service {
         System.arraycopy(offset, 0, payload, 0, offset.length);
         if (start == 0) System.arraycopy(length, 0, payload, 2, length.length);
         System.arraycopy(chunk, 0, payload, chunkOffset, chunk.length);
-
-        String payloadString = "";
-        for (byte b : payload)
-            payloadString += " " + b;
-        Log.e("getData", "payload: " + payloadString);
 
         return payload;
     }

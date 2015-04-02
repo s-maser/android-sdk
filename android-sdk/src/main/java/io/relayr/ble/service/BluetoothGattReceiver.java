@@ -78,8 +78,6 @@ public class BluetoothGattReceiver extends BluetoothGattCallback {
     @Override
     public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
         synchronized (onConnectionLock) {
-            Log.w("BGR", "Status " + status + " newstate " + newState);
-
             if (status == BluetoothGatt.GATT_FAILURE) {
                 if (newState == 0 && ++sGattFailure < 5) return;
                 sGattFailure = 0;
@@ -182,8 +180,6 @@ public class BluetoothGattReceiver extends BluetoothGattCallback {
     @Override
     public void onReliableWriteCompleted(final BluetoothGatt gatt, int status) {
         if (mReliableWriteSubscriber == null) return;
-
-        Log.e("reliableWriteCompleted", "status: " + status);
 
         if (status == GATT_SUCCESS) {
             mReliableWriteSubscriber.onNext(gatt);
