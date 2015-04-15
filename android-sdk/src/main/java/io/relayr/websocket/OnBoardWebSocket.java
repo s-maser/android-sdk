@@ -31,7 +31,7 @@ class OnBoardWebSocket extends WebSocket<Transmitter> {
                 @Override
                 public void call(Subscriber<? super Transmitter> subscriber) {
                     if (mClient != null && mClient.isConnected()) {
-                        subscriber.onNext(null);
+                        subscriber.onNext(transmitter);
                         return;
                     }
 
@@ -43,19 +43,17 @@ class OnBoardWebSocket extends WebSocket<Transmitter> {
                     if (createMqttClient("AndroidTestClient")) {
                         try {
                             if (!mClient.isConnected()) {
-                                Log.e("OBWS", "CLIENT CREATED");
                                 final IMqttToken connectToken = mClient.connect(SslUtil.instance().
                                         getConnectOptions(transmitter.id, transmitter.secret));
                                 connectToken.waitForCompletion(CONNECT_TIMEOUT);
-                                subscriber.onNext(null);
+                                subscriber.onNext(transmitter);
                             }
                         } catch (MqttException e) {
-                            Log.e("OBWS", "Failed to connect.");
-                            e.printStackTrace();
+                            Log.d("OnBoardWebSocket", "Failed to connect.");
                             subscriber.onError(e);
                         }
                     } else {
-                        Log.e("OBWS", "Client not created.");
+                        Log.d("OnBoardWebSocket", "Client not created.");
                         subscriber.onError(new Throwable("Client not created!"));
                     }
                 }
@@ -95,7 +93,7 @@ class OnBoardWebSocket extends WebSocket<Transmitter> {
                         for (WebSocketCallback socketCallback : callbacks)
                             socketCallback.disconnectCallback(cause);
 
-                    Log.e("MQTT", "Connection lost.");
+                    Log.d("OnBoardWebSocket", "Connection lost.");
                     cause.printStackTrace();
                 }
 
@@ -124,8 +122,7 @@ class OnBoardWebSocket extends WebSocket<Transmitter> {
 
             return true;
         } catch (MqttException e) {
-            Log.e("OBWS", "Error creating client.");
-            e.printStackTrace();
+            Log.d("OnBoardWebSocket", "Error creating client.");
             if (mTopicCallbacks == null || mTopicCallbacks.isEmpty()) return false;
             for (List<WebSocketCallback> callbacks : mTopicCallbacks.values())
                 for (WebSocketCallback socketCallback : callbacks)

@@ -24,9 +24,9 @@ public class OnBoardingClient {
     private final String CMD_PRESENCE_DISCONNECT = "/presence/disconnect";
     private final String CMD_PRESENCE_ANNOUNCE = "/announce/#";
 
-    private final WebSocket<Transmitter> mWebSocket;
     private String topicPrefix;
     private String commandPrefix;
+    private final WebSocket<Transmitter> mWebSocket;
 
     @Inject
     public OnBoardingClient(WebSocketFactory factory) {

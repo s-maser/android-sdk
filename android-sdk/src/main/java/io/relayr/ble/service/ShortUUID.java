@@ -39,4 +39,6 @@ public interface ShortUUID {
     static String CHARACTERISTIC_MQTT_TOPIC = "2404";
     static String CHARACTERISTIC_MQTT_CLIENT_ID = "2405";
     static String CHARACTERISTIC_MQTT_HOST = "2406";
+    static String CHARACTERISTIC_COMMIT = "2407";
+    static String CHARACTERISTIC_STATUS = "2408";
 }

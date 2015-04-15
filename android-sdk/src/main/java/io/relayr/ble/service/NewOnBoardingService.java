@@ -2,16 +2,19 @@ package io.relayr.ble.service;
 
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
+import android.bluetooth.BluetoothGattCharacteristic;
 
 import io.relayr.ble.BleDevice;
 import rx.Observable;
 import rx.functions.Func1;
 
+import static io.relayr.ble.service.ShortUUID.CHARACTERISTIC_COMMIT;
 import static io.relayr.ble.service.ShortUUID.CHARACTERISTIC_MQTT_CLIENT_ID;
 import static io.relayr.ble.service.ShortUUID.CHARACTERISTIC_MQTT_HOST;
 import static io.relayr.ble.service.ShortUUID.CHARACTERISTIC_MQTT_PASSWORD;
 import static io.relayr.ble.service.ShortUUID.CHARACTERISTIC_MQTT_TOPIC;
 import static io.relayr.ble.service.ShortUUID.CHARACTERISTIC_MQTT_USER;
+import static io.relayr.ble.service.ShortUUID.CHARACTERISTIC_STATUS;
 import static io.relayr.ble.service.ShortUUID.CHARACTERISTIC_WIFI_PASSWORD;
 import static io.relayr.ble.service.ShortUUID.CHARACTERISTIC_WIFI_SSID;
 import static io.relayr.ble.service.ShortUUID.SERVICE_NEW_ON_BOARDING;
@@ -42,7 +45,7 @@ public class NewOnBoardingService extends BaseService {
     /**
      * Writes the WiFi SSID characteristic to the associated remote device.
      * <p/>
-     * <p>See {@link android.bluetooth.BluetoothGatt#writeCharacteristic} for details as to the actions performed in
+     * <p>See {@link BluetoothGatt#beginReliableWrite()} for details as to the actions performed in
      * the background.
      *
      * @param ssid A number represented in Bytes to be written the remote device
@@ -56,7 +59,7 @@ public class NewOnBoardingService extends BaseService {
     /**
      * Writes the WiFi password characteristic to the associated remote device.
      * <p/>
-     * <p>See {@link android.bluetooth.BluetoothGatt#writeCharacteristic} for details as to the actions performed in
+     * <p>See {@link BluetoothGatt#beginReliableWrite()} for details as to the actions performed in
      * the background.
      *
      * @param password A number represented in Bytes to be written the remote device
@@ -70,7 +73,7 @@ public class NewOnBoardingService extends BaseService {
     /**
      * Writes the MQTT user characteristic to the associated remote device.
      * <p/>
-     * <p>See {@link android.bluetooth.BluetoothGatt#writeCharacteristic} for details as to the actions performed in
+     * <p>See {@link BluetoothGatt#writeCharacteristic} for details as to the actions performed in
      * the background.
      *
      * @param user A number represented in Bytes to be written the remote device
@@ -84,7 +87,7 @@ public class NewOnBoardingService extends BaseService {
     /**
      * Writes the MQTT password characteristic to the associated remote device.
      * <p/>
-     * <p>See {@link android.bluetooth.BluetoothGatt#writeCharacteristic} for details as to the actions performed in
+     * <p>See {@link BluetoothGatt#beginReliableWrite()} for details as to the actions performed in
      * the background.
      *
      * @param password A number represented in Bytes to be written the remote device
@@ -98,7 +101,7 @@ public class NewOnBoardingService extends BaseService {
     /**
      * Writes the MQTT topic characteristic to the associated remote device.
      * <p/>
-     * <p>See {@link android.bluetooth.BluetoothGatt#writeCharacteristic} for details as to the actions performed in
+     * <p>See {@link BluetoothGatt#beginReliableWrite()} for details as to the actions performed in
      * the background.
      *
      * @param topic A number represented in Bytes to be written the remote device
@@ -112,7 +115,7 @@ public class NewOnBoardingService extends BaseService {
     /**
      * Writes the transmitter characteristic to the associated remote device.
      * <p/>
-     * <p>See {@link android.bluetooth.BluetoothGatt#writeCharacteristic} for details as to the actions performed in
+     * <p>See {@link BluetoothGatt#beginReliableWrite()} for details as to the actions performed in
      * the background.
      *
      * @param transmitter A number represented in Bytes to be written the remote device
@@ -126,7 +129,7 @@ public class NewOnBoardingService extends BaseService {
     /**
      * Writes the transmitter characteristic to the associated remote device.
      * <p/>
-     * <p>See {@link android.bluetooth.BluetoothGatt#writeCharacteristic} for details as to the actions performed in
+     * <p>See {@link BluetoothGatt#beginReliableWrite()} for details as to the actions performed in
      * the background.
      *
      * @param transmitter A number represented in Bytes to be written the remote device
@@ -135,5 +138,31 @@ public class NewOnBoardingService extends BaseService {
      */
     public Observable<BluetoothGatt> writeMqttClientId(byte[] transmitter) {
         return longWrite(transmitter, SERVICE_NEW_ON_BOARDING, CHARACTERISTIC_MQTT_CLIENT_ID);
+    }
+
+    /**
+     * Writes the transmitter characteristic to the associated remote device.
+     * <p/>
+     * <p>See {@link BluetoothGatt#writeCharacteristic} for details as to the actions performed in
+     * the background.
+     *
+     * @return Observable<BluetoothGattCharacteristic>, an observable of what will be written to the
+     * device
+     */
+    public Observable<BluetoothGattCharacteristic> writeCommit() {
+        return write("0".getBytes(), SERVICE_NEW_ON_BOARDING, CHARACTERISTIC_COMMIT);
+    }
+
+    /**
+     * Writes the transmitter characteristic to the associated remote device.
+     * <p/>
+     * <p>See {@link BluetoothGatt#writeCharacteristic} for details as to the actions performed in
+     * the background.
+     *
+     * @return Observable<BluetoothGattCharacteristic>, an observable of what will be written to the
+     * device
+     */
+    public Observable<BluetoothGattCharacteristic> getNotifications() {
+        return readCharacteristic(SERVICE_NEW_ON_BOARDING, CHARACTERISTIC_STATUS, "Can't read status!");
     }
 }

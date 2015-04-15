@@ -24,7 +24,7 @@ import javax.net.ssl.TrustManagerFactory;
 public class SslUtil {
 
     private static final String PROPERTIES_FILE_NAME = "ssl.properties";
-    private static final String CERTIFICATE_FILE_NAME = "relayr.crt";//AddTrustExternalCARoot.crt
+    private static final String CERTIFICATE_FILE_NAME = "relayr.crt";//AddTrustExternalCARoot.crt;
 
     private static SslUtil sSslUtil;
     private static Certificate sCertificate;

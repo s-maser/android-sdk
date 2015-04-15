@@ -30,7 +30,7 @@ class MqttWebSocket extends WebSocket<MqttChannel> {
             public void call(Subscriber<? super MqttChannel> subscriber) {
                 synchronized (mLock) {
                     if (mClient != null && mClient.isConnected()) {
-                        subscriber.onNext(null);
+                        subscriber.onNext(channel);
                         return;
                     }
 
@@ -42,7 +42,7 @@ class MqttWebSocket extends WebSocket<MqttChannel> {
                     if (createMqttClient(channel.getCredentials().getClientId())) {
                         try {
                             connect(channel.getCredentials().getUser(), channel.getCredentials().getPassword());
-                            subscriber.onNext(null);
+                            subscriber.onNext(channel);
                         } catch (MqttException e) {
                             subscriber.onError(e);
                         }
@@ -57,7 +57,7 @@ class MqttWebSocket extends WebSocket<MqttChannel> {
     @Override
     public boolean unSubscribe(String topic) {
         if (topic == null) {
-            Log.e("WebSocket", "Topic can't be null!");
+            Log.d("MqttWebSocket", "Topic can't be null!");
             return false;
         }
 
@@ -112,21 +112,16 @@ class MqttWebSocket extends WebSocket<MqttChannel> {
     }
 
     private void connect(String username, String password) throws MqttException {
-        try {
-            if (!mClient.isConnected()) {
-                final IMqttToken connectToken = mClient.connect(SslUtil.instance().getConnectOptions(username, password));
-                connectToken.waitForCompletion(CONNECT_TIMEOUT);
-            }
-        } catch (MqttException e) {
-//            SslUtil.instance().refreshCertificate();
-            throw e;
+        if (!mClient.isConnected()) {
+            final IMqttToken connectToken = mClient.connect(SslUtil.instance().getConnectOptions(username, password));
+            connectToken.waitForCompletion(CONNECT_TIMEOUT);
         }
     }
 
     @Override
     public boolean subscribe(String topic, String channelId, final WebSocketCallback callback) {
         if (callback == null) {
-            Log.e("WebSocket", "Argument WebSocketCallback can not be null!");
+            Log.e("MqttWebSocket", "Argument WebSocketCallback can not be null!");
             return false;
         }
 
