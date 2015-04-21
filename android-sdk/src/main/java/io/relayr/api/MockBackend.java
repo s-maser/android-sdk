@@ -45,7 +45,7 @@ public class MockBackend {
     public static final String MQTT_CREDENTIALS = "mqtt_channel.json";
 
     private final Context mContext;
-    private Gson gson;
+    private final Gson mGson;
 
     @Inject
     public MockBackend(Context context) {
@@ -53,7 +53,7 @@ public class MockBackend {
 
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(Date.class, new DateDeserializer());
-        gson = gsonBuilder.create();
+        mGson = gsonBuilder.create();
     }
 
     public String load(String fileName) throws Exception {
@@ -81,7 +81,7 @@ public class MockBackend {
     }
 
     public <T> T load(TypeToken<T> typeToken, String resource) throws Exception {
-        return gson.fromJson(load(resource), typeToken.getType());
+        return mGson.fromJson(load(resource), typeToken.getType());
     }
 
     public Object[] getWebSocketReadings() {

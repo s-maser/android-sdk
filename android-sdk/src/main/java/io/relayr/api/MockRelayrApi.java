@@ -18,7 +18,6 @@ import io.relayr.model.ReadingMeaning;
 import io.relayr.model.Transmitter;
 import io.relayr.model.TransmitterDevice;
 import io.relayr.model.User;
-import retrofit.http.Body;
 import rx.Observable;
 import rx.Subscriber;
 
@@ -71,8 +70,13 @@ public class MockRelayrApi implements RelayrApi {
     }
 
     @Override
+    public Observable<Void> deleteDevice(String deviceId) {
+        return null;
+    }
+
+    @Override
     public Observable<CreateWunderBar> createWunderBar(String userId) {
-        return mMockBackend.createObservable(new TypeToken<CreateWunderBar>() {},
+        return mMockBackend.createObservable(new TypeToken<CreateWunderBar>() { },
                 USERS_CREATE_WUNDERBAR);
     }
 
@@ -105,7 +109,8 @@ public class MockRelayrApi implements RelayrApi {
 
     @Override
     public Observable<List<Device>> getPublicDevices(String meaning) {
-        return mMockBackend.createObservable(new TypeToken<List<Device>>() { }, PUBLIC_DEVICES);
+        return mMockBackend.createObservable(new TypeToken<List<Device>>() {
+        }, PUBLIC_DEVICES);
     }
 
     @Override
@@ -156,6 +161,16 @@ public class MockRelayrApi implements RelayrApi {
     }
 
     @Override
+    public Observable<Void> deleteTransmitter(String transmitterId) {
+        return Observable.create(new Observable.OnSubscribe<Void>() {
+            @Override
+            public void call(Subscriber<? super Void> subscriber) {
+                subscriber.onNext(null);
+            }
+        });
+    }
+
+    @Override
     public Observable<Object> getBleModels() {
         return Observable.create(new Observable.OnSubscribe<Object>() {
             @Override
@@ -166,7 +181,8 @@ public class MockRelayrApi implements RelayrApi {
     }
 
     @Override
-    public Observable<Device> createDevice(@Body CreateDevice device) {
+    public Observable<Device> createDevice(CreateDevice device) {
         return mMockBackend.createObservable(new TypeToken<Device>() { },
-                USER_DEVICE);    }
+                USER_DEVICE);
+    }
 }

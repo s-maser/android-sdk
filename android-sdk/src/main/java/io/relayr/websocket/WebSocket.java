@@ -4,12 +4,17 @@ import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttAsyncClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import io.relayr.RelayrApp;
 import rx.Observable;
 
 abstract class WebSocket<T> {
 
     protected static final Object mLock = new Object();
+    protected Map<String, List<WebSocketCallback>> mTopicCallbacks = new HashMap<>();
 
     protected static final int CONNECT_TIMEOUT = 10000;
     protected static final int SUBSCRIBE_TIMEOUT = 2000;
@@ -21,11 +26,9 @@ abstract class WebSocket<T> {
         SslUtil.init(RelayrApp.get());
     }
 
-    abstract boolean subscribe(String topic, String channelId, final WebSocketCallback callback);
-
-    abstract Observable<T> createClient(T object);
-
-    abstract boolean unSubscribe(String topic);
+    public boolean isConnected() {
+        return mClient != null && mClient.isConnected();
+    }
 
     protected void publish(String topic, String payload) {
         try {
@@ -37,7 +40,9 @@ abstract class WebSocket<T> {
         }
     }
 
-    public boolean isConnected() {
-        return mClient != null && mClient.isConnected();
-    }
+    abstract Observable<T> createClient(T object);
+
+    abstract boolean subscribe(String topic, String channelId, final WebSocketCallback callback);
+
+    abstract boolean unSubscribe(String topic);
 }

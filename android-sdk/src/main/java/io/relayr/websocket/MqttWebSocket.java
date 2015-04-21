@@ -21,8 +21,6 @@ import rx.Subscriber;
 
 class MqttWebSocket extends WebSocket<MqttChannel> {
 
-    private Map<String, List<WebSocketCallback>> mTopicCallbacks = new HashMap<>();
-
     @Override
     public Observable<MqttChannel> createClient(final MqttChannel channel) {
         return Observable.create(new Observable.OnSubscribe<MqttChannel>() {

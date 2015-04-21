@@ -22,8 +22,6 @@ import rx.Subscriber;
 
 class OnBoardWebSocket extends WebSocket<Transmitter> {
 
-    private Map<String, List<WebSocketCallback>> mTopicCallbacks = new HashMap<>();
-
     @Override
     public Observable<Transmitter> createClient(final Transmitter transmitter) {
         synchronized (mLock) {
@@ -40,7 +38,7 @@ class OnBoardWebSocket extends WebSocket<Transmitter> {
                         return;
                     }
 
-                    if (createMqttClient("AndroidTestClient")) {
+                    if (createMqttClient("Android-OB-WB2")) {
                         try {
                             if (!mClient.isConnected()) {
                                 final IMqttToken connectToken = mClient.connect(SslUtil.instance().
@@ -59,6 +57,34 @@ class OnBoardWebSocket extends WebSocket<Transmitter> {
                 }
             });
         }
+    }
+
+    @Override
+    public boolean subscribe(String topic, String channelId, final WebSocketCallback callback) {
+        if (callback == null) {
+            Log.e("WebSocket", "Argument WebSocketCallback can not be null!");
+            return false;
+        }
+
+        if (topic == null) {
+            callback.errorCallback(new IllegalArgumentException("Topic can't be null!"));
+            return false;
+        }
+
+        if (mTopicCallbacks.containsKey(topic)) {
+            addCallback(topic, callback);
+            return true;
+        }
+
+        try {
+            subscribe(topic);
+            addCallback(topic, callback);
+        } catch (MqttException e) {
+            callback.disconnectCallback(e);
+            return false;
+        }
+
+        return true;
     }
 
     @Override
@@ -130,34 +156,6 @@ class OnBoardWebSocket extends WebSocket<Transmitter> {
 
             return false;
         }
-    }
-
-    @Override
-    public boolean subscribe(String topic, String channelId, final WebSocketCallback callback) {
-        if (callback == null) {
-            Log.e("WebSocket", "Argument WebSocketCallback can not be null!");
-            return false;
-        }
-
-        if (topic == null) {
-            callback.errorCallback(new IllegalArgumentException("Topic can't be null!"));
-            return false;
-        }
-
-        if (mTopicCallbacks.containsKey(topic)) {
-            addCallback(topic, callback);
-            return true;
-        }
-
-        try {
-            subscribe(topic);
-            addCallback(topic, callback);
-        } catch (MqttException e) {
-            callback.disconnectCallback(e);
-            return false;
-        }
-
-        return true;
     }
 
     private void addCallback(String topic, WebSocketCallback callback) {

@@ -1,7 +1,5 @@
 package io.relayr.model;
 
-import android.util.Pair;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,7 +11,7 @@ public class WunderBar implements Serializable {
 
     public final IntegrationType type;
     public final Transmitter masterModule;
-    public List<Pair<DeviceModel, TransmitterDevice>> wbDevices = new ArrayList<>();
+    public List<TransmitterDevice> wbDevices = new ArrayList<>();
 
     public WunderBar(Transmitter masterModule, TransmitterDevice gyroscope,
                      TransmitterDevice light, TransmitterDevice microphone,
@@ -21,20 +19,13 @@ public class WunderBar implements Serializable {
                      TransmitterDevice bridge) {
         this.type = IntegrationType.WUNDERBAR_1;
         this.masterModule = masterModule;
-        this.wbDevices = Arrays.asList(new Pair<>(DeviceModel.ACCELEROMETER_GYROSCOPE, gyroscope),
-                new Pair<>(DeviceModel.LIGHT_PROX_COLOR, light),
-                new Pair<>(DeviceModel.MICROPHONE, microphone),
-                new Pair<>(DeviceModel.TEMPERATURE_HUMIDITY, thermometer),
-                new Pair<>(DeviceModel.IR_TRANSMITTER, infrared),
-                new Pair<>(DeviceModel.GROVE, bridge));
+        this.wbDevices = Arrays.asList(gyroscope, light, microphone, thermometer, infrared, bridge);
     }
 
     public WunderBar(Transmitter masterModule, List<TransmitterDevice> devices, IntegrationType type) {
         this.type = type;
         this.masterModule = masterModule;
-        for (TransmitterDevice device : devices) {
-            wbDevices.add(new Pair<>(device.getModel(), device));
-        }
+        wbDevices.addAll(devices);
     }
 
     public WunderBar(Transmitter masterModule) {
@@ -42,24 +33,24 @@ public class WunderBar implements Serializable {
     }
 
     public void addDevice(TransmitterDevice device) {
-        wbDevices.add(new Pair<>(device.getModel(), device));
+        wbDevices.add(device);
     }
 
     public static WunderBar from(Transmitter masterModule, List<TransmitterDevice> devices) {
-        return new WunderBar(masterModule, devices, IntegrationType.WUNDERBAR_1);
+        return new WunderBar(masterModule, devices, masterModule.getIntegrationType());
     }
 
     public TransmitterDevice getDevice(BleDeviceType type) {
         DeviceModel model = resolveType(type);
-        for (Pair<DeviceModel, TransmitterDevice> device : wbDevices)
-            if (device.first == model) return device.second;
+        for (TransmitterDevice device : wbDevices)
+            if (device.getModel() == model) return device;
 
         return null;
     }
 
     public TransmitterDevice getDevice(DeviceModel model) {
-        for (Pair<DeviceModel, TransmitterDevice> device : wbDevices)
-            if (device.first == model) return device.second;
+        for (TransmitterDevice device : wbDevices)
+            if (device.getModel() == model) return device;
 
         return null;
     }

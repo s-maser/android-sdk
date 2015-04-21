@@ -24,8 +24,6 @@ import static org.fest.assertions.api.Assertions.assertThat;
 @RunWith(RobolectricTestRunner.class)
 public class SslUtilTest {
 
-    private final String CERT_URL = "https://dev-mqtt.relayr.io/relayr.crt";
-
     @Before
     public void init() {
         SslUtil.init(Robolectric.application.getApplicationContext());
@@ -58,12 +56,6 @@ public class SslUtilTest {
         assertThat(certificate.getType()).isEqualTo("X.509");
     }
 
-//    @Test
-//    public void createCertificateTest_ShouldFail() {
-//        final Certificate certificate = SslUtil.instance().loadCertificate();
-//        assertThat(certificate).isNull();
-//    }
-
     @Test
     public void createKeyStoreTest() throws KeyStoreException, CertificateException {
         Certificate certificate = SslUtil.instance().loadCertificate(Robolectric.application.getApplicationContext());
@@ -76,14 +68,12 @@ public class SslUtilTest {
     @Test
     public void createTrustManagerTest() throws CertificateException {
         TrustManagerFactory trustManagerFactory = SslUtil.instance().createTrustManagerFactory();
-
         assertThat(trustManagerFactory).isNotNull();
     }
 
     @Test
     public void createSocketFactoryTest() throws KeyStoreException {
         SSLSocketFactory socketFactory = SslUtil.instance().createSocketFactory();
-
         assertThat(socketFactory).isNotNull();
     }
 

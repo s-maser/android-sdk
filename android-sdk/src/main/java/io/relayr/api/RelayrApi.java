@@ -42,6 +42,9 @@ public interface RelayrApi {
     Observable<Void> sendCommand(@Path("device_id") String deviceId,
                                  @Body Command command);
 
+    @DELETE("/devices/{device_id}")
+    Observable<Void> deleteDevice(@Path("device_id") String deviceId);
+
     /**
      * Api call to tell the backend to create WunderBar.
      * @return an {@link rx.Observable} to a WunderBar that contains the IDs and Secrets of the
@@ -154,6 +157,14 @@ public interface RelayrApi {
      */
     @DELETE("/wunderbars/{transmitterId}")
     Observable<Void> deleteWunderBar(@Path("transmitterId") String transmitterId);
+
+    /**
+     * Deletes a transmitter and all of its components (Transmitter and Devices)
+     * @param transmitterId id of the transmitter (the Master Module)
+     * @return an empty {@link rx.Observable}
+     */
+    @DELETE("/transmitters/{transmitterId}")
+    Observable<Void> deleteTransmitter(@Path("transmitterId") String transmitterId);
 
     /**
      * Returns map of ble device names and their device model ids. Used with v2 on-boarding.

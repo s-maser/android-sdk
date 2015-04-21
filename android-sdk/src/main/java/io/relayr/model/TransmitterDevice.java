@@ -2,6 +2,8 @@ package io.relayr.model;
 
 import android.bluetooth.BluetoothGattCharacteristic;
 
+import java.io.Serializable;
+
 import io.relayr.RelayrSdk;
 import io.relayr.ble.BleDevicesCache;
 import io.relayr.ble.service.BaseService;
@@ -16,7 +18,7 @@ import rx.functions.Action0;
  * The transmitter device object holds the same information as the {@link io.relayr.model.Device}
  * The difference is that the model attribute in the former is an ID rather than an object.
  */
-public class TransmitterDevice extends Transmitter {
+public class TransmitterDevice extends Transmitter implements Serializable {
 
     public final String model;
 
