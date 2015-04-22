@@ -17,7 +17,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class OnBoardingClientTest extends TestEnvironment {
+public class OnBoardClientTest extends TestEnvironment {
 
     @Mock private WebSocketFactory webSocketFactory;
     @Mock private WebSocket<Transmitter> webSocket;
@@ -25,21 +25,21 @@ public class OnBoardingClientTest extends TestEnvironment {
     @Before
     public void init() {
         super.init();
-
         initSdk();
         inject();
     }
 
     @Test
     public void webSocketClientSubscribeTest() {
-        when(webSocket.createClient(any(Transmitter.class))).thenReturn(Observable.create(new Observable.OnSubscribe<Transmitter>() {
+        final Observable<Transmitter> observable = Observable.create(new Observable.OnSubscribe<Transmitter>() {
             @Override
             public void call(Subscriber<? super Transmitter> subscriber) {
                 subscriber.onNext(createTransmitterDevice());
             }
-        }));
-        when(webSocket.subscribe(anyString(), anyString(), any(WebSocketCallback.class))).thenReturn(true);
+        });
 
+        when(webSocket.createClient(any(Transmitter.class))).thenReturn(observable);
+        when(webSocket.subscribe(anyString(), anyString(), any(WebSocketCallback.class))).thenReturn(true);
         when(webSocketFactory.createOnBoardingWebSocket()).thenReturn(webSocket);
 
         OnBoardingClient mSocketClient = new OnBoardingClient(webSocketFactory);

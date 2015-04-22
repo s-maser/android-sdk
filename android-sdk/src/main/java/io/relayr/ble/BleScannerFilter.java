@@ -49,7 +49,6 @@ class BleScannerFilter implements BluetoothAdapter.LeScanCallback {
     }
 
     interface BleFilteredScanCallback {
-        public void onLeScan(BleDevice device, int rssi);
+        void onLeScan(BleDevice device, int rssi);
     }
-
 }

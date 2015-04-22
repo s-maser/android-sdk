@@ -6,7 +6,7 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import io.relayr.websocket.OnBoardingClientTest;
+import io.relayr.websocket.OnBoardClientTest;
 import io.relayr.websocket.WebSocketClientTest;
 
 @Module(
@@ -19,7 +19,7 @@ import io.relayr.websocket.WebSocketClientTest;
                 MockStatusApiTest.class,
                 MockSubscriptionApiTest.class,
                 WebSocketClientTest.class,
-                OnBoardingClientTest.class
+                OnBoardClientTest.class
         }
 )
 public class TestModule {

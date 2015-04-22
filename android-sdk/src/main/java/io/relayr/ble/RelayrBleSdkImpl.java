@@ -76,14 +76,10 @@ class RelayrBleSdkImpl extends RelayrBleSdk implements BleScannerFilter.BleFilte
         return null;
     }
 
-    /*@Override
-    public SocketClient getBleSocketClient() {
-        return new BleSocketClient();
-    }*/
-
     @Override
     public void stop() {
         mBleDeviceScanner.stop();
+        mDeviceManager.clear();
     }
 
     @Override
@@ -93,6 +89,6 @@ class RelayrBleSdkImpl extends RelayrBleSdk implements BleScannerFilter.BleFilte
 
     @Override
     public void onLeScan(BleDevice device, int rssi) {
-        mDeviceManager.addDiscoveredDevice(device);
+        mDeviceManager.addDiscoveredDevice(device, rssi);
     }
 }

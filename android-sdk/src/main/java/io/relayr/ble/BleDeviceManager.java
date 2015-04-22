@@ -23,6 +23,17 @@ class BleDeviceManager {
         if (mDiscoveredDevices.containsKey(device.getAddress()))
             mDiscoveredDevices.remove(device.getAddress());
         mDiscoveredDevices.put(device.getAddress(), device);
+
+        for (Subscriber<? super List<BleDevice>> mDevicesSubscriber : mDevicesSubscriberMap.values())
+            mDevicesSubscriber.onNext(getDiscoveredDevices());
+    }
+
+    void addDiscoveredDevice(BleDevice device, int rssi) {
+        if (!mDiscoveredDevices.containsKey(device.getAddress()))
+            mDiscoveredDevices.put(device.getAddress(), device);
+        else
+            mDiscoveredDevices.get(device.getAddress()).setRssi(rssi);
+
         for (Subscriber<? super List<BleDevice>> mDevicesSubscriber : mDevicesSubscriberMap.values())
             mDevicesSubscriber.onNext(getDiscoveredDevices());
     }
@@ -56,7 +67,7 @@ class BleDeviceManager {
     void removeSubscriber(Long key) {
         mDevicesSubscriberMap.remove(key);
     }
-    
+
     boolean isThereAnySubscriber() {
         return !mDevicesSubscriberMap.isEmpty();
     }

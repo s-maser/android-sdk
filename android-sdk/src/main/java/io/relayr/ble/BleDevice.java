@@ -30,7 +30,7 @@ public class BleDevice implements Serializable {
     private final String name;
     private final Observable<? extends BaseService> serviceObservable;
     private final BleDeviceManager mDeviceManager;
-    private final int rssi;
+    private int rssi;
 
     BleDevice(BluetoothDevice bluetoothDevice, String name, BleDeviceMode mode, BleDeviceManager manager) {
         this(bluetoothDevice, name, mode, manager, 0);
@@ -111,4 +111,30 @@ public class BleDevice implements Serializable {
     public int getRssi() {
         return rssi;
     }
-}
+
+    public void setRssi(int rssi){
+        this.rssi = rssi;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        BleDevice bleDevice = (BleDevice) o;
+
+        if (mode != bleDevice.mode) return false;
+        if (type != bleDevice.type) return false;
+        if (address != null ? !address.equals(bleDevice.address) : bleDevice.address != null)
+            return false;
+        return !(name != null ? !name.equals(bleDevice.name) : bleDevice.name != null);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = mode != null ? mode.hashCode() : 0;
+        result = 31 * result + (type != null ? type.hashCode() : 0);
+        result = 31 * result + (address != null ? address.hashCode() : 0);
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        return result;
+    }}
