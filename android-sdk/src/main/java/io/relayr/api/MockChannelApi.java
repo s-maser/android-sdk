@@ -7,8 +7,6 @@ import javax.inject.Inject;
 import io.relayr.model.MqttChannel;
 import io.relayr.model.MqttDefinition;
 import io.relayr.model.MqttExistingChannel;
-import retrofit.http.Body;
-import retrofit.http.Path;
 import rx.Observable;
 import rx.Subscriber;
 
@@ -24,13 +22,13 @@ public class MockChannelApi implements ChannelApi {
     }
 
     @Override
-    public Observable<MqttChannel> create(@Body MqttDefinition mqttDefinition) {
+    public Observable<MqttChannel> create( MqttDefinition mqttDefinition) {
         return mMockBackend.createObservable(new TypeToken<MqttChannel>() {
         }, MQTT_CREDENTIALS);
     }
 
     @Override
-    public Observable<Void> delete(@Path("channelId") String channelId) {
+    public Observable<Void> delete(String channelId) {
         return Observable.create(new Observable.OnSubscribe<Void>() {
             @Override
             public void call(Subscriber<? super Void> subscriber) {
@@ -41,7 +39,7 @@ public class MockChannelApi implements ChannelApi {
     }
 
     @Override
-    public Observable<MqttExistingChannel> getChannels(@Path("deviceId") String deviceId) {
+    public Observable<MqttExistingChannel> getChannels(String deviceId) {
         return Observable.empty();
     }
 }

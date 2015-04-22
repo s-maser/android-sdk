@@ -16,7 +16,7 @@ import io.relayr.websocket.WebSocketClientTest;
                 MockBackendTest.class,
                 MockRelayrApiTest.class,
                 MockStatusApiTest.class,
-                MockSubscriptionApiTest.class,
+                MockChannelApiTest.class,
                 WebSocketClientTest.class
         }
 )
@@ -48,7 +48,7 @@ public class TestModule {
 
     @Provides
     @Singleton
-    SubscriptionApi provideSubscriptionApi(MockBackend loader) {
-        return new MockSubscriptionApi(loader);
+    ChannelApi provideChannelApi(MockBackend loader) {
+        return new MockChannelApi(loader);
     }
 }

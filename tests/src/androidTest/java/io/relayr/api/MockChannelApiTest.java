@@ -2,30 +2,22 @@ package io.relayr.api;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.robolectric.Robolectric;
-import org.robolectric.RobolectricTestRunner;
 
 import javax.inject.Inject;
 
-import dagger.ObjectGraph;
 import io.relayr.TestEnvironment;
 import io.relayr.model.MqttChannel;
 import io.relayr.model.MqttDefinition;
-import io.relayr.model.Status;
 import rx.Observer;
 
 import static org.fest.assertions.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
-public class MockSubscriptionApiTest extends TestEnvironment {
+public class MockChannelApiTest extends TestEnvironment {
 
-    @Inject SubscriptionApi subscriptionApi;
+    @Inject ChannelApi channelApi;
 
     @Captor private ArgumentCaptor<MqttChannel> statusCaptor;
 
@@ -42,7 +34,7 @@ public class MockSubscriptionApiTest extends TestEnvironment {
     @Test
     @SuppressWarnings("unchecked")
     public void getMqttData() throws Exception {
-        subscriptionApi.subscribe(new MqttDefinition("shiny_id", "dev_id"))
+        channelApi.create(new MqttDefinition("shiny_id", "dev_id"))
                 .subscribe(new Observer<MqttChannel>() {
                     @Override
                     public void onCompleted() {

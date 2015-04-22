@@ -87,12 +87,6 @@ public class ApiModule {
         return restAdapter.create(OauthApi.class);
     }
 
-    @Provides @Singleton
-    SubscriptionApi provideSubscriptionApi(@Named("api")
-                                                                RestAdapter restAdapter) {
-        return restAdapter.create(SubscriptionApi.class);
-    }
-
     @Provides @Singleton ChannelApi provideChannelApi(@Named("api")
                                                                 RestAdapter restAdapter) {
         return restAdapter.create(ChannelApi.class);

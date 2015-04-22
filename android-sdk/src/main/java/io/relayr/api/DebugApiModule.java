@@ -35,11 +35,7 @@ public class DebugApiModule {
     }
 
     @Provides @Singleton
-    SubscriptionApi provideSubscriptionApi(MockBackend loader) {
-        return new MockSubscriptionApi(loader);
-    }
-
-    @Provides @Singleton ChannelApi provideChannelApi(MockBackend loader) {
+    ChannelApi provideChannelApi(MockBackend loader) {
         return new MockChannelApi(loader);
     }
 
