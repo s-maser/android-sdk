@@ -118,10 +118,9 @@ public class DirectConnectionService extends BaseService {
     /**
      * Indicates the sensorFrequency characteristic to the associated remote device. This is the time
      * elapsing between sending one BLE event and the next.
-     *
+     * <p/>
      * <p>See {@link android.bluetooth.BluetoothGatt#readCharacteristic} for details as to the actions performed in
      * the background.
-     *
      * @return Observable<Integer>, an observable of the sensor frequency value
      */
     public Observable<Integer> getSensorFrequency() {
@@ -133,10 +132,9 @@ public class DirectConnectionService extends BaseService {
     /**
      * Indicates the SensorThreshold characteristic to the associated remote device. This is the
      * value that must be exceeded for a sensor to register a change.
-     *
+     * <p/>
      * <p>See {@link android.bluetooth.BluetoothGatt#readCharacteristic} for details as to the actions performed in
      * the background
-     *
      * @return Observable<BluetoothGattCharacteristic>, an observable of the sensor characteristic.
      * In order to get the value from the characteristic call
      * {@link android.bluetooth.BluetoothGattCharacteristic#getValue()}
@@ -149,10 +147,9 @@ public class DirectConnectionService extends BaseService {
     /**
      * Writes the sensorFrequency characteristic to the associated remote device. This is the time
      * elapsing between sending one BLE event and the next.
-     *
+     * <p/>
      * <p>See {@link android.bluetooth.BluetoothGatt#writeCharacteristic} for details as to the actions performed in
      * the background.
-     *
      * @param sensorFrequency A number represented in Bytes to be written the remote device
      * @return Observable<BluetoothGattCharacteristic>, an observable of what will be written to the
      * remote device
@@ -164,24 +161,22 @@ public class DirectConnectionService extends BaseService {
     /**
      * Writes the sensorLedState characteristic to the associated remote device. It will turn the
      * LED on if the operation is carried out successfully.
-     *
+     * <p/>
      * <p>See {@link android.bluetooth.BluetoothGatt#writeCharacteristic} for details as to the actions performed in
      * the background.
-     *
      * @return Observable<BluetoothGattCharacteristic>, an observable of what will be written to the
      * device
      */
     public Observable<BluetoothGattCharacteristic> turnLedOn() {
-        return write(new byte[] {0x01}, SERVICE_DIRECT_CONNECTION, CHARACTERISTIC_SENSOR_LED_STATE);
+        return write(new byte[]{0x01}, SERVICE_DIRECT_CONNECTION, CHARACTERISTIC_SENSOR_LED_STATE);
     }
 
     /**
      * Writes the command characteristic to the associated remote device. It will send the command
      * if the operation is carried out successfully.
-     *
+     * <p/>
      * <p>See {@link android.bluetooth.BluetoothGatt#writeCharacteristic} for details as to the actions performed in
      * the background.
-     *
      * @return Observable<BluetoothGattCharacteristic>, an observable of what will be written to the
      * device
      */
@@ -192,10 +187,9 @@ public class DirectConnectionService extends BaseService {
     /**
      * Writes the sensorThreshold characteristic to the associated remote device. This is the
      * value that must be exceeded for a sensor to register a change.
-     *
+     * <p/>
      * <p>See {@link android.bluetooth.BluetoothGatt#writeCharacteristic} for details as to the actions performed in
      * the background
-     *
      * @param sensorThreshold A number represented in Bytes to be written the remote device
      * @return Observable<BluetoothGattCharacteristic>, an observable of what will be written to the
      * device
@@ -206,10 +200,9 @@ public class DirectConnectionService extends BaseService {
 
     /**
      * Writes the sensorConfig characteristic to the associated remote device.
-     *
+     * <p/>
      * <p>See {@link android.bluetooth.BluetoothGatt#writeCharacteristic} for details as to the actions performed in
      * the background.
-     *
      * @param configuration A number represented in Bytes to be written the remote device
      * @return Observable<BluetoothGattCharacteristic>, an observable of what will be written to the
      * device

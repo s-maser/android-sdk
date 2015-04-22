@@ -112,7 +112,7 @@ public class BleDevice implements Serializable {
         return rssi;
     }
 
-    public void setRssi(int rssi){
+    public void setRssi(int rssi) {
         this.rssi = rssi;
     }
 
@@ -137,4 +137,5 @@ public class BleDevice implements Serializable {
         result = 31 * result + (address != null ? address.hashCode() : 0);
         result = 31 * result + (name != null ? name.hashCode() : 0);
         return result;
-    }}
+    }
+}

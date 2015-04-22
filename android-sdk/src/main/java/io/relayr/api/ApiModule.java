@@ -92,35 +92,29 @@ public class ApiModule {
                 .build();
     }
 
-    @Provides @Singleton
-    RelayrApi provideRelayrApi(@Named("api") RestAdapter restAdapter) {
+    @Provides @Singleton RelayrApi provideRelayrApi(@Named("api") RestAdapter restAdapter) {
         return restAdapter.create(RelayrApi.class);
     }
 
-    @Provides @Singleton
-    OauthApi provideOauthApi(@Named("oauth") RestAdapter restAdapter) {
+    @Provides @Singleton OauthApi provideOauthApi(@Named("oauth") RestAdapter restAdapter) {
         return restAdapter.create(OauthApi.class);
     }
 
-    @Provides @Singleton
-    SubscriptionApi provideSubscriptionApi(@Named("api")
+    @Provides @Singleton SubscriptionApi provideSubscriptionApi(@Named("api")
                                                                 RestAdapter restAdapter) {
         return restAdapter.create(SubscriptionApi.class);
     }
 
-    @Provides @Singleton
-    ChannelApi provideChannelApi(@Named("api")
-                                                                RestAdapter restAdapter) {
+    @Provides @Singleton ChannelApi provideChannelApi(@Named("api")
+                                                      RestAdapter restAdapter) {
         return restAdapter.create(ChannelApi.class);
     }
 
-    @Provides @Singleton
-    CloudApi provideCloudApi(@Named("api") RestAdapter restAdapter) {
+    @Provides @Singleton CloudApi provideCloudApi(@Named("api") RestAdapter restAdapter) {
         return restAdapter.create(CloudApi.class);
     }
 
-    @Provides @Singleton
-    StatusApi provideStatusApi(@Named("api") RestAdapter restAdapter) {
+    @Provides @Singleton StatusApi provideStatusApi(@Named("api") RestAdapter restAdapter) {
         return restAdapter.create(StatusApi.class);
     }
 

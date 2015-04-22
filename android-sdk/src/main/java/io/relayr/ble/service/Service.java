@@ -5,7 +5,6 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.os.Build;
-import android.util.Log;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
@@ -28,8 +27,7 @@ import static io.relayr.ble.service.Utils.getCharacteristicInServices;
 import static rx.Observable.error;
 import static rx.Observable.just;
 
-@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
-class Service {
+@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2) class Service {
 
     protected BluetoothGatt mBluetoothGatt;
     protected final BluetoothGattReceiver mBluetoothGattReceiver;

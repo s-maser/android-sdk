@@ -31,7 +31,6 @@ import static rx.Observable.error;
 
 /**
  * A class representing the service associated with the NEW_ON_BOARDING mode
- *
  * @see {@link io.relayr.ble.BleDeviceMode}
  */
 public class NewOnBoardingService extends BaseService {
@@ -62,7 +61,6 @@ public class NewOnBoardingService extends BaseService {
      * <p/>
      * <p>See {@link BluetoothGatt#beginReliableWrite()} for details as to the actions performed in
      * the background.
-     *
      * @param ssid A number represented in Bytes to be written the remote device
      * @return Observable<BluetoothGattCharacteristic>, an observable of what will be written to the
      * device
@@ -76,7 +74,6 @@ public class NewOnBoardingService extends BaseService {
      * <p/>
      * <p>See {@link BluetoothGatt#beginReliableWrite()} for details as to the actions performed in
      * the background.
-     *
      * @param password A number represented in Bytes to be written the remote device
      * @return Observable<BluetoothGattCharacteristic>, an observable of what will be written to the
      * device
@@ -90,7 +87,6 @@ public class NewOnBoardingService extends BaseService {
      * <p/>
      * <p>See {@link BluetoothGatt#writeCharacteristic} for details as to the actions performed in
      * the background.
-     *
      * @param user A number represented in Bytes to be written the remote device
      * @return Observable<BluetoothGattCharacteristic>, an observable of what will be written to the
      * device
@@ -104,7 +100,6 @@ public class NewOnBoardingService extends BaseService {
      * <p/>
      * <p>See {@link BluetoothGatt#beginReliableWrite()} for details as to the actions performed in
      * the background.
-     *
      * @param password A number represented in Bytes to be written the remote device
      * @return Observable<BluetoothGattCharacteristic>, an observable of what will be written to the
      * device
@@ -118,7 +113,6 @@ public class NewOnBoardingService extends BaseService {
      * <p/>
      * <p>See {@link BluetoothGatt#beginReliableWrite()} for details as to the actions performed in
      * the background.
-     *
      * @param topic A number represented in Bytes to be written the remote device
      * @return Observable<BluetoothGattCharacteristic>, an observable of what will be written to the
      * device
@@ -132,7 +126,6 @@ public class NewOnBoardingService extends BaseService {
      * <p/>
      * <p>See {@link BluetoothGatt#beginReliableWrite()} for details as to the actions performed in
      * the background.
-     *
      * @param transmitter A number represented in Bytes to be written the remote device
      * @return Observable<BluetoothGattCharacteristic>, an observable of what will be written to the
      * device
@@ -146,7 +139,6 @@ public class NewOnBoardingService extends BaseService {
      * <p/>
      * <p>See {@link BluetoothGatt#beginReliableWrite()} for details as to the actions performed in
      * the background.
-     *
      * @param transmitter A number represented in Bytes to be written the remote device
      * @return Observable<BluetoothGattCharacteristic>, an observable of what will be written to the
      * device
@@ -160,7 +152,6 @@ public class NewOnBoardingService extends BaseService {
      * <p/>
      * <p>See {@link BluetoothGatt#writeCharacteristic} for details as to the actions performed in
      * the background.
-     *
      * @return Observable<BluetoothGattCharacteristic>, an observable of what will be written to the
      * device
      */
@@ -173,7 +164,6 @@ public class NewOnBoardingService extends BaseService {
      * <p/>
      * <p>See {@link BluetoothGatt#writeCharacteristic} for details as to the actions performed in
      * the background.
-     *
      * @return Observable<BluetoothGattCharacteristic>, an observable of what will be written to the
      * device
      */

@@ -31,12 +31,10 @@ public interface RelayrApi {
     Observable<List<Device>> getUserDevices(@Path("userId") String userId);
 
     /** @return an {@link rx.Observable} to the information about the app initiating the request. */
-    @GET("/oauth2/app-info")
-    Observable<App> getAppInfo();
+    @GET("/oauth2/app-info") Observable<App> getAppInfo();
 
     /** @return an {@link rx.Observable} information about the user initiating the request. */
-    @GET("/oauth2/user-info")
-    Observable<User> getUserInfo();
+    @GET("/oauth2/user-info") Observable<User> getUserInfo();
 
     @POST("/devices/{device_id}/cmd")
     Observable<Void> sendCommand(@Path("device_id") String deviceId,
@@ -132,23 +130,20 @@ public interface RelayrApi {
      * Returns all available device models.
      * @return an {@link rx.Observable} with a list of all available device models
      */
-    @GET("/device-models")
-    Observable<List<Model>> getDeviceModels();
+    @GET("/device-models") Observable<List<Model>> getDeviceModels();
 
     /**
      * Returns information about a specific device model
      * @param model id of the device model
      * @return an {@link rx.Observable} of a specific device model
      */
-    @GET("/device-models/{model}")
-    Observable<Model> getDeviceModel(@Path("model") String model);
+    @GET("/device-models/{model}") Observable<Model> getDeviceModel(@Path("model") String model);
 
     /**
      * Returns a list of the possible reading types of the devices on the relayr platform
      * @return an {@link rx.Observable} with a list of Reading meanings
      */
-    @GET("/device-models/meanings")
-    Observable<List<ReadingMeaning>> getReadingMeanings();
+    @GET("/device-models/meanings") Observable<List<ReadingMeaning>> getReadingMeanings();
 
     /**
      * Deletes a WunderBar and all of its components (Transmitter and Devices)
@@ -170,14 +165,12 @@ public interface RelayrApi {
      * Returns map of ble device names and their device model ids. Used with v2 on-boarding.
      * @return an {@link rx.Observable} with Map<String, String>
      */
-    @GET("/device-models/ble-names")
-    Observable<Object> getBleModels();
+    @GET("/device-models/ble-names") Observable<Object> getBleModels();
 
     /**
      * Creates device on the platform. Used for v2 on-boarding.
      * @param device to create and add to the existing transmitter
      * @return created device
      */
-    @POST("/devices")
-    Observable<Device> createDevice(@Body CreateDevice device);
+    @POST("/devices") Observable<Device> createDevice(@Body CreateDevice device);
 }

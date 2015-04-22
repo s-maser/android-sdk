@@ -46,7 +46,6 @@ public class Transmitter implements Serializable {
 
     /**
      * Updates a transmitter.
-     *
      * @return an {@link rx.Observable} to the updated Transmitter
      */
     public Observable<Transmitter> updateTransmitter() {

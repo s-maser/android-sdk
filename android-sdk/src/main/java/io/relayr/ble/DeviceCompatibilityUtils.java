@@ -10,7 +10,7 @@ import java.lang.reflect.Method;
 
 public class DeviceCompatibilityUtils {
 
-    private static final String TAG = "DeviceCompatibilityUtils";
+    private static final String TAG = "DeviceCompatUtils";
 
     private static boolean isSdk19() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
@@ -53,7 +53,6 @@ public class DeviceCompatibilityUtils {
         }
         return false;
     }
-
 
 
 }
