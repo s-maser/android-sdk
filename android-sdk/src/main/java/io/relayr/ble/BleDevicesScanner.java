@@ -7,24 +7,20 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 class BleDevicesScanner implements Runnable, BluetoothAdapter.LeScanCallback {
     private static final String TAG = BleDevicesScanner.class.getSimpleName();
 
+    private static final long DEFAULT_SCAN_PERIOD = 7000;
     private static final long PERIOD_SCAN_ONCE = -1;
 
     private final BluetoothAdapter bluetoothAdapter;
     private final Handler mainThreadHandler = new Handler(Looper.getMainLooper());
     private final LeScansPoster leScansPoster;
 
-    private long scanPeriod = PERIOD_SCAN_ONCE;
+    private long scanPeriod = DEFAULT_SCAN_PERIOD;
     private Thread scanThread;
-    private volatile boolean isStopping = false;
-    private ScheduledExecutorService stopService;
+    private volatile boolean isScanning = false;
 
     public BleDevicesScanner(BluetoothAdapter adapter, BluetoothAdapter.LeScanCallback callback) {
         bluetoothAdapter = adapter;
@@ -40,7 +36,7 @@ class BleDevicesScanner implements Runnable, BluetoothAdapter.LeScanCallback {
     }
 
     public synchronized void start() {
-        if (isScanning() || isStopping)
+        if (isScanning())
             return;
 
         if (scanThread != null) {
@@ -52,31 +48,35 @@ class BleDevicesScanner implements Runnable, BluetoothAdapter.LeScanCallback {
     }
 
     public synchronized void stop() {
-        isStopping = true;
-
+        isScanning = false;
         if (scanThread != null) {
             scanThread.interrupt();
             scanThread = null;
         }
-
         bluetoothAdapter.stopLeScan(this);
-        isStopping = false;
     }
 
     @Override
     public void run() {
-        synchronized (this) {
-            bluetoothAdapter.startLeScan(this);
-            if (scanPeriod != PERIOD_SCAN_ONCE) {
-                if (stopService != null) stopService.shutdown();
-                stopService = Executors.newSingleThreadScheduledExecutor();
-                stopService.schedule(new Runnable() {
-                    @Override
-                    public void run() {
-                        stop();
-                        stopService.shutdown();
-                    }
-                }, scanPeriod, TimeUnit.MILLISECONDS);
+        try {
+            isScanning = true;
+            do {
+                synchronized (this) {
+                    bluetoothAdapter.startLeScan(this);
+                }
+
+                if (scanPeriod > 0)
+                    Thread.sleep(scanPeriod);
+
+                synchronized (this) {
+                    // although it should never be null sometimes it happens to be
+                    if (bluetoothAdapter != null) bluetoothAdapter.stopLeScan(this);
+                }
+            } while (isScanning && scanPeriod > 0);
+        } catch (InterruptedException ignore) {
+        } finally {
+            synchronized (this) {
+                bluetoothAdapter.stopLeScan(this);
             }
         }
     }

@@ -37,9 +37,9 @@ public enum BleDeviceMode {
     public static BleDeviceMode fromUuid(String serviceUuid) {
         return serviceUuid.equals(SERVICE_DIRECT_CONNECTION) ? DIRECT_CONNECTION :
                 serviceUuid.equals(SERVICE_CONNECTED_TO_MASTER_MODULE) ? CONNECTED_TO_MASTER_MODULE :
-                        serviceUuid.equals(SERVICE_ON_BOARDING) ? ON_BOARDING :
-                                serviceUuid.equals(SERVICE_NEW_ON_BOARDING) ? NEW_ON_BOARDING :
-                                        UNKNOWN;
+                serviceUuid.equals(SERVICE_ON_BOARDING) ? ON_BOARDING :
+                serviceUuid.equals(SERVICE_NEW_ON_BOARDING) ? NEW_ON_BOARDING :
+                UNKNOWN;
     }
 
     public static boolean containsService(String serviceUuid) {

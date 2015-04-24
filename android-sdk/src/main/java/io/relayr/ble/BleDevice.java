@@ -46,11 +46,11 @@ public class BleDevice implements Serializable {
         serviceObservable =
                 mode == ON_BOARDING ?
                         OnBoardingService.connect(this, bluetoothDevice).cache() :
-                        mode == DIRECT_CONNECTION ?
-                                DirectConnectionService.connect(this, bluetoothDevice).cache() :
-                                mode == NEW_ON_BOARDING ?
-                                        NewOnBoardingService.connect(this, bluetoothDevice).cache() :
-                                        MasterModuleService.connect(this, bluetoothDevice).cache();
+                mode == DIRECT_CONNECTION ?
+                        DirectConnectionService.connect(this, bluetoothDevice).cache() :
+                mode == NEW_ON_BOARDING ?
+                        NewOnBoardingService.connect(this, bluetoothDevice).cache() :
+                        MasterModuleService.connect(this, bluetoothDevice).cache();
     }
 
     /**

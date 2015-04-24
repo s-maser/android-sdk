@@ -45,8 +45,7 @@ public class MockRelayrApi implements RelayrApi {
 
     @Override
     public Observable<List<Device>> getUserDevices(String userId) {
-        return mMockBackend.createObservable(new TypeToken<List<Device>>() {
-        }, USER_DEVICES);
+        return mMockBackend.createObservable(new TypeToken<List<Device>>() {}, USER_DEVICES);
     }
 
     @Override
@@ -57,8 +56,7 @@ public class MockRelayrApi implements RelayrApi {
 
     @Override
     public Observable<User> getUserInfo() {
-        return mMockBackend.createObservable(new TypeToken<User>() {
-        }, USER_INFO);
+        return mMockBackend.createObservable(new TypeToken<User>() {}, USER_INFO);
     }
 
     @Override
@@ -78,27 +76,23 @@ public class MockRelayrApi implements RelayrApi {
             public void call(Subscriber<? super Void> subscriber) {
                 subscriber.onNext(null);
             }
-        });
-    }
+        });    }
 
     @Override
     public Observable<CreateWunderBar> createWunderBar(String userId) {
-        return mMockBackend.createObservable(new TypeToken<CreateWunderBar>() {
-        },
+        return mMockBackend.createObservable(new TypeToken<CreateWunderBar>() { },
                 USERS_CREATE_WUNDERBAR);
     }
 
     @Override
     public Observable<List<Transmitter>> getTransmitters(String userId) {
-        return mMockBackend.createObservable(new TypeToken<List<Transmitter>>() {
-        },
+        return mMockBackend.createObservable(new TypeToken<List<Transmitter>>() {},
                 USERS_TRANSMITTERS);
     }
 
     @Override
     public Observable<Transmitter> getTransmitter(String transmitter) {
-        return mMockBackend.createObservable(new TypeToken<Transmitter>() {
-        }, USERS_TRANSMITTER);
+        return mMockBackend.createObservable(new TypeToken<Transmitter>() {}, USERS_TRANSMITTER);
     }
 
     @Override
@@ -108,8 +102,7 @@ public class MockRelayrApi implements RelayrApi {
 
     @Override
     public Observable<List<TransmitterDevice>> getTransmitterDevices(String transmitter) {
-        return mMockBackend.createObservable(new TypeToken<List<TransmitterDevice>>() {
-        },
+        return mMockBackend.createObservable(new TypeToken<List<TransmitterDevice>>() { },
                 TRANSMITTER_DEVICES);
     }
 
@@ -126,8 +119,7 @@ public class MockRelayrApi implements RelayrApi {
 
     @Override
     public Observable<Bookmark> bookmarkPublicDevice(String userId, String deviceId) {
-        return mMockBackend.createObservable(new TypeToken<Bookmark>() {
-        }, BOOKMARK_DEVICE);
+        return mMockBackend.createObservable(new TypeToken<Bookmark>() { }, BOOKMARK_DEVICE);
     }
 
     @Override
@@ -142,27 +134,23 @@ public class MockRelayrApi implements RelayrApi {
 
     @Override
     public Observable<List<BookmarkDevice>> getBookmarkedDevices(String userId) {
-        return mMockBackend.createObservable(new TypeToken<List<BookmarkDevice>>() {
-        },
+        return mMockBackend.createObservable(new TypeToken<List<BookmarkDevice>>() { },
                 BOOKMARKED_DEVICES);
     }
 
     @Override
     public Observable<List<Model>> getDeviceModels() {
-        return mMockBackend.createObservable(new TypeToken<List<Model>>() {
-        }, DEVICE_MODELS);
+        return mMockBackend.createObservable(new TypeToken<List<Model>>() { }, DEVICE_MODELS);
     }
 
     @Override
     public Observable<Model> getDeviceModel(String model) {
-        return mMockBackend.createObservable(new TypeToken<Model>() {
-        }, DEVICE_MODELS);
+        return mMockBackend.createObservable(new TypeToken<Model>() { }, DEVICE_MODELS);
     }
 
     @Override
     public Observable<List<ReadingMeaning>> getReadingMeanings() {
-        return mMockBackend.createObservable(new TypeToken<List<ReadingMeaning>>() {
-        },
+        return mMockBackend.createObservable(new TypeToken<List<ReadingMeaning>>() { },
                 DEVICE_READING_MEANINGS);
     }
 
@@ -198,8 +186,7 @@ public class MockRelayrApi implements RelayrApi {
 
     @Override
     public Observable<Device> createDevice(CreateDevice device) {
-        return mMockBackend.createObservable(new TypeToken<Device>() {
-        },
+        return mMockBackend.createObservable(new TypeToken<Device>() { },
                 USER_DEVICE);
     }
 }

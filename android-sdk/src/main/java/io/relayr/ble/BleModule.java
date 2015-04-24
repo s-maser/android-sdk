@@ -32,21 +32,19 @@ public class BleModule {
         // Initializes a Bluetooth adapter.  For API level 18 and above, get a reference to
         // BluetoothAdapter through BluetoothManager.
         BluetoothManager manager = (BluetoothManager) app.getSystemService(BLUETOOTH_SERVICE);
-        return manager == null ? null: manager.getAdapter();
+        return manager == null ? null : manager.getAdapter();
     }
 
     @Provides @Singleton PackageManager providePackageManager() {
         return app.getPackageManager();
     }
 
-    @Provides @Singleton
-    BleUtils provideBleUtils(PackageManager manager) {
+    @Provides @Singleton BleUtils provideBleUtils(PackageManager manager) {
         return Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2 ?
-                new BleUtils(null, manager): new BleUtils(getBluetoothAdapter(), manager);
+                new BleUtils(null, manager) : new BleUtils(getBluetoothAdapter(), manager);
     }
 
-    @Provides @Singleton
-    RelayrBleSdk provideRelayrBleSdk() {
+    @Provides @Singleton RelayrBleSdk provideRelayrBleSdk() {
         return RelayrSdk.isBleSupported() ?
                 new RelayrBleSdkImpl(getBluetoothAdapter(), new BleDeviceManager()) :
                 new NullableRelayrBleSdk();

@@ -11,8 +11,7 @@ import dagger.Provides;
 )
 public class WebSocketModule {
 
-    @Provides @Singleton
-    WebSocketFactory provideWebSocketFactory() {
+    @Provides @Singleton WebSocketFactory provideWebSocketFactory() {
         return new WebSocketFactory();
     }
 

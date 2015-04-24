@@ -45,8 +45,6 @@ public class BaseService extends Service {
                     @Override
                     public BleDevice call(BluetoothGatt gatt) {
                         mBluetoothGatt.close();
-                        mBluetoothGatt = null;
-                        System.gc();
                         return mBleDevice;
                     }
                 });
