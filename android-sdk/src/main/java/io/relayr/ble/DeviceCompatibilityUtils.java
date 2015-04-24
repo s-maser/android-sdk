@@ -10,14 +10,14 @@ import java.lang.reflect.Method;
 
 public class DeviceCompatibilityUtils {
 
-    private static final String TAG = "DeviceCompatibilityUtils";
+    private static final String TAG = "DeviceCompatUtils";
 
     private static boolean isSdk19() {
         return android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
     }
 
     public static boolean createBond(BluetoothDevice device) {
-        if (isSdk19()) doCreateBond(device);
+        if (isSdk19()) return doCreateBond(device);
         return callMethod(device, "createBond");
     }
 

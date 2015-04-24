@@ -33,11 +33,6 @@ import static io.relayr.ble.service.BluetoothGattReceiver.UndocumentedBleStuff.i
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class BluetoothGattReceiver extends BluetoothGattCallback {
 
-    private static int sGattFailure = 0;
-    private static int sUndocumentedFailure = 0;
-    private static final Object gattLock = new Object();
-    private static final Object onConnectionLock = new Object();
-
     private volatile Subscriber<? super BluetoothGatt> mConnectionChangesSubscriber;
     private volatile Subscriber<? super BluetoothGatt> mDisconnectedSubscriber;
     private volatile Subscriber<? super BluetoothGatt> mBluetoothGattServiceSubscriber;
@@ -74,58 +69,27 @@ public class BluetoothGattReceiver extends BluetoothGattCallback {
 
     @Override
     public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
-        synchronized (onConnectionLock) {
-            if (status == BluetoothGatt.GATT_FAILURE) {
-                if (newState == 0 && ++sGattFailure < 5) return;
-                sGattFailure = 0;
+        if (isUndocumentedErrorStatus(status)) {
+            fixUndocumentedBleStatusProblem(gatt, this);
+            return;
+        }
+        if (status != GATT_SUCCESS) return;
 
-                turnOffGatt(gatt);
-                fixUndocumentedBleStatusProblem(gatt, this);
-                return;
-            }
-
-            if (isUndocumentedErrorStatus(status)) {
-                if (++sUndocumentedFailure > 5) {
-                    sUndocumentedFailure = 0;
-                    turnOffGatt(gatt);
-                    return;
-                }
-
-                // If couple of fixUndocumentedBleStatusProblem() calls doesn't help there is
-                // sFixingErrorCounter to turn the GATT of or there will be infinite loop with
-                // the same error status
-                fixUndocumentedBleStatusProblem(gatt, this);
-                return;
-            }
-
-            if (status != GATT_SUCCESS) {
-                turnOffGatt(gatt);
-                return;
-            }
-
-            if (newState == STATE_CONNECTED) { // on connected
+        if (newState == STATE_CONNECTED) { // on connected
+            if (mConnectionChangesSubscriber != null) mConnectionChangesSubscriber.onNext(gatt);
+        } else if (newState == STATE_DISCONNECTED) {
+            if (mDisconnectedSubscriber != null) { // disconnected voluntarily
+                gatt.close(); // should stay here since you might want to reconnect if involuntarily
+                mDisconnectedSubscriber.onNext(gatt);
+                mDisconnectedSubscriber.onCompleted();
+            } else { // disconnected involuntarily because an error occurred
                 if (mConnectionChangesSubscriber != null)
-                    mConnectionChangesSubscriber.onNext(gatt);
-            } else if (newState == STATE_DISCONNECTED) {
-                turnOffGatt(gatt);
-                if (mDisconnectedSubscriber != null) { // disconnected voluntarily
-                    mDisconnectedSubscriber.onNext(gatt);
-                    mDisconnectedSubscriber.onCompleted();
-                } else { // disconnected involuntarily because an error occurred
-                    if (mConnectionChangesSubscriber != null) {
-                        mConnectionChangesSubscriber.onError(new DisconnectionException(status + ""));
-                        fixUndocumentedBleStatusProblem(gatt, this);
-                    }
-                }
+                    mConnectionChangesSubscriber.onError(new DisconnectionException(status + ""));
             }
-        }
-    }
-
-    public void turnOffGatt(BluetoothGatt gatt) {
-        synchronized (gattLock) {
-            gatt.disconnect();
-            gatt.close();
-        }
+        } /*else if (BluetoothGattStatus.isFailureStatus(status)) {
+            if (mConnectionChangesSubscriber != null)  // TODO: unreachable -propagate error earlier
+                mConnectionChangesSubscriber.onError(new GattException(status + ""));
+        }*/
     }
 
     public Observable<BluetoothGatt> discoverServices(final BluetoothGatt bluetoothGatt) {
