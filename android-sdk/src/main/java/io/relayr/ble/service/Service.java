@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.os.Build;
+import android.util.Log;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
@@ -149,24 +150,27 @@ import static rx.Observable.just;
         int chunkSize = 16;
         int chunkOffset = 2;
 
-        byte[] offset = ByteBuffer.allocate(2).putShort((short) start).array();
-        byte[] length = new byte[0];
+        byte[] offset = ByteBuffer.allocate(2).putShort((short) (start << 8)).array();
+        byte[] length = new byte[2];
 
         if (start == 0) {
-            length = ByteBuffer.allocate(2).putShort((short) mData.length).array();
-            chunkSize = 14;
+            length = ByteBuffer.allocate(2).putShort((short) (mData.length << 8)).array();
+            chunkSize = mData.length < 14 ? mData.length : 14;
             chunkOffset = 4;
+            end = chunkSize;
+        } else {
+            end = start + chunkSize > mData.length ? mData.length : start + chunkSize;
+            chunkSize = end - start;
         }
 
-        end = Math.min(start + chunkSize, mData.length);
-        chunkSize = end - start;
-        byte[] payload = new byte[chunkSize + chunkOffset];
         chunk = Arrays.copyOfRange(mData, start, end);
-        start += chunkSize;
+        byte[] payload = new byte[chunkSize + chunkOffset];
 
         System.arraycopy(offset, 0, payload, 0, offset.length);
         if (start == 0) System.arraycopy(length, 0, payload, 2, length.length);
         System.arraycopy(chunk, 0, payload, chunkOffset, chunk.length);
+
+        start += chunkSize;
 
         return payload;
     }
@@ -178,6 +182,7 @@ import static rx.Observable.just;
         BluetoothGattCharacteristic characteristic = getCharacteristicInServices(
                 mBluetoothGatt.getServices(), serviceUuid, characteristicUuid);
         if (characteristic == null) {
+            mBluetoothGatt.disconnect();
             return error(new CharacteristicNotFoundException(what));
         }
         return mBluetoothGattReceiver.readCharacteristic(mBluetoothGatt, characteristic);

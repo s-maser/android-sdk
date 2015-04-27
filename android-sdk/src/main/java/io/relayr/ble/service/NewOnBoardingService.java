@@ -155,8 +155,8 @@ public class NewOnBoardingService extends BaseService {
      * @return Observable<BluetoothGattCharacteristic>, an observable of what will be written to the
      * device
      */
-    public Observable<BluetoothGattCharacteristic> writeCommit() {
-        return write("0".getBytes(), SERVICE_NEW_ON_BOARDING, CHARACTERISTIC_COMMIT);
+    public Observable<BluetoothGatt> writeCommit() {
+        return longWrite(new byte[1], SERVICE_NEW_ON_BOARDING, CHARACTERISTIC_COMMIT);
     }
 
     /**
@@ -191,6 +191,7 @@ public class NewOnBoardingService extends BaseService {
                             public void call(Subscriber<? super OnBoardingStatus> subscriber) {
                                 try {
                                     final int status = Integer.parseInt(s);
+                                    Log.e("STATUUUUS", "" + status);
                                     subscriber.onNext(OnBoardingStatus.values()[status]);
                                 } catch (Exception e) {
                                     Log.e("NewOnBoardingService", e.toString());
