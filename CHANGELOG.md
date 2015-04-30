@@ -1,6 +1,14 @@
 Change Log
 ==========
 
+Version 0.0.13 *(2015-04-30)*
+----------------------------
+ * BLE DirectConnection mode
+   * Fix data parsing for Light/Proximity sensor
+   * Send command to a sensor over BLE
+   * Bridge module data parsing
+ * Remove unnecessary API calls
+
 Version 0.0.12 *(2015-03-04)*
 ----------------------------
  * Fix problem with debug data parsing and incomplete test.
