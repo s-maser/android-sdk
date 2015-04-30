@@ -11,8 +11,10 @@ import io.relayr.ble.service.DirectConnectionService;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscriber;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action0;
+import rx.subscriptions.Subscriptions;
 
 /**
  * The transmitter device object holds the same information as the {@link io.relayr.model.Device}
@@ -21,6 +23,7 @@ import rx.functions.Action0;
 public class TransmitterDevice extends Transmitter implements Serializable {
 
     public final String model;
+    private transient Subscription mReadingsSubscription = Subscriptions.empty();
 
     public TransmitterDevice(String id, String secret, String owner, String name,
                              String model) {
@@ -62,6 +65,11 @@ public class TransmitterDevice extends Transmitter implements Serializable {
                 getSensorForDevice(cache)
                         .subscribeOn(AndroidSchedulers.mainThread())
                         .observeOn(AndroidSchedulers.mainThread())
+                        .doOnUnsubscribe(new Action0() {
+                            @Override public void call() {
+                                mReadingsSubscription.unsubscribe();
+                            }
+                        })
                         .subscribe(new Observer<BaseService>() {
                             @Override
                             public void onCompleted() {
@@ -77,7 +85,7 @@ public class TransmitterDevice extends Transmitter implements Serializable {
                                 if (!(baseService instanceof DirectConnectionService)) return;
                                 final DirectConnectionService service = (DirectConnectionService) baseService;
 
-                                service.getReadings()
+                                mReadingsSubscription = service.getReadings()
                                         .subscribeOn(AndroidSchedulers.mainThread())
                                         .observeOn(AndroidSchedulers.mainThread())
                                         .doOnUnsubscribe(new Action0() {
@@ -131,5 +139,5 @@ public class TransmitterDevice extends Transmitter implements Serializable {
     public Observable<Void> sendCommand(Command command) {
         return RelayrSdk.getRelayrApi().sendCommand(id, command);
     }
-    
+
 }

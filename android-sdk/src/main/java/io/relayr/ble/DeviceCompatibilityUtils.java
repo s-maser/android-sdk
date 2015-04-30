@@ -17,7 +17,7 @@ public class DeviceCompatibilityUtils {
     }
 
     public static boolean createBond(BluetoothDevice device) {
-        if (isSdk19()) doCreateBond(device);
+        if (isSdk19()) return doCreateBond(device);
         return callMethod(device, "createBond");
     }
 

@@ -14,14 +14,14 @@ class NullableRelayrBleSdk extends RelayrBleSdk {
             @Override
             public void call(Subscriber<? super List<BleDevice>> subscriber) {
                 subscriber.onNext(Arrays.asList(new BleDevice(null, "Wunderbar MM",
-                        BleDeviceMode.NEW_ON_BOARDING, new BleDeviceManager(), 0)));
+                        BleDeviceMode.NEW_ON_BOARDING, new BleDeviceManager())));
             }
         });
     }
 
     @Override
     public BleDevice getPairedDevice(String macAddress) {
-        return new BleDevice(null, "Wunderbar MM", BleDeviceMode.NEW_ON_BOARDING, new BleDeviceManager(), 0);
+        return new BleDevice(null, "Wunderbar MM", BleDeviceMode.NEW_ON_BOARDING, new BleDeviceManager());
     }
 
     public void stop() {
@@ -30,30 +30,5 @@ class NullableRelayrBleSdk extends RelayrBleSdk {
     public boolean isScanning() {
         return false;
     }
-
-    /*@Override
-    public SocketClient getBleSocketClient() {
-        return new SocketClient() {
-            @Override
-            public Subscription subscribe(TransmitterDevice device, Subscriber<Object> subscriber) {
-                return new Subscription() {
-                    @Override
-                    public void unsubscribe() {
-
-                    }
-
-                    @Override
-                    public boolean isUnsubscribed() {
-                        return false;
-                    }
-                };
-            }
-
-            @Override
-            public void unSubscribe(String sensorId) {
-
-            }
-        };
-    }*/
 
 }

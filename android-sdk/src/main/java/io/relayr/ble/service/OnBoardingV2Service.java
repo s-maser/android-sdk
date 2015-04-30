@@ -6,13 +6,13 @@ import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.util.Log;
 
+import java.nio.ByteBuffer;
+
 import io.relayr.ble.BleDevice;
 import io.relayr.ble.service.error.CharacteristicNotFoundException;
 import rx.Observable;
-import rx.Subscriber;
 import rx.functions.Func1;
 
-import static io.relayr.ble.parser.BleDataParser.getFormattedValue;
 import static io.relayr.ble.service.ShortUUID.CHARACTERISTIC_COMMIT;
 import static io.relayr.ble.service.ShortUUID.CHARACTERISTIC_MQTT_CLIENT_ID;
 import static io.relayr.ble.service.ShortUUID.CHARACTERISTIC_MQTT_HOST;
@@ -33,25 +33,25 @@ import static rx.Observable.error;
  * A class representing the service associated with the NEW_ON_BOARDING mode
  * @see {@link io.relayr.ble.BleDeviceMode}
  */
-public class NewOnBoardingService extends BaseService {
+public class OnBoardingV2Service extends BaseService {
 
     public enum OnBoardingStatus {
-        STATUS_SUCCESS, STATUS_UN_CONFIGURED, STATUS_WIFI_ERROR, STATUS_TCP_ERROR
+        STATUS_SUCCESS, STATUS_UN_CONFIGURED, STATUS_WIFI_ERROR, STATUS_TCP_ERROR, UNKNOWN
     }
 
-    protected NewOnBoardingService(BleDevice device, BluetoothGatt gatt,
-                                   BluetoothGattReceiver receiver) {
+    protected OnBoardingV2Service(BleDevice device, BluetoothGatt gatt,
+                                  BluetoothGattReceiver receiver) {
         super(device, gatt, receiver);
     }
 
-    public static Observable<NewOnBoardingService> connect(final BleDevice bleDevice,
+    public static Observable<OnBoardingV2Service> connect(final BleDevice bleDevice,
                                                            final BluetoothDevice device) {
         final BluetoothGattReceiver receiver = new BluetoothGattReceiver();
         return doConnect(device, receiver, true)
-                .map(new Func1<BluetoothGatt, NewOnBoardingService>() {
+                .map(new Func1<BluetoothGatt, OnBoardingV2Service>() {
                     @Override
-                    public NewOnBoardingService call(BluetoothGatt gatt) {
-                        return new NewOnBoardingService(bleDevice, gatt, receiver);
+                    public OnBoardingV2Service call(BluetoothGatt gatt) {
+                        return new OnBoardingV2Service(bleDevice, gatt, receiver);
                     }
                 });
     }
@@ -175,30 +175,21 @@ public class NewOnBoardingService extends BaseService {
         }
         BluetoothGattDescriptor descriptor = getDescriptorInCharacteristic(
                 characteristic, DESCRIPTOR_DATA_NOTIFICATIONS);
+
         return mBluetoothGattReceiver
                 .subscribeToCharacteristicChanges(mBluetoothGatt, characteristic, descriptor)
-                .map(new Func1<BluetoothGattCharacteristic, String>() {
+                .map(new Func1<BluetoothGattCharacteristic, OnBoardingStatus>() {
                     @Override
-                    public String call(BluetoothGattCharacteristic characteristic) {
-                        return getFormattedValue(mBleDevice.getType(), characteristic.getValue());
-                    }
-                })
-                .flatMap(new Func1<String, Observable<OnBoardingStatus>>() {
-                    @Override
-                    public Observable<OnBoardingStatus> call(final String s) {
-                        return Observable.create(new Observable.OnSubscribe<OnBoardingStatus>() {
-                            @Override
-                            public void call(Subscriber<? super OnBoardingStatus> subscriber) {
-                                try {
-                                    final int status = Integer.parseInt(s);
-                                    Log.e("STATUUUUS", "" + status);
-                                    subscriber.onNext(OnBoardingStatus.values()[status]);
-                                } catch (Exception e) {
-                                    Log.e("NewOnBoardingService", e.toString());
-                                    subscriber.onError(e);
-                                }
-                            }
-                        });
+                    public OnBoardingStatus call(BluetoothGattCharacteristic characteristic) {
+                        ByteBuffer wrapped = ByteBuffer.wrap(characteristic.getValue());
+
+                        try {
+                            int status = wrapped.get(0);
+                            return OnBoardingStatus.values()[status];
+                        } catch (Exception e) {
+                            Log.d("OnBoardingV2Service", "Failed to parse OnBoardingStatus.");
+                            return OnBoardingStatus.UNKNOWN;
+                        }
                     }
                 });
     }

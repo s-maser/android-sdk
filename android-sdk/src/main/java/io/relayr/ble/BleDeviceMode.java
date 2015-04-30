@@ -2,6 +2,8 @@ package io.relayr.ble;
 
 import java.util.List;
 
+import io.relayr.ble.service.OnBoardingV2Service;
+
 import static io.relayr.ble.service.ShortUUID.SERVICE_CONNECTED_TO_MASTER_MODULE;
 import static io.relayr.ble.service.ShortUUID.SERVICE_DIRECT_CONNECTION;
 import static io.relayr.ble.service.ShortUUID.SERVICE_NEW_ON_BOARDING;
@@ -29,7 +31,7 @@ public enum BleDeviceMode {
     CONNECTED_TO_MASTER_MODULE,
     /**
      * In new onboarding mode. It will be able to access the functionality
-     * in and characteristics in {@link io.relayr.ble.service.NewOnBoardingService}
+     * in and characteristics in {@link OnBoardingV2Service}
      */
     NEW_ON_BOARDING,
     UNKNOWN;

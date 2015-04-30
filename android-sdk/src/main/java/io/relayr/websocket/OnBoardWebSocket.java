@@ -12,7 +12,6 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -21,6 +20,8 @@ import rx.Observable;
 import rx.Subscriber;
 
 class OnBoardWebSocket extends WebSocket<Transmitter> {
+
+    private final String TAG = "OnBoardWebSocket";
 
     @Override
     public Observable<Transmitter> createClient(final Transmitter transmitter) {
@@ -47,11 +48,11 @@ class OnBoardWebSocket extends WebSocket<Transmitter> {
                                 subscriber.onNext(transmitter);
                             }
                         } catch (MqttException e) {
-                            Log.d("OnBoardWebSocket", "Failed to connect.");
+                            Log.d(TAG, "Failed to connect.");
                             subscriber.onError(e);
                         }
                     } else {
-                        Log.d("OnBoardWebSocket", "Client not created.");
+                        Log.d(TAG, "Client not created.");
                         subscriber.onError(new Throwable("Client not created!"));
                     }
                 }
@@ -62,7 +63,7 @@ class OnBoardWebSocket extends WebSocket<Transmitter> {
     @Override
     public boolean subscribe(String topic, String channelId, final WebSocketCallback callback) {
         if (callback == null) {
-            Log.e("WebSocket", "Argument WebSocketCallback can not be null!");
+            Log.e(TAG, "Argument WebSocketCallback can not be null!");
             return false;
         }
 
@@ -90,7 +91,7 @@ class OnBoardWebSocket extends WebSocket<Transmitter> {
     @Override
     public boolean unSubscribe(String topic) {
         if (topic == null) {
-            Log.e("WebSocket", "Topic can't be null!");
+            Log.e(TAG, "Topic can't be null!");
             return false;
         }
 
@@ -119,7 +120,7 @@ class OnBoardWebSocket extends WebSocket<Transmitter> {
                         for (WebSocketCallback socketCallback : callbacks)
                             socketCallback.disconnectCallback(cause);
 
-                    Log.d("OnBoardWebSocket", "Connection lost.");
+                    Log.d(TAG, "Connection lost.");
                     cause.printStackTrace();
                 }
 
@@ -148,7 +149,7 @@ class OnBoardWebSocket extends WebSocket<Transmitter> {
 
             return true;
         } catch (MqttException e) {
-            Log.d("OnBoardWebSocket", "Error creating client.");
+            Log.d(TAG, "Error creating client.");
             if (mTopicCallbacks == null || mTopicCallbacks.isEmpty()) return false;
             for (List<WebSocketCallback> callbacks : mTopicCallbacks.values())
                 for (WebSocketCallback socketCallback : callbacks)

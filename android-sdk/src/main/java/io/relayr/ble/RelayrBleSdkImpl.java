@@ -88,6 +88,7 @@ class RelayrBleSdkImpl extends RelayrBleSdk implements BleScannerFilter.BleFilte
 
     @Override
     public void onLeScan(BleDevice device, int rssi) {
-        mDeviceManager.addDiscoveredDevice(device, rssi);
+        device.setRssi(rssi);
+        mDeviceManager.addDiscoveredDevice(device);
     }
 }

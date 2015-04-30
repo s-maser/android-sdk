@@ -9,9 +9,10 @@ import java.io.Serializable;
 import io.relayr.ble.service.BaseService;
 import io.relayr.ble.service.DirectConnectionService;
 import io.relayr.ble.service.MasterModuleService;
-import io.relayr.ble.service.NewOnBoardingService;
+import io.relayr.ble.service.OnBoardingV2Service;
 import io.relayr.ble.service.OnBoardingService;
 import rx.Observable;
+import rx.Subscriber;
 import rx.functions.Func1;
 
 import static io.relayr.ble.BleDeviceMode.DIRECT_CONNECTION;
@@ -45,12 +46,12 @@ public class BleDevice implements Serializable {
         mDeviceManager = manager;
         serviceObservable =
                 mode == ON_BOARDING ?
-                        OnBoardingService.connect(this, bluetoothDevice).cache() :
+                    OnBoardingService.connect(this, bluetoothDevice).cache() :
                 mode == DIRECT_CONNECTION ?
-                        DirectConnectionService.connect(this, bluetoothDevice).cache() :
+                    DirectConnectionService.connect(this, bluetoothDevice).cache() :
                 mode == NEW_ON_BOARDING ?
-                        NewOnBoardingService.connect(this, bluetoothDevice).cache() :
-                        MasterModuleService.connect(this, bluetoothDevice).cache();
+                    OnBoardingV2Service.connect(this, bluetoothDevice).cache() :
+                    MasterModuleService.connect(this, bluetoothDevice).cache();
     }
 
     /**
@@ -101,6 +102,25 @@ public class BleDevice implements Serializable {
                         return service.disconnect();
                     }
                 });
+    }
+
+    public void refreshGatt() {
+        if (mode != DIRECT_CONNECTION) return;
+        serviceObservable
+                .flatMap(new Func1<BaseService, Observable<Boolean>>() {
+                    @Override
+                    public Observable<Boolean> call(final BaseService service) {
+                        return Observable.create(new Observable.OnSubscribe<Boolean>() {
+                            @Override
+                            public void call(Subscriber<? super Boolean> subscriber) {
+                                service.getGatt().disconnect();
+                                service.getGatt().close();
+                                DeviceCompatibilityUtils.refresh(service.getGatt());
+                            }
+                        });
+                    }
+                })
+                .subscribe();
     }
 
     @Override

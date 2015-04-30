@@ -148,6 +148,7 @@ public class BluetoothGattReceiver extends BluetoothGattCallback {
 
         if (status == GATT_SUCCESS) {
             mReliableWriteSubscriber.onNext(gatt);
+            mReliableWriteSubscriber.onCompleted();
         } else if (GATT_INSUFFICIENT_AUTHENTICATION == status || GATT_INSUFFICIENT_ENCRYPTION == status) {
             mReliableWriteSubscriber.onError(new GattException("Authentication"));
         } else if (isUndocumentedErrorStatus(status)) {

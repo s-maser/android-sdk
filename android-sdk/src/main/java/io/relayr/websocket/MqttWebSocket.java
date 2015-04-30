@@ -11,15 +11,15 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import io.relayr.model.MqttChannel;
 import rx.Observable;
 import rx.Subscriber;
 
 class MqttWebSocket extends WebSocket<MqttChannel> {
+
+    private final String TAG = "MqttWebSocket";
 
     @Override
     public Observable<MqttChannel> createClient(final MqttChannel channel) {
@@ -55,7 +55,7 @@ class MqttWebSocket extends WebSocket<MqttChannel> {
     @Override
     public boolean unSubscribe(String topic) {
         if (topic == null) {
-            Log.d("MqttWebSocket", "Topic can't be null!");
+            Log.d(TAG, "Topic can't be null!");
             return false;
         }
 
@@ -119,7 +119,7 @@ class MqttWebSocket extends WebSocket<MqttChannel> {
     @Override
     public boolean subscribe(String topic, String channelId, final WebSocketCallback callback) {
         if (callback == null) {
-            Log.e("MqttWebSocket", "Argument WebSocketCallback can not be null!");
+            Log.e(TAG, "Argument WebSocketCallback can not be null!");
             return false;
         }
 

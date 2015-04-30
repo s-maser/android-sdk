@@ -102,7 +102,6 @@ import static rx.Observable.just;
                     public void call(Subscriber<? super BluetoothGatt> subscriber) {
                         mBluetoothGatt.beginReliableWrite();
                         sendPayload(characteristic, subscriber);
-                        mBluetoothGatt.executeReliableWrite();
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
@@ -111,7 +110,7 @@ import static rx.Observable.just;
                 .doOnError(new Action1<Throwable>() {
                     @Override
                     public void call(Throwable t) {
-                        t.printStackTrace();
+                        DeviceCompatibilityUtils.refresh(mBluetoothGatt);
                         start = 0;
                         end = 0;
                     }
@@ -126,18 +125,26 @@ import static rx.Observable.just;
     }
 
     private void sendPayload(final BluetoothGattCharacteristic characteristic,
-                             Subscriber<? super BluetoothGatt> subscriber) {
+                             final Subscriber<? super BluetoothGatt> subscriber) {
         final byte[] data = getData();
-        if (data.length == 0) return;
+        if (data.length == 0) {
+            mBluetoothGatt.executeReliableWrite();
+            return;
+        }
 
         characteristic.setValue(data);
         mBluetoothGattReceiver.reliableWriteCharacteristic(mBluetoothGatt, characteristic, subscriber);
-        try {
-            Thread.sleep(300);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        sendPayload(characteristic, subscriber);
+
+        Observable.create(
+                new Observable.OnSubscribe<Object>() {
+                    @Override public void call(Subscriber<? super Object> s) {
+                        sendPayload(characteristic, subscriber);
+                    }
+                })
+                .delaySubscription(300, TimeUnit.MILLISECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe();
     }
 
     private int start = 0;
@@ -182,7 +189,6 @@ import static rx.Observable.just;
         BluetoothGattCharacteristic characteristic = getCharacteristicInServices(
                 mBluetoothGatt.getServices(), serviceUuid, characteristicUuid);
         if (characteristic == null) {
-            mBluetoothGatt.disconnect();
             return error(new CharacteristicNotFoundException(what));
         }
         return mBluetoothGattReceiver.readCharacteristic(mBluetoothGatt, characteristic);
