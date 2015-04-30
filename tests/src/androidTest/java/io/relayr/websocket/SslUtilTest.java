@@ -1,7 +1,6 @@
 package io.relayr.websocket;
 
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,8 +15,6 @@ import java.util.Properties;
 
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManagerFactory;
-
-import io.relayr.model.MqttChannel;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 

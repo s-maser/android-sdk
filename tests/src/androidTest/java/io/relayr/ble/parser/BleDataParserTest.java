@@ -30,7 +30,7 @@ public class BleDataParserTest {
         String val = BleDataParser.getFormattedValue(WunderbarLIGHT, lightData);
         DataPackage dataPackage = new Gson().fromJson(val, DataPackage.class);
         int light = new Gson().fromJson(dataPackage.readings.get(2).value.toString(), Integer.class);
-        Assert.assertEquals(2557, light, 5);
+        Assert.assertEquals(22, light, 5);
     }
 
     @Test
@@ -38,7 +38,7 @@ public class BleDataParserTest {
         String val = BleDataParser.getFormattedValue(WunderbarLIGHT, lightData);
         DataPackage dataPackage = new Gson().fromJson(val, DataPackage.class);
         LightColorProx.Color color = new Gson().fromJson(dataPackage.readings.get(0).value.toString(), LightColorProx.Color.class);
-        Assert.assertEquals(1571, color.red);
+        Assert.assertEquals(2557, color.red);
     }
 
     @Test
@@ -46,7 +46,7 @@ public class BleDataParserTest {
         String val = BleDataParser.getFormattedValue(WunderbarLIGHT, lightData);
         DataPackage dataPackage = new Gson().fromJson(val, DataPackage.class);
         LightColorProx.Color color = new Gson().fromJson(dataPackage.readings.get(0).value.toString(), LightColorProx.Color.class);
-        Assert.assertEquals(22, color.blue);
+        Assert.assertEquals(1304, color.blue);
     }
 
     @Test
@@ -54,7 +54,7 @@ public class BleDataParserTest {
         String val = BleDataParser.getFormattedValue(WunderbarLIGHT, lightData);
         DataPackage dataPackage = new Gson().fromJson(val, DataPackage.class);
         LightColorProx.Color color = new Gson().fromJson(dataPackage.readings.get(0).value.toString(), LightColorProx.Color.class);
-        Assert.assertEquals(1304, color.green);
+        Assert.assertEquals(1571, color.green);
     }
 
     @Test

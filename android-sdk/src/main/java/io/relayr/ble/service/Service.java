@@ -5,10 +5,7 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.os.Build;
-import android.util.Log;
 
-import java.nio.ByteBuffer;
-import java.util.Arrays;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -84,24 +81,22 @@ import static rx.Observable.just;
         return mBluetoothGattReceiver.writeCharacteristic(mBluetoothGatt, characteristic);
     }
 
-    private byte[] mData;
-
-    protected Observable<BluetoothGatt> longWrite(byte[] data, String serviceUuid,
+    protected Observable<BluetoothGatt> longWrite(final byte[] data, String serviceUuid,
                                                   String characteristicUuid) {
 
         final BluetoothGattCharacteristic characteristic = getCharacteristicInServices(
                 mBluetoothGatt.getServices(), serviceUuid, characteristicUuid);
 
-        this.mData = data;
         if (characteristic == null)
             return error(new CharacteristicNotFoundException(characteristicUuid));
 
+        final LongWriteDataParser dataParser = new LongWriteDataParser(data);
         return Observable
                 .create(new Observable.OnSubscribe<BluetoothGatt>() {
                     @Override
                     public void call(Subscriber<? super BluetoothGatt> subscriber) {
                         mBluetoothGatt.beginReliableWrite();
-                        sendPayload(characteristic, subscriber);
+                        sendPayload(dataParser, characteristic, subscriber);
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
@@ -111,22 +106,15 @@ import static rx.Observable.just;
                     @Override
                     public void call(Throwable t) {
                         DeviceCompatibilityUtils.refresh(mBluetoothGatt);
-                        start = 0;
-                        end = 0;
-                    }
-                })
-                .doOnNext(new Action1<BluetoothGatt>() {
-                    @Override
-                    public void call(BluetoothGatt bluetoothGatt) {
-                        start = 0;
-                        end = 0;
                     }
                 });
     }
 
-    private void sendPayload(final BluetoothGattCharacteristic characteristic,
+    private void sendPayload(final LongWriteDataParser parser,
+                             final BluetoothGattCharacteristic characteristic,
                              final Subscriber<? super BluetoothGatt> subscriber) {
-        final byte[] data = getData();
+        final byte[] data = parser.getData();
+
         if (data.length == 0) {
             mBluetoothGatt.executeReliableWrite();
             return;
@@ -138,48 +126,13 @@ import static rx.Observable.just;
         Observable.create(
                 new Observable.OnSubscribe<Object>() {
                     @Override public void call(Subscriber<? super Object> s) {
-                        sendPayload(characteristic, subscriber);
+                        sendPayload(parser, characteristic, subscriber);
                     }
                 })
                 .delaySubscription(300, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe();
-    }
-
-    private int start = 0;
-    private int end = 0;
-
-    private byte[] getData() {
-        if (end == mData.length) return new byte[]{};
-
-        byte[] chunk;
-        int chunkSize = 16;
-        int chunkOffset = 2;
-
-        byte[] offset = ByteBuffer.allocate(2).putShort((short) (start << 8)).array();
-        byte[] length = new byte[2];
-
-        if (start == 0) {
-            length = ByteBuffer.allocate(2).putShort((short) (mData.length << 8)).array();
-            chunkSize = mData.length < 14 ? mData.length : 14;
-            chunkOffset = 4;
-            end = chunkSize;
-        } else {
-            end = start + chunkSize > mData.length ? mData.length : start + chunkSize;
-            chunkSize = end - start;
-        }
-
-        chunk = Arrays.copyOfRange(mData, start, end);
-        byte[] payload = new byte[chunkSize + chunkOffset];
-
-        System.arraycopy(offset, 0, payload, 0, offset.length);
-        if (start == 0) System.arraycopy(length, 0, payload, 2, length.length);
-        System.arraycopy(chunk, 0, payload, chunkOffset, chunk.length);
-
-        start += chunkSize;
-
-        return payload;
     }
 
     protected Observable<BluetoothGattCharacteristic> readCharacteristic(String serviceUuid,
