@@ -10,6 +10,7 @@ import io.relayr.model.App;
 import io.relayr.model.Bookmark;
 import io.relayr.model.BookmarkDevice;
 import io.relayr.model.Command;
+import io.relayr.model.CreateDevice;
 import io.relayr.model.CreateWunderBar;
 import io.relayr.model.Device;
 import io.relayr.model.Model;
@@ -30,6 +31,7 @@ import static io.relayr.api.MockBackend.TRANSMITTER_DEVICES;
 import static io.relayr.api.MockBackend.USERS_CREATE_WUNDERBAR;
 import static io.relayr.api.MockBackend.USERS_TRANSMITTER;
 import static io.relayr.api.MockBackend.USERS_TRANSMITTERS;
+import static io.relayr.api.MockBackend.USER_DEVICE;
 import static io.relayr.api.MockBackend.USER_DEVICES;
 import static io.relayr.api.MockBackend.USER_INFO;
 
@@ -68,8 +70,17 @@ public class MockRelayrApi implements RelayrApi {
     }
 
     @Override
+    public Observable<Void> deleteDevice(String deviceId) {
+        return Observable.create(new Observable.OnSubscribe<Void>() {
+            @Override
+            public void call(Subscriber<? super Void> subscriber) {
+                subscriber.onNext(null);
+            }
+        });    }
+
+    @Override
     public Observable<CreateWunderBar> createWunderBar(String userId) {
-        return mMockBackend.createObservable(new TypeToken<CreateWunderBar>() {},
+        return mMockBackend.createObservable(new TypeToken<CreateWunderBar>() { },
                 USERS_CREATE_WUNDERBAR);
     }
 
@@ -102,7 +113,8 @@ public class MockRelayrApi implements RelayrApi {
 
     @Override
     public Observable<List<Device>> getPublicDevices(String meaning) {
-        return mMockBackend.createObservable(new TypeToken<List<Device>>() { }, PUBLIC_DEVICES);
+        return mMockBackend.createObservable(new TypeToken<List<Device>>() {
+        }, PUBLIC_DEVICES);
     }
 
     @Override
@@ -149,5 +161,32 @@ public class MockRelayrApi implements RelayrApi {
             public void call(Subscriber<? super Void> subscriber) {
                 subscriber.onNext(null);
             }
-        });    }
+        });
+    }
+
+    @Override
+    public Observable<Void> deleteTransmitter(String transmitterId) {
+        return Observable.create(new Observable.OnSubscribe<Void>() {
+            @Override
+            public void call(Subscriber<? super Void> subscriber) {
+                subscriber.onNext(null);
+            }
+        });
+    }
+
+    @Override
+    public Observable<Object> getBleModels() {
+        return Observable.create(new Observable.OnSubscribe<Object>() {
+            @Override
+            public void call(Subscriber<? super Object> subscriber) {
+                subscriber.onNext("\"name\" : \"modelId\"");
+            }
+        });
+    }
+
+    @Override
+    public Observable<Device> createDevice(CreateDevice device) {
+        return mMockBackend.createObservable(new TypeToken<Device>() { },
+                USER_DEVICE);
+    }
 }

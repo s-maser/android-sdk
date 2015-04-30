@@ -6,8 +6,6 @@ public interface WebSocketCallback {
 
     void disconnectCallback(Object message);
 
-    void reconnectCallback(Object message);
-
     void successCallback(Object message);
 
     void errorCallback(Throwable error);

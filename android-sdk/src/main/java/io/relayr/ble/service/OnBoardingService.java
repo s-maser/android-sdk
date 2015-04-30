@@ -83,7 +83,7 @@ public class OnBoardingService extends BaseService {
 
     /**
      * Returns an observable of the Sensor Id characteristic.
-     * <p>See {@link BluetoothGatt#readCharacteristic} for details about the actions performed in
+     * <p>See {@link android.bluetooth.BluetoothGatt#readCharacteristic} for details about the actions performed in
      * the background
      * @return an observable of the Sensor Id characteristic
      */
@@ -93,7 +93,7 @@ public class OnBoardingService extends BaseService {
 
     /**
      * Returns an observable of the Sensor Pass Key characteristic.
-     * <p>See {@link BluetoothGatt#readCharacteristic} for details about the actions
+     * <p>See {@link android.bluetooth.BluetoothGatt#readCharacteristic} for details about the actions
      * performed in the background.
      * @return an observable of the Sensor Pass Key characteristic
      */
@@ -105,7 +105,7 @@ public class OnBoardingService extends BaseService {
      * Returns an observable of the OnBoarding Flag characteristic. 1 indicates that
      * the device is connected to the Master Module
      * 0 indicates direct connection.
-     * <p>See {@link BluetoothGatt#readCharacteristic} for details about the actions performed
+     * <p>See {@link android.bluetooth.BluetoothGatt#readCharacteristic} for details about the actions performed
      * in the background.
      * @return an observable of the OnBoarding Flag characteristic
      */

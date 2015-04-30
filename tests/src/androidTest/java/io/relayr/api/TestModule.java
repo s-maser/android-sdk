@@ -6,6 +6,7 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import io.relayr.websocket.OnBoardClientTest;
 import io.relayr.websocket.WebSocketClientTest;
 
 @Module(
@@ -17,7 +18,8 @@ import io.relayr.websocket.WebSocketClientTest;
                 MockRelayrApiTest.class,
                 MockStatusApiTest.class,
                 MockChannelApiTest.class,
-                WebSocketClientTest.class
+                WebSocketClientTest.class,
+                OnBoardClientTest.class
         }
 )
 public class TestModule {
@@ -28,27 +30,19 @@ public class TestModule {
         app = context;
     }
 
-    @Provides
-    @Singleton
-    MockBackend provideMockBackend() {
+    @Provides @Singleton MockBackend provideMockBackend() {
         return new MockBackend(app);
     }
 
-    @Provides
-    @Singleton
-    RelayrApi provideRelayrApi(MockBackend mockBackend) {
+    @Provides @Singleton RelayrApi provideRelayrApi(MockBackend mockBackend) {
         return new MockRelayrApi(mockBackend);
     }
 
-    @Provides
-    @Singleton
-    StatusApi provideStatusApi(MockBackend loader) {
+    @Provides @Singleton StatusApi provideStatusApi(MockBackend loader) {
         return new MockStatusApi(loader);
     }
 
-    @Provides
-    @Singleton
-    ChannelApi provideChannelApi(MockBackend loader) {
+    @Provides @Singleton ChannelApi provideChannelApi(MockBackend loader) {
         return new MockChannelApi(loader);
     }
 }

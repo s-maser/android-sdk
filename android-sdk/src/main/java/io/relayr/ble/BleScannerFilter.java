@@ -9,6 +9,7 @@ import java.util.List;
 
 import io.relayr.ble.parser.AdvertisementPacketParser;
 
+import static io.relayr.ble.BleDeviceMode.NEW_ON_BOARDING;
 import static io.relayr.ble.BleDeviceMode.UNKNOWN;
 
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
@@ -31,15 +32,23 @@ class BleScannerFilter implements BluetoothAdapter.LeScanCallback {
     @Override
     public void onLeScan(BluetoothDevice device, int rssi, byte[] scanRecord) {
         String deviceName = AdvertisementPacketParser.decodeDeviceName(scanRecord);
+
+        if (deviceName != null && deviceName.contains("Wunderbar MM")) {
+            BleDevice bleDevice = new BleDevice(device, deviceName, NEW_ON_BOARDING, mDeviceManager, rssi);
+            if (mBleFilteredScanCallback != null)
+                mBleFilteredScanCallback.onLeScan(bleDevice, rssi);
+            return;
+        }
+
         List<String> serviceUuids = AdvertisementPacketParser.decodeServicesUuid(scanRecord);
         BleDeviceMode mode = BleDeviceMode.fromServiceUuids(serviceUuids);
         if (!isRelevant(device, deviceName, mode)) return;
-        BleDevice bleDevice = new BleDevice(device, deviceName, mode, mDeviceManager);
+
+        BleDevice bleDevice = new BleDevice(device, deviceName, mode, mDeviceManager, rssi);
         if (mBleFilteredScanCallback != null) mBleFilteredScanCallback.onLeScan(bleDevice, rssi);
     }
 
     interface BleFilteredScanCallback {
-        public void onLeScan(BleDevice device, int rssi);
+        void onLeScan(BleDevice device, int rssi);
     }
-
 }

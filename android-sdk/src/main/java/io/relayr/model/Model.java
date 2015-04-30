@@ -1,10 +1,7 @@
 package io.relayr.model;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * A model is an entity which holds the following information about a device:

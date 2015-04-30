@@ -7,24 +7,27 @@ import android.bluetooth.BluetoothGattCharacteristic;
 import android.os.Build;
 
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import io.relayr.ble.BleUtils;
 import io.relayr.ble.DeviceCompatibilityUtils;
 import io.relayr.ble.service.error.CharacteristicNotFoundException;
 import rx.Observable;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
 import rx.functions.Func1;
 
-import static android.bluetooth.BluetoothDevice.*;
+import static android.bluetooth.BluetoothDevice.BOND_NONE;
 import static android.bluetooth.BluetoothGattCharacteristic.FORMAT_SFLOAT;
 import static android.bluetooth.BluetoothGattCharacteristic.FORMAT_UINT16;
 import static io.relayr.ble.service.Utils.getCharacteristicInServices;
 import static rx.Observable.error;
 import static rx.Observable.just;
 
-@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
-class Service {
+@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2) class Service {
 
-    protected final BluetoothGatt mBluetoothGatt;
+    protected BluetoothGatt mBluetoothGatt;
     protected final BluetoothGattReceiver mBluetoothGattReceiver;
 
     protected Service(BluetoothGatt gatt, BluetoothGattReceiver receiver) {
@@ -32,12 +35,12 @@ class Service {
         mBluetoothGattReceiver = receiver;
     }
 
-    public  BluetoothGatt getGatt() {
+    public BluetoothGatt getGatt() {
         return mBluetoothGatt;
     }
 
     protected static Observable<? extends BluetoothGatt> doConnect(
-            final BluetoothDevice bluetoothDevice, final BluetoothGattReceiver receiver, 
+            final BluetoothDevice bluetoothDevice, final BluetoothGattReceiver receiver,
             final boolean unBond) {
         return receiver
                 .connect(bluetoothDevice)
@@ -76,6 +79,60 @@ class Service {
         }
         characteristic.setValue(bytes);
         return mBluetoothGattReceiver.writeCharacteristic(mBluetoothGatt, characteristic);
+    }
+
+    protected Observable<BluetoothGatt> longWrite(final byte[] data, String serviceUuid,
+                                                  String characteristicUuid) {
+
+        final BluetoothGattCharacteristic characteristic = getCharacteristicInServices(
+                mBluetoothGatt.getServices(), serviceUuid, characteristicUuid);
+
+        if (characteristic == null)
+            return error(new CharacteristicNotFoundException(characteristicUuid));
+
+        final LongWriteDataParser dataParser = new LongWriteDataParser(data);
+        return Observable
+                .create(new Observable.OnSubscribe<BluetoothGatt>() {
+                    @Override
+                    public void call(Subscriber<? super BluetoothGatt> subscriber) {
+                        mBluetoothGatt.beginReliableWrite();
+                        sendPayload(dataParser, characteristic, subscriber);
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .timeout(20, TimeUnit.SECONDS)
+                .doOnError(new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable t) {
+                        DeviceCompatibilityUtils.refresh(mBluetoothGatt);
+                    }
+                });
+    }
+
+    private void sendPayload(final LongWriteDataParser parser,
+                             final BluetoothGattCharacteristic characteristic,
+                             final Subscriber<? super BluetoothGatt> subscriber) {
+        final byte[] data = parser.getData();
+
+        if (data.length == 0) {
+            mBluetoothGatt.executeReliableWrite();
+            return;
+        }
+
+        characteristic.setValue(data);
+        mBluetoothGattReceiver.reliableWriteCharacteristic(mBluetoothGatt, characteristic, subscriber);
+
+        Observable.create(
+                new Observable.OnSubscribe<Object>() {
+                    @Override public void call(Subscriber<? super Object> s) {
+                        sendPayload(parser, characteristic, subscriber);
+                    }
+                })
+                .delaySubscription(300, TimeUnit.MILLISECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe();
     }
 
     protected Observable<BluetoothGattCharacteristic> readCharacteristic(String serviceUuid,

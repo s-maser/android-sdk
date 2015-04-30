@@ -1,0 +1,25 @@
+{
+    "id": "d4650445-d85f-4c4a-bbb3-2da7ccd9c28d",
+    "title": "Fridge thermometer",
+    "model": {
+        "id": "ecf6cf94-cb07-43ac-a85e-dccf26b48c86",
+        "name": "Wunderbar Thermometer & Humidity Sensor",
+        "manufacturer": "Relayr GmbH",
+        "readings": [
+            {
+                "meaning": "temperature",
+                "unit": "celsius",
+                "maximum": 100,
+                "minimum": -100,
+                "precision": 0.25
+            },
+            {
+                "meaning": "humidity",
+                "unit": "percent"
+            }
+        ]
+    },
+    "firmwareVersion": "1.0.0",
+    "owner" : "4f1ddffb-d9fa-456b-a73e-33daa6284c39",
+    "integrationType" : "wunderbar2"
+}

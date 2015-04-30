@@ -4,9 +4,9 @@ import com.google.gson.Gson;
 
 import io.relayr.ble.BleDeviceType;
 import io.relayr.model.AccelGyroscope;
+import io.relayr.model.DataPackage;
 import io.relayr.model.DeviceModel;
 import io.relayr.model.LightColorProx;
-import io.relayr.model.DataPackage;
 
 public abstract class BleDataParser {
 
@@ -37,16 +37,16 @@ public abstract class BleDataParser {
         dataPackage.modelId = DeviceModel.LIGHT_PROX_COLOR.getId();
         dataPackage.received = System.currentTimeMillis();
 
-        int red = (byteToUnsignedInt(value[3]) << 8) | byteToUnsignedInt(value[2]);
-        int green = (byteToUnsignedInt(value[5]) << 8) | byteToUnsignedInt(value[4]);
-        int blue = (byteToUnsignedInt(value[7]) << 8) | byteToUnsignedInt(value[6]);
+        int red = (byteToUnsignedInt(value[1]) << 8) | byteToUnsignedInt(value[0]);
+        int green = (byteToUnsignedInt(value[3]) << 8) | byteToUnsignedInt(value[2]);
+        int blue = (byteToUnsignedInt(value[5]) << 8) | byteToUnsignedInt(value[4]);
         LightColorProx.Color color = new LightColorProx.Color(red, green, blue);
         dataPackage.readings.add(new DataPackage.Data(dataPackage.received, "color", "", color));
 
         int proximity = (byteToUnsignedInt(value[9]) << 8) | byteToUnsignedInt(value[8]);
         dataPackage.readings.add(new DataPackage.Data(dataPackage.received, "proximity", "", proximity));
         
-        int luminosity = (byteToUnsignedInt(value[1]) << 8) | byteToUnsignedInt(value[0]);
+        int luminosity = (byteToUnsignedInt(value[7]) << 8) | byteToUnsignedInt(value[6]);
         dataPackage.readings.add(new DataPackage.Data(dataPackage.received, "luminosity", "", luminosity));
         
         return new Gson().toJson(dataPackage);

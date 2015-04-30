@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -32,13 +33,15 @@ public class BleDevicesCache {
 
     private final Map<TransmitterDevice, BaseService> mCache = new ConcurrentHashMap<>();
 
-    @Inject public BleDevicesCache() { }
+    @Inject public BleDevicesCache() {
+    }
 
     public Observable<BaseService> getSensorForDevice(final TransmitterDevice device) {
         if (!mCache.containsKey(device)) {
             Set<BleDeviceType> deviceTypeSet = new HashSet<>(asList(BleDeviceType.from(device.getModel())));
             return RelayrSdk.getRelayrBleSdk()
                     .scan(deviceTypeSet)
+                    .timeout(20, TimeUnit.SECONDS)
                     .flatMap(new Func1<List<BleDevice>, Observable<BleDevice>>() {
                         @Override
                         public Observable<BleDevice> call(final List<BleDevice> bleDevices) {
@@ -117,23 +120,29 @@ public class BleDevicesCache {
                             mCache.put(device, service);
                         }
                     })
+                    .doOnError(new Action1<Throwable>() {
+                        @Override public void call(Throwable throwable) {
+                            RelayrSdk.getRelayrBleSdk().stop();
+                        }
+                    })
                     .delay(300, MILLISECONDS);
         }
+
         return just(mCache.get(device));
     }
 
     /** Disconnects all the devices and clears the cache */
     public void clean() {
-        for (final BaseService service: mCache.values()) {
+        for (final BaseService service : mCache.values()) {
             (service instanceof DirectConnectionService ?
                     (((DirectConnectionService) service)
-                        .stopGettingReadings()
-                        .map(new Func1<BluetoothGattCharacteristic, BaseService>() {
-                            @Override
-                            public BaseService call(BluetoothGattCharacteristic c) {
-                                return service;
-                            }
-                        })) :
+                            .stopGettingReadings()
+                            .map(new Func1<BluetoothGattCharacteristic, BaseService>() {
+                                @Override
+                                public BaseService call(BluetoothGattCharacteristic c) {
+                                    return service;
+                                }
+                            })) :
                     just(service))
                     .flatMap(new Func1<BaseService, Observable<BleDevice>>() {
                         @Override
@@ -144,17 +153,14 @@ public class BleDevicesCache {
                     .subscribe(new Observer<BleDevice>() {
                         @Override
                         public void onCompleted() {
-
                         }
 
                         @Override
                         public void onError(Throwable e) {
-
                         }
 
                         @Override
                         public void onNext(BleDevice bleDevice) {
-
                         }
                     });
         }

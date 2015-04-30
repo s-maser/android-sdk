@@ -29,6 +29,7 @@ public class MockBackend {
     public static final String USER_INFO = "user-info.json";
     public static final String APP_INFO = "app-info.json";
     public static final String USER_DEVICES = "user_devices.json";
+    public static final String USER_DEVICE = "user_device.json";
     public static final String WEB_SOCKET_READINGS = "web_socket_reading.json";
     public static final String USERS_CREATE_WUNDERBAR = "users_create_wunderbar.json";
     public static final String USERS_TRANSMITTERS = "users_transmitters.json";
@@ -44,7 +45,7 @@ public class MockBackend {
     public static final String MQTT_CREDENTIALS = "mqtt_channel.json";
 
     private final Context mContext;
-    private Gson gson;
+    private final Gson mGson;
 
     @Inject
     public MockBackend(Context context) {
@@ -52,7 +53,7 @@ public class MockBackend {
 
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(Date.class, new DateDeserializer());
-        gson = gsonBuilder.create();
+        mGson = gsonBuilder.create();
     }
 
     public String load(String fileName) throws Exception {
@@ -80,7 +81,7 @@ public class MockBackend {
     }
 
     public <T> T load(TypeToken<T> typeToken, String resource) throws Exception {
-        return gson.fromJson(load(resource), typeToken.getType());
+        return mGson.fromJson(load(resource), typeToken.getType());
     }
 
     public Object[] getWebSocketReadings() {

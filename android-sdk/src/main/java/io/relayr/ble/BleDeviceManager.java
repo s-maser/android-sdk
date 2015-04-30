@@ -19,10 +19,11 @@ class BleDeviceManager {
         if (!mDiscoveredDevices.isEmpty()) devicesSubscriber.onNext(getDiscoveredDevices());
     }
 
+    //TODO EXTREMELY IMPORTANT METHOD
     void addDiscoveredDevice(BleDevice device) {
-        if (mDiscoveredDevices.containsKey(device.getAddress()))
-            mDiscoveredDevices.remove(device.getAddress());
+        mDiscoveredDevices.remove(device.getAddress());
         mDiscoveredDevices.put(device.getAddress(), device);
+
         for (Subscriber<? super List<BleDevice>> mDevicesSubscriber : mDevicesSubscriberMap.values())
             mDevicesSubscriber.onNext(getDiscoveredDevices());
     }
@@ -56,7 +57,7 @@ class BleDeviceManager {
     void removeSubscriber(Long key) {
         mDevicesSubscriberMap.remove(key);
     }
-    
+
     boolean isThereAnySubscriber() {
         return !mDevicesSubscriberMap.isEmpty();
     }

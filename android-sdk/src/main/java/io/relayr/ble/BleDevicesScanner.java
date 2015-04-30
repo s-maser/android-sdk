@@ -48,11 +48,14 @@ class BleDevicesScanner implements Runnable, BluetoothAdapter.LeScanCallback {
     }
 
     public synchronized void stop() {
+        if(!isScanning()) return;
+
         isScanning = false;
         if (scanThread != null) {
             scanThread.interrupt();
             scanThread = null;
         }
+
         bluetoothAdapter.stopLeScan(this);
     }
 

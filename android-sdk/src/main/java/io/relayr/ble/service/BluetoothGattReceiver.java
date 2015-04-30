@@ -7,6 +7,7 @@ import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.os.Build;
+import android.util.Log;
 
 import java.util.Map;
 import java.util.UUID;
@@ -15,6 +16,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import io.relayr.RelayrApp;
 import io.relayr.ble.DeviceCompatibilityUtils;
 import io.relayr.ble.service.error.DisconnectionException;
+import io.relayr.ble.service.error.GattException;
+import io.relayr.ble.service.error.UndocumentedException;
 import io.relayr.ble.service.error.WriteCharacteristicException;
 import rx.Observable;
 import rx.Subscriber;
@@ -42,6 +45,7 @@ public class BluetoothGattReceiver extends BluetoothGattCallback {
             mWriteCharacteristicsSubscriberMap = new ConcurrentHashMap<>();
     private volatile Map<UUID, Subscriber<? super BluetoothGattCharacteristic>>
             mReadCharacteristicsSubscriberMap = new ConcurrentHashMap<>();
+    private volatile Subscriber<? super BluetoothGatt> mReliableWriteSubscriber;
 
     public Observable<BluetoothGatt> connect(final BluetoothDevice bluetoothDevice) {
         return Observable.create(new Observable.OnSubscribe<BluetoothGatt>() {
@@ -52,13 +56,13 @@ public class BluetoothGattReceiver extends BluetoothGattCallback {
             }
         });
     }
-    
+
     static class UndocumentedBleStuff {
-        
+
         static boolean isUndocumentedErrorStatus(int status) {
             return status == 133 || status == 137;
         }
-        
+
         static void fixUndocumentedBleStatusProblem(BluetoothGatt gatt, BluetoothGattReceiver receiver) {
             DeviceCompatibilityUtils.refresh(gatt);
             gatt.getDevice().connectGatt(RelayrApp.get(), false, receiver);
@@ -120,8 +124,8 @@ public class BluetoothGattReceiver extends BluetoothGattCallback {
     }
 
     public Observable<BluetoothGattCharacteristic>
-                            writeCharacteristic(final BluetoothGatt bluetoothGatt,
-                                                final BluetoothGattCharacteristic characteristic) {
+    writeCharacteristic(final BluetoothGatt bluetoothGatt,
+                        final BluetoothGattCharacteristic characteristic) {
         return Observable.create(new Observable.OnSubscribe<BluetoothGattCharacteristic>() {
             @Override
             public void call(Subscriber<? super BluetoothGattCharacteristic> subscriber) {
@@ -129,6 +133,32 @@ public class BluetoothGattReceiver extends BluetoothGattCallback {
                 bluetoothGatt.writeCharacteristic(characteristic);
             }
         });
+    }
+
+    public void reliableWriteCharacteristic(final BluetoothGatt bluetoothGatt,
+                                            final BluetoothGattCharacteristic characteristic,
+                                            Subscriber<? super BluetoothGatt> subscriber) {
+        if (mReliableWriteSubscriber == null) mReliableWriteSubscriber = subscriber;
+        bluetoothGatt.writeCharacteristic(characteristic);
+    }
+
+    @Override
+    public void onReliableWriteCompleted(final BluetoothGatt gatt, int status) {
+        if (mReliableWriteSubscriber == null) return;
+
+        if (status == GATT_SUCCESS) {
+            mReliableWriteSubscriber.onNext(gatt);
+            mReliableWriteSubscriber.onCompleted();
+        } else if (GATT_INSUFFICIENT_AUTHENTICATION == status || GATT_INSUFFICIENT_ENCRYPTION == status) {
+            mReliableWriteSubscriber.onError(new GattException("Authentication"));
+        } else if (isUndocumentedErrorStatus(status)) {
+            fixUndocumentedBleStatusProblem(gatt, this);
+            mReliableWriteSubscriber.onError(new UndocumentedException());
+        } else {
+            mReliableWriteSubscriber.onError(new GattException("Reliable write failed."));
+        }
+
+        mReliableWriteSubscriber = null;
     }
 
     @Override
@@ -139,7 +169,7 @@ public class BluetoothGattReceiver extends BluetoothGattCallback {
                 mWriteCharacteristicsSubscriberMap.remove(characteristic.getUuid());
         if (status == GATT_SUCCESS) {
             subscriber.onNext(characteristic);
-        } else if(GATT_INSUFFICIENT_AUTHENTICATION == status || GATT_INSUFFICIENT_ENCRYPTION == status) {
+        } else if (GATT_INSUFFICIENT_AUTHENTICATION == status || GATT_INSUFFICIENT_ENCRYPTION == status) {
             Observable.just(gatt)
                     .flatMap(new BondingReceiver.BondingFunc1())
                     .map(new Func1<BluetoothGatt, Boolean>() {
@@ -155,9 +185,10 @@ public class BluetoothGattReceiver extends BluetoothGattCallback {
             subscriber.onError(new WriteCharacteristicException(characteristic, status));
         }
     }
+
     public Observable<BluetoothGattCharacteristic> readCharacteristic(
-                                                final BluetoothGatt gatt,
-                                                final BluetoothGattCharacteristic characteristic) {
+            final BluetoothGatt gatt,
+            final BluetoothGattCharacteristic characteristic) {
         return Observable.create(new Observable.OnSubscribe<BluetoothGattCharacteristic>() {
             @Override
             public void call(Subscriber<? super BluetoothGattCharacteristic> subscriber) {
@@ -175,7 +206,7 @@ public class BluetoothGattReceiver extends BluetoothGattCallback {
                 mReadCharacteristicsSubscriberMap.remove(characteristic.getUuid());
         if (status == GATT_SUCCESS) {
             subscriber.onNext(characteristic);
-        } else if(GATT_INSUFFICIENT_AUTHENTICATION == status || GATT_INSUFFICIENT_ENCRYPTION == status) {
+        } else if (GATT_INSUFFICIENT_AUTHENTICATION == status || GATT_INSUFFICIENT_ENCRYPTION == status) {
             Observable.just(gatt)
                     .flatMap(new BondingReceiver.BondingFunc1())
                     .map(new Func1<BluetoothGatt, Boolean>() {

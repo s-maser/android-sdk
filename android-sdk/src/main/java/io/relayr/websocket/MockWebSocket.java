@@ -2,7 +2,6 @@ package io.relayr.websocket;
 
 import com.google.gson.Gson;
 
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import io.relayr.api.MockBackend;
@@ -22,7 +21,7 @@ class MockWebSocket extends WebSocket<MqttChannel> {
     }
 
     @Override
-    public boolean subscribe(MqttChannel channel, final WebSocketCallback callback) {
+    boolean subscribe(String topic, String channelId, final WebSocketCallback callback) {
         callback.connectCallback("");
         Observable.from(mMockBackend.getWebSocketReadings())
                 .delay(1, TimeUnit.SECONDS)
@@ -55,12 +54,17 @@ class MockWebSocket extends WebSocket<MqttChannel> {
     }
 
     @Override
-    void createClient(MqttChannel channel, Subscriber<Void> subscriber) {
-        subscriber.onNext(null);
+    Observable<MqttChannel> createClient(final MqttChannel channel) {
+        return Observable.create(new Observable.OnSubscribe<MqttChannel>() {
+            @Override
+            public void call(Subscriber<? super MqttChannel> subscriber) {
+                subscriber.onNext(channel);
+            }
+        });
     }
 
     @Override
-    boolean unSubscribe(MqttChannel topic) {
+    boolean unSubscribe(String topic) {
         return true;
     }
 }

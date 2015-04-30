@@ -30,4 +30,15 @@ public interface ShortUUID {
 
     static String DESCRIPTOR_DATA_NOTIFICATIONS = "2902";
 
+    //New onboarding
+    static String SERVICE_NEW_ON_BOARDING = "1900";
+    static String CHARACTERISTIC_WIFI_SSID = "2400";
+    static String CHARACTERISTIC_WIFI_PASSWORD = "2401";
+    static String CHARACTERISTIC_MQTT_USER = "2402";
+    static String CHARACTERISTIC_MQTT_PASSWORD = "2403";
+    static String CHARACTERISTIC_MQTT_TOPIC = "2404";
+    static String CHARACTERISTIC_MQTT_CLIENT_ID = "2405";
+    static String CHARACTERISTIC_MQTT_HOST = "2406";
+    static String CHARACTERISTIC_COMMIT = "2407";
+    static String CHARACTERISTIC_STATUS = "2408";
 }

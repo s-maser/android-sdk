@@ -17,10 +17,13 @@ import dagger.Provides;
 import io.relayr.storage.DataStorage;
 import retrofit.Endpoint;
 import retrofit.Endpoints;
+import retrofit.ErrorHandler;
 import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
+import retrofit.RetrofitError;
 import retrofit.client.Client;
 import retrofit.client.OkClient;
+import retrofit.client.Response;
 
 @Module(
         complete = false,
@@ -51,6 +54,16 @@ public class ApiModule {
         app = context;
     }
 
+    class MyErrorHandler implements ErrorHandler {
+        @Override public Throwable handleError(RetrofitError cause) {
+            Response r = cause.getResponse();
+            if (r != null && r.getStatus() > 301) {
+                return new Exception(cause);
+            }
+            return cause;
+        }
+    }
+
     @Provides @Singleton Endpoint provideEndpoint() {
         return Endpoints.newFixedEndpoint(API_ENDPOINT);
     }
@@ -65,6 +78,8 @@ public class ApiModule {
                 .setClient(client)
                 .setEndpoint(endpoint)
                 .setRequestInterceptor(apiRequestInterceptor)
+//                .setErrorHandler(new MyErrorHandler())
+//                .setLogLevel(RestAdapter.LogLevel.FULL)
                 .build();
     }
 
@@ -77,28 +92,24 @@ public class ApiModule {
                 .build();
     }
 
-    @Provides @Singleton
-    RelayrApi provideRelayrApi(@Named("api") RestAdapter restAdapter) {
+    @Provides @Singleton RelayrApi provideRelayrApi(@Named("api") RestAdapter restAdapter) {
         return restAdapter.create(RelayrApi.class);
     }
 
-    @Provides @Singleton
-    OauthApi provideOauthApi(@Named("oauth") RestAdapter restAdapter) {
+    @Provides @Singleton OauthApi provideOauthApi(@Named("oauth") RestAdapter restAdapter) {
         return restAdapter.create(OauthApi.class);
     }
 
     @Provides @Singleton ChannelApi provideChannelApi(@Named("api")
-                                                                RestAdapter restAdapter) {
+                                                      RestAdapter restAdapter) {
         return restAdapter.create(ChannelApi.class);
     }
 
-    @Provides @Singleton
-    CloudApi provideCloudApi(@Named("api") RestAdapter restAdapter) {
+    @Provides @Singleton CloudApi provideCloudApi(@Named("api") RestAdapter restAdapter) {
         return restAdapter.create(CloudApi.class);
     }
 
-    @Provides @Singleton
-    StatusApi provideStatusApi(@Named("api") RestAdapter restAdapter) {
+    @Provides @Singleton StatusApi provideStatusApi(@Named("api") RestAdapter restAdapter) {
         return restAdapter.create(StatusApi.class);
     }
 
