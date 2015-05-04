@@ -19,6 +19,12 @@ public abstract class RelayrBleSdk {
     public abstract Observable<List<BleDevice>> scan(Collection<BleDeviceType> deviceTypes);
 
     /**
+     * Starts a scan for BLE devices without pausing. Used for refreshing RSSI.
+     * @param deviceTypes a collection containing all ble type devices you are interested in
+     */
+    public abstract Observable<List<BleDevice>> scan(Collection<BleDeviceType> deviceTypes, boolean infinite);
+
+    /**
      * Returns BleDevice if it's paired.
      */
     public abstract BleDevice getPairedDevice(String macAddress);

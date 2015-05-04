@@ -9,12 +9,13 @@ import android.os.Looper;
 
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 class BleDevicesScanner implements Runnable, BluetoothAdapter.LeScanCallback {
-    private static final String TAG = BleDevicesScanner.class.getSimpleName();
 
-    private static final long DEFAULT_SCAN_PERIOD = 7000;
-    private static final long PERIOD_SCAN_ONCE = -1;
+    private static final String TAG = "BleDevicesScanner";
 
-    private final BluetoothAdapter bluetoothAdapter;
+    public static final long DEFAULT_SCAN_PERIOD = 7000;
+    public static final long INFINITE_SCAN = 2500;
+
+    private BluetoothAdapter bluetoothAdapter;
     private final Handler mainThreadHandler = new Handler(Looper.getMainLooper());
     private final LeScansPoster leScansPoster;
 
@@ -28,35 +29,38 @@ class BleDevicesScanner implements Runnable, BluetoothAdapter.LeScanCallback {
     }
 
     public synchronized void setScanPeriod(long scanPeriod) {
-        this.scanPeriod = scanPeriod < 0 ? PERIOD_SCAN_ONCE : scanPeriod;
+        this.scanPeriod = scanPeriod < 0 ? INFINITE_SCAN : scanPeriod;
     }
 
     public boolean isScanning() {
         return scanThread != null && scanThread.isAlive();
     }
 
-    public synchronized void start() {
-        if (isScanning())
-            return;
+    public synchronized void startFastScan() {
+        scanPeriod = INFINITE_SCAN;
+        start();
+    }
 
-        if (scanThread != null) {
-            scanThread.interrupt();
-        }
+    public synchronized void start() {
+        if (isScanning()) return;
+
+        if (scanThread != null) scanThread.interrupt();
+
         scanThread = new Thread(this);
         scanThread.setName(TAG);
         scanThread.start();
     }
 
     public synchronized void stop() {
-        if(!isScanning()) return;
+        if (!isScanning()) return;
 
         isScanning = false;
+        bluetoothAdapter.stopLeScan(this);
+
         if (scanThread != null) {
             scanThread.interrupt();
             scanThread = null;
         }
-
-        bluetoothAdapter.stopLeScan(this);
     }
 
     @Override
@@ -68,14 +72,13 @@ class BleDevicesScanner implements Runnable, BluetoothAdapter.LeScanCallback {
                     bluetoothAdapter.startLeScan(this);
                 }
 
-                if (scanPeriod > 0)
-                    Thread.sleep(scanPeriod);
+                Thread.sleep(scanPeriod);
 
+                // although it should never be null sometimes it happens to be
                 synchronized (this) {
-                    // although it should never be null sometimes it happens to be
                     if (bluetoothAdapter != null) bluetoothAdapter.stopLeScan(this);
                 }
-            } while (isScanning && scanPeriod > 0);
+            } while (isScanning);
         } catch (InterruptedException ignore) {
         } finally {
             synchronized (this) {

@@ -4,6 +4,7 @@ import android.annotation.TargetApi;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.os.Build;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -30,12 +31,19 @@ class RelayrBleSdkImpl extends RelayrBleSdk implements BleScannerFilter.BleFilte
 
     @Override
     public Observable<List<BleDevice>> scan(final Collection<BleDeviceType> deviceTypes) {
+        return scan(deviceTypes, false);
+    }
+
+    @Override
+    public Observable<List<BleDevice>> scan(final Collection<BleDeviceType> deviceTypes, final boolean infinite) {
         final long key = System.currentTimeMillis();
         return Observable.create(new Observable.OnSubscribe<List<BleDevice>>() {
             @Override
             public void call(Subscriber<? super List<BleDevice>> subscriber) {
                 mDeviceManager.addSubscriber(key, subscriber);
-                mBleDeviceScanner.start();
+
+                if (infinite) mBleDeviceScanner.startFastScan();
+                else mBleDeviceScanner.start();
             }
         }).filter(new Func1<List<BleDevice>, Boolean>() {
             @Override
@@ -58,9 +66,7 @@ class RelayrBleSdkImpl extends RelayrBleSdk implements BleScannerFilter.BleFilte
             @Override
             public void call() {
                 mDeviceManager.removeSubscriber(key);
-                if (!mDeviceManager.isThereAnySubscriber()) {
-                    mBleDeviceScanner.stop();
-                }
+                if (!mDeviceManager.isThereAnySubscriber()) mBleDeviceScanner.stop();
             }
         });
     }

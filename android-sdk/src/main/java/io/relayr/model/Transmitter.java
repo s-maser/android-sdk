@@ -21,6 +21,7 @@ public class Transmitter implements Serializable {
     private String topic;
     private String integrationType;
     private String name;
+    private String clientId;
 
     public Transmitter(String owner, String name, IntegrationType type) {
         this.owner = owner;
@@ -75,6 +76,15 @@ public class Transmitter implements Serializable {
     public void setIntegrationType(IntegrationType integrationType) {
         this.integrationType = integrationType.getName();
     }
+
+    public String getClientId() {
+        return clientId;
+    }
+
+    public void setClientId(String clientId) {
+        this.clientId = clientId;
+    }
+
 
     @Override
     public String toString() {
