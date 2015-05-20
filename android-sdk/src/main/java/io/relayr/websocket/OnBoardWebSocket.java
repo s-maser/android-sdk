@@ -13,7 +13,6 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import io.relayr.model.Transmitter;
 import rx.Observable;
@@ -128,18 +127,26 @@ class OnBoardWebSocket extends WebSocket<Transmitter> {
                 public void messageArrived(String topic, MqttMessage message) {
                     if (mTopicCallbacks == null || mTopicCallbacks.isEmpty()) return;
 
-                    if (mTopicCallbacks.get(topic) == null) {
-                        final String top = topic.substring(0, topic.lastIndexOf("/")) + "/#";
-                        final String data = topic.substring(topic.lastIndexOf("/") + 1, topic.length());
-                        for (Map.Entry<String, List<WebSocketCallback>> entry : mTopicCallbacks.entrySet())
-                            if (entry.getKey().equals(top))
-                                for (WebSocketCallback socketCallback : entry.getValue())
-                                    socketCallback.successCallback(new Pair<>(data, message.toString()));
-                        return;
-                    }
+                    String additionalData = "";
+                    String orgTopic = topic;
+                    boolean topicFound = mTopicCallbacks.get(orgTopic) != null;
 
-                    for (WebSocketCallback socketCallback : mTopicCallbacks.get(topic))
-                        socketCallback.successCallback(message);
+                    if (topicFound)
+                        for (WebSocketCallback socketCallback : mTopicCallbacks.get(topic))
+                            socketCallback.successCallback(message);
+                    else
+                        while (!topicFound) {
+                            final int lastDelimiter = orgTopic.lastIndexOf("/");
+                            String tempTopic = orgTopic.substring(0, lastDelimiter);
+                            additionalData += orgTopic.substring(lastDelimiter + 1, orgTopic.length()) + "#";
+
+                            topicFound = mTopicCallbacks.get(tempTopic + "/#") != null;
+                            if (topicFound)
+                                for (WebSocketCallback socketCallback : mTopicCallbacks.get(tempTopic + "/#"))
+                                    socketCallback.successCallback(new Pair<>(message.toString().trim(), additionalData));
+
+                            orgTopic = tempTopic;
+                        }
                 }
 
                 @Override

@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothDevice;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 class BleDevicesScanner implements Runnable, BluetoothAdapter.LeScanCallback {
@@ -13,7 +14,6 @@ class BleDevicesScanner implements Runnable, BluetoothAdapter.LeScanCallback {
     private static final String TAG = "BleDevicesScanner";
 
     public static final long DEFAULT_SCAN_PERIOD = 7000;
-    public static final long INFINITE_SCAN = 2500;
 
     private BluetoothAdapter bluetoothAdapter;
     private final Handler mainThreadHandler = new Handler(Looper.getMainLooper());
@@ -29,16 +29,11 @@ class BleDevicesScanner implements Runnable, BluetoothAdapter.LeScanCallback {
     }
 
     public synchronized void setScanPeriod(long scanPeriod) {
-        this.scanPeriod = scanPeriod < 0 ? INFINITE_SCAN : scanPeriod;
+        this.scanPeriod = scanPeriod < 0 ? DEFAULT_SCAN_PERIOD : scanPeriod;
     }
 
     public boolean isScanning() {
         return scanThread != null && scanThread.isAlive();
-    }
-
-    public synchronized void startFastScan() {
-        scanPeriod = INFINITE_SCAN;
-        start();
     }
 
     public synchronized void start() {
@@ -90,6 +85,8 @@ class BleDevicesScanner implements Runnable, BluetoothAdapter.LeScanCallback {
     @Override
     public void onLeScan(BluetoothDevice device, int rssi, byte[] scanRecord) {
         synchronized (leScansPoster) {
+            if(device.getAddress().contains("0A:B6"))
+                Log.e("MM", "" + rssi);
             leScansPoster.set(device, rssi, scanRecord);
             mainThreadHandler.post(leScansPoster);
         }
