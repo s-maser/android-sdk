@@ -41,6 +41,8 @@ public class OnBoardingClient {
     }
 
     public Observable<Boolean> getTransmitterPresence() {
+        if (mWebSocket == null || !mWebSocket.isConnected()) return Observable.just(false);
+
         final String connectTopic = topicPrefix + CMD_PRESENCE_CONNECT;
         final String disconnectTopic = topicPrefix + CMD_PRESENCE_DISCONNECT;
 
@@ -115,9 +117,9 @@ public class OnBoardingClient {
                             mWebSocket.unSubscribe(disconnectTopic);
                         }
                     })
-                            //Cache only the last value
+                    //Cache only the last value
                     .cache(1)
-                            //If there is no presence message transmitter is probably disconnected
+                    //If there is no presence message transmitter is probably disconnected
                     .defaultIfEmpty(false);
 
         return mTransmitterPresence;
