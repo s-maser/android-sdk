@@ -115,12 +115,12 @@ class OnBoardWebSocket extends WebSocket<Transmitter> {
                 public void connectionLost(Throwable cause) {
                     if (mTopicCallbacks == null || mTopicCallbacks.isEmpty()) return;
 
+                    Log.d(TAG, "Connection lost.");
+                    cause.printStackTrace();
+
                     for (List<WebSocketCallback> callbacks : mTopicCallbacks.values())
                         for (WebSocketCallback socketCallback : callbacks)
                             socketCallback.disconnectCallback(cause);
-
-                    Log.d(TAG, "Connection lost.");
-                    cause.printStackTrace();
                 }
 
                 @Override
