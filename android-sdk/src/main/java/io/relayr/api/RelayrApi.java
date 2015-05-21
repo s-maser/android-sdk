@@ -168,9 +168,18 @@ public interface RelayrApi {
     @GET("/device-models/ble-names") Observable<Object> getBleModels();
 
     /**
-     * Creates device on the platform. Used for v2 on-boarding.
+     * Creates device on the platform.
      * @param device to create and add to the existing transmitter
      * @return created device
      */
     @POST("/devices") Observable<Device> createDevice(@Body CreateDevice device);
+
+    /**
+     * Creates device on the platform. Used for v2 on-boarding.
+     * @param device   to update
+     * @param deviceId id of the device to update
+     * @return updated device
+     */
+    @PATCH("/devices/{deviceId}")
+    Observable<Device> updateDevice(@Body CreateDevice device, @Path("deviceId") String deviceId);
 }

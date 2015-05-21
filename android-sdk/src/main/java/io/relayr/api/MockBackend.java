@@ -43,6 +43,7 @@ public class MockBackend {
     public static final String DEVICE_READING_MEANINGS = "device_reading_meanings.json";
     public static final String SERVER_STATUS = "server-info.json";
     public static final String MQTT_CREDENTIALS = "mqtt_channel.json";
+    public static final String MQTT_DEVICE_CREDENTIALS = "mqtt_channel.json";
 
     private final Context mContext;
     private final Gson mGson;

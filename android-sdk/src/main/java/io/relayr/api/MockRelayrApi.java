@@ -18,6 +18,8 @@ import io.relayr.model.ReadingMeaning;
 import io.relayr.model.Transmitter;
 import io.relayr.model.TransmitterDevice;
 import io.relayr.model.User;
+import retrofit.http.Body;
+import retrofit.http.Path;
 import rx.Observable;
 import rx.Subscriber;
 
@@ -186,6 +188,12 @@ public class MockRelayrApi implements RelayrApi {
 
     @Override
     public Observable<Device> createDevice(CreateDevice device) {
+        return mMockBackend.createObservable(new TypeToken<Device>() { },
+                USER_DEVICE);
+    }
+
+    @Override
+    public Observable<Device> updateDevice(CreateDevice device, String deviceId) {
         return mMockBackend.createObservable(new TypeToken<Device>() { },
                 USER_DEVICE);
     }

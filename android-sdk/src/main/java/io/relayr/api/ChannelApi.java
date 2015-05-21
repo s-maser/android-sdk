@@ -2,6 +2,7 @@ package io.relayr.api;
 
 import io.relayr.model.MqttChannel;
 import io.relayr.model.MqttDefinition;
+import io.relayr.model.MqttDeviceChannel;
 import io.relayr.model.MqttExistingChannel;
 import retrofit.http.Body;
 import retrofit.http.DELETE;
@@ -20,4 +21,8 @@ public interface ChannelApi {
 
     @GET("/devices/{deviceId}/channels")
     Observable<MqttExistingChannel> getChannels(@Path("deviceId") String deviceId);
+
+    @POST("/devices/{deviceId}/transmitter")
+    Observable<MqttDeviceChannel> createForDevice(@Body MqttDefinition mqttDefinition,
+                                                         @Path("deviceId") String deviceId);
 }

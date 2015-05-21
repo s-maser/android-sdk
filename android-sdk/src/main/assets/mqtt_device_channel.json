@@ -1,0 +1,13 @@
+{
+    "id": "eabdb2ed-2375-4137-b006-da24c93c9507",
+    "secret": "na1R6Hn3dYg1",
+    "owner": "9210dce8-25da-4275-a73a-1383b9774255",
+    "name": "no transmitter  no model",
+    "credentials": {
+        "user": "eabdb2ed-2375-4137-b006-da24c93c9507",
+        "password": "na1R6Hn3dYg1",
+        "clientId": "T6r2y7SN1QTewBtokyTyVBw",
+        "topic": "/v1/eabdb2ed-2375-4137-b006-da24c93c9507/"
+    },
+    "integrationType": "wunderbar1"
+}

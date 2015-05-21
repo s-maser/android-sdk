@@ -6,11 +6,13 @@ import javax.inject.Inject;
 
 import io.relayr.model.MqttChannel;
 import io.relayr.model.MqttDefinition;
+import io.relayr.model.MqttDeviceChannel;
 import io.relayr.model.MqttExistingChannel;
 import rx.Observable;
 import rx.Subscriber;
 
 import static io.relayr.api.MockBackend.MQTT_CREDENTIALS;
+import static io.relayr.api.MockBackend.MQTT_DEVICE_CREDENTIALS;
 
 public class MockChannelApi implements ChannelApi {
 
@@ -22,7 +24,7 @@ public class MockChannelApi implements ChannelApi {
     }
 
     @Override
-    public Observable<MqttChannel> create( MqttDefinition mqttDefinition) {
+    public Observable<MqttChannel> create(MqttDefinition mqttDefinition) {
         return mMockBackend.createObservable(new TypeToken<MqttChannel>() {
         }, MQTT_CREDENTIALS);
     }
@@ -41,5 +43,11 @@ public class MockChannelApi implements ChannelApi {
     @Override
     public Observable<MqttExistingChannel> getChannels(String deviceId) {
         return Observable.empty();
+    }
+
+    @Override
+    public Observable<MqttDeviceChannel> createForDevice(MqttDefinition mqttDefinition, String deviceId) {
+        return mMockBackend.createObservable(new TypeToken<MqttDeviceChannel>() {
+        }, MQTT_DEVICE_CREDENTIALS);
     }
 }
