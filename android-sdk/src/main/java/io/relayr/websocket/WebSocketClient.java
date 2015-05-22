@@ -13,9 +13,11 @@ import io.relayr.api.ChannelApi;
 import io.relayr.model.DataPackage;
 import io.relayr.model.MqttChannel;
 import io.relayr.model.MqttDefinition;
+import io.relayr.model.MqttDeviceChannel;
 import io.relayr.model.Reading;
 import io.relayr.model.TransmitterDevice;
 import rx.Observable;
+import rx.Observer;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
@@ -43,6 +45,28 @@ public class WebSocketClient implements SocketClient {
             return mSocketConnections.get(device.id);
         else
             return start(device);
+    }
+
+    @Override
+    public void publish(final String deviceId, Object payload) {
+        if (mDeviceChannels.containsKey(deviceId))
+            mWebSocket.publish(mDeviceChannels.get(deviceId).getCredentials().getTopic(),
+                    new Gson().toJson(payload));
+        else
+            mChannelApi.createForDevice(new MqttDefinition(deviceId, "mqtt"), deviceId)
+                    .subscribe(new Observer<MqttDeviceChannel>() {
+                        @Override public void onCompleted() {
+                        }
+
+                        @Override public void onError(Throwable e) {
+                            mDeviceChannels.remove(deviceId);
+                        }
+
+                        @Override public void onNext(MqttDeviceChannel channel) {
+                            if (!mDeviceChannels.containsKey(deviceId))
+                                mDeviceChannels.put(deviceId, channel);
+                        }
+                    });
     }
 
     private synchronized Observable<Reading> start(final TransmitterDevice device) {

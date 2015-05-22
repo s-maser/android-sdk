@@ -12,7 +12,7 @@ import rx.Subscriber;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.contains;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -39,7 +39,6 @@ public class OnBoardClientTest extends TestEnvironment {
         });
 
         when(webSocket.createClient(any(Transmitter.class))).thenReturn(observable);
-        when(webSocket.subscribe(anyString(), anyString(), any(WebSocketCallback.class))).thenReturn(true);
         when(webSocketFactory.createOnBoardingWebSocket()).thenReturn(webSocket);
 
         OnBoardingClient mSocketClient = new OnBoardingClient(webSocketFactory);
@@ -47,10 +46,26 @@ public class OnBoardClientTest extends TestEnvironment {
         await();
 
         verify(webSocket, times(1)).createClient(any(Transmitter.class));
+    }
 
+    @Test
+    public void webSocketClientScanningTest() {
+        final Observable<Transmitter> observable = Observable.create(new Observable.OnSubscribe<Transmitter>() {
+            @Override
+            public void call(Subscriber<? super Transmitter> subscriber) {
+                subscriber.onNext(createTransmitterDevice());
+            }
+        });
+
+        when(webSocket.createClient(any(Transmitter.class))).thenReturn(observable);
+        when(webSocket.subscribe(anyString(), anyString(), any(WebSocketCallback.class))).thenReturn(true);
+        when(webSocketFactory.createOnBoardingWebSocket()).thenReturn(webSocket);
+
+        OnBoardingClient mSocketClient = new OnBoardingClient(webSocketFactory);
+        mSocketClient.startScanning().subscribe();
         await();
-        verify(webSocket, times(1)).subscribe(eq("topic/presence/connect"), anyString(), any(WebSocketCallback
-                .class));
+
+        verify(webSocket, times(1)).subscribe(contains("/announce/#"), anyString(), any(WebSocketCallback.class));
     }
 
     private Transmitter createTransmitterDevice() {
