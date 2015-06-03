@@ -1,6 +1,5 @@
 package io.relayr.websocket;
 
-import android.util.Log;
 import android.util.Pair;
 
 import java.util.concurrent.TimeUnit;
@@ -19,7 +18,7 @@ import rx.functions.Action1;
 @Singleton
 public class OnBoardingClient {
 
-    private final int SCAN_TIME = 20000;
+    private final int SCAN_TIME = 5;
     private final String CMD_SCAN_ON = "/cmd/scan/" + SCAN_TIME;
     private final String CMD_PRESENCE_CONNECT = "/presence/connect";
     private final String CMD_PRESENCE_DISCONNECT = "/presence/disconnect";
@@ -35,7 +34,7 @@ public class OnBoardingClient {
     }
 
     public Observable<Transmitter> startOnBoarding(final Transmitter transmitter) {
-        topicPrefix = transmitter.getTopic();
+        topicPrefix = transmitter.getCredentials().getTopic();
 
         return mWebSocket.createClient(transmitter);
     }
@@ -58,19 +57,16 @@ public class OnBoardingClient {
 
                                 @Override
                                 public void disconnectCallback(Object message) {
-                                    Log.e("PRES", "true - disconnectCallback");
-                                    subscriber.onError(new MqttDisconnectException());
+                                    subscriber.onNext(false);
                                 }
 
                                 @Override
                                 public void successCallback(Object message) {
-                                    Log.e("PRES", "true");
                                     subscriber.onNext(true);
                                 }
 
                                 @Override
                                 public void errorCallback(Throwable e) {
-                                    Log.e("PRES", "true - errorCallback");
                                     subscriber.onError(e);
                                 }
                             });
@@ -81,19 +77,16 @@ public class OnBoardingClient {
 
                                 @Override
                                 public void disconnectCallback(Object message) {
-                                    Log.e("PRES", "false - disconnectCallback");
-                                    subscriber.onError(new MqttDisconnectException());
+                                    subscriber.onNext(false);
                                 }
 
                                 @Override
                                 public void successCallback(Object message) {
-                                    Log.e("PRES", "false");
                                     subscriber.onNext(false);
                                 }
 
                                 @Override
                                 public void errorCallback(Throwable e) {
-                                    Log.e("PRES", "false - errorCallback");
                                     subscriber.onError(e);
                                 }
                             });
@@ -101,7 +94,6 @@ public class OnBoardingClient {
                     })
                     .doOnUnsubscribe(new Action0() {
                         @Override public void call() {
-                            Log.e("PRES", "doOnUnsubscribe");
                             mTransmitterPresence = null;
                             mWebSocket.unSubscribe(connectTopic);
                             mWebSocket.unSubscribe(disconnectTopic);
@@ -109,7 +101,6 @@ public class OnBoardingClient {
                     })
                     .doOnError(new Action1<Throwable>() {
                         @Override public void call(Throwable t) {
-                            Log.e("PRES", "doOnError");
                             mTransmitterPresence = null;
                             if (t instanceof MqttDisconnectException) return;
 
@@ -140,13 +131,11 @@ public class OnBoardingClient {
 
                             @Override
                             public void disconnectCallback(Object message) {
-                                Log.e("SCAN", "disconnectCallback");
                                 subscriber.onError(new MqttDisconnectException());
                             }
 
                             @Override
                             public void successCallback(Object message) {
-                                Log.e("SCAN", "successCallback");
                                 Pair<String, String> scanData = (Pair<String, String>) message;
                                 final String[] split = scanData.second.split("#");
                                 subscriber.onNext(new OnBoardingScan(scanData.first, split[1], Integer.parseInt(split[0])));
@@ -154,24 +143,21 @@ public class OnBoardingClient {
 
                             @Override
                             public void errorCallback(Throwable e) {
-                                Log.e("SCAN", "errorCallback");
                                 subscriber.onError(e);
                             }
                         });
 
-                        mWebSocket.publish(scanTopic, null);
+                        mWebSocket.publish(scanTopic, "");
                     }
                 })
-                .timeout(SCAN_TIME, TimeUnit.MILLISECONDS)
+                .timeout(SCAN_TIME, TimeUnit.SECONDS)
                 .doOnUnsubscribe(new Action0() {
                     @Override public void call() {
-                        Log.e("SCAN", "doOnUnsubscribe");
                         mWebSocket.unSubscribe(presenceTopic);
                     }
                 })
                 .doOnError(new Action1<Throwable>() {
                     @Override public void call(Throwable t) {
-                        Log.e("SCAN", "doOnError");
                         mWebSocket.unSubscribe(presenceTopic);
                     }
                 });

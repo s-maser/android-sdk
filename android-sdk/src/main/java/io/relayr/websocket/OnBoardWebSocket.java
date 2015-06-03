@@ -42,7 +42,8 @@ class OnBoardWebSocket extends WebSocket<Transmitter> {
                         try {
                             if (!mClient.isConnected()) {
                                 final IMqttToken connectToken = mClient.connect(SslUtil.instance().
-                                        getConnectOptions(transmitter.id, transmitter.secret));
+                                        getConnectOptions(transmitter.getCredentials().getUser(),
+                                                transmitter.getCredentials().getPassword()));
                                 connectToken.waitForCompletion(CONNECT_TIMEOUT);
                                 subscriber.onNext(transmitter);
                             }
@@ -125,6 +126,8 @@ class OnBoardWebSocket extends WebSocket<Transmitter> {
 
                 @Override
                 public void messageArrived(String topic, MqttMessage message) {
+                    Log.d("OBWS", topic + " - " + message.toString());
+
                     if (mTopicCallbacks == null || mTopicCallbacks.isEmpty()) return;
 
                     String additionalData = "";
