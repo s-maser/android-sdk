@@ -21,7 +21,7 @@ public abstract class RelayrBleSdk {
     /**
      * Starts a scan for BLE devices without pausing. Used for refreshing RSSI.
      * @param deviceTypes a collection containing all ble type devices you are interested in
-     * @param scanPeriod  in milliseconds
+     * @param scanPeriod  in seconds
      */
     public abstract Observable<List<BleDevice>> scan(Collection<BleDeviceType> deviceTypes, long scanPeriod);
 
