@@ -102,4 +102,8 @@ public class Transmitter implements Serializable {
                 ", credentials=" + credentials +
                 '}';
     }
+
+    public void setCredentials(MqttChannel.MqttCredentials credentials) {
+        this.credentials = credentials;
+    }
 }
