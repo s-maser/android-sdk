@@ -6,6 +6,7 @@ import org.mockito.Mock;
 
 import io.relayr.TestEnvironment;
 import io.relayr.model.IntegrationType;
+import io.relayr.model.MqttChannel;
 import io.relayr.model.Transmitter;
 import rx.Observable;
 import rx.Subscriber;
@@ -30,7 +31,7 @@ public class OnBoardClientTest extends TestEnvironment {
     }
 
     @Test
-    public void webSocketClientSubscribeTest() {
+    public void webSocketClientCreateTest() {
         final Observable<Transmitter> observable = Observable.create(new Observable.OnSubscribe<Transmitter>() {
             @Override
             public void call(Subscriber<? super Transmitter> subscriber) {
@@ -47,6 +48,25 @@ public class OnBoardClientTest extends TestEnvironment {
         await();
 
         verify(webSocket, times(1)).createClient(any(Transmitter.class));
+    }
+
+    @Test
+    public void webSocketClientSubscribeTest() {
+        final Observable<Transmitter> observable = Observable.create(new Observable.OnSubscribe<Transmitter>() {
+            @Override
+            public void call(Subscriber<? super Transmitter> subscriber) {
+                subscriber.onNext(createTransmitterDevice());
+            }
+        });
+
+        when(webSocket.isConnected()).thenReturn(true);
+        when(webSocket.createClient(any(Transmitter.class))).thenReturn(observable);
+        when(webSocket.subscribe(anyString(), anyString(), any(WebSocketCallback.class))).thenReturn(true);
+        when(webSocketFactory.createOnBoardingWebSocket()).thenReturn(webSocket);
+
+        OnBoardingClient mSocketClient = new OnBoardingClient(webSocketFactory);
+        mSocketClient.startOnBoarding(createTransmitterDevice()).subscribe();
+        mSocketClient.getTransmitterPresence().subscribe();
 
         await();
         verify(webSocket, times(1)).subscribe(eq("topic/presence/connect"), anyString(), any(WebSocketCallback
@@ -56,6 +76,7 @@ public class OnBoardClientTest extends TestEnvironment {
     private Transmitter createTransmitterDevice() {
         final Transmitter transmitter = new Transmitter("o", "name", IntegrationType.WUNDERBAR_2);
         transmitter.setTopic("topic");
+        transmitter.setCredentials(new MqttChannel.MqttCredentials("u", "p", "topic", "clientId"));
         return transmitter;
     }
 }

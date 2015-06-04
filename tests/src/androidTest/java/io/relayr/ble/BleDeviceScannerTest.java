@@ -53,9 +53,11 @@ public class BleDeviceScannerTest {
         BluetoothAdapter adapter = Mockito.mock(BluetoothAdapter.class);
         LeScanCallback callback = Mockito.mock(LeScanCallback.class);
         BleDevicesScanner bleDevicesScanner = new BleDevicesScanner(adapter, callback);
-        bleDevicesScanner.setScanPeriod(20);
+        bleDevicesScanner.setScanPeriod(1);//in seconds
         bleDevicesScanner.start();
         Assert.assertTrue(bleDevicesScanner.isScanning());
-        Mockito.verify(adapter, Mockito.timeout(200).atLeastOnce()).stopLeScan(bleDevicesScanner);
+
+        //timeout for Mockito in milliseconds
+        Mockito.verify(adapter, Mockito.timeout(2000).atLeastOnce()).stopLeScan(bleDevicesScanner);
     }
 }
