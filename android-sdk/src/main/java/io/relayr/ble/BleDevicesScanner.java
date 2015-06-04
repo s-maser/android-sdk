@@ -42,6 +42,7 @@ class BleDevicesScanner implements Runnable, BluetoothAdapter.LeScanCallback {
 
         if (Build.VERSION.SDK_INT >= 21) {
             mLeScanner = adapter.getBluetoothLeScanner();
+            Log.e("BleDevicesScanner", "LeScanner is null");
             settings = new ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build();
 
             mScanCallback = new ScanCallback() {
@@ -93,8 +94,9 @@ class BleDevicesScanner implements Runnable, BluetoothAdapter.LeScanCallback {
         }
     }
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private synchronized void stopScan() {
-        if (Build.VERSION.SDK_INT < 21) {
+        if (Build.VERSION.SDK_INT < 21 || mLeScanner == null) {
             if (mBluetoothAdapter != null) mBluetoothAdapter.stopLeScan(this);
         } else {
             mLeScanner.flushPendingScanResults(mScanCallback);
@@ -102,12 +104,13 @@ class BleDevicesScanner implements Runnable, BluetoothAdapter.LeScanCallback {
         }
     }
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public void run() {
         try {
             isScanning = true;
             do {
                 synchronized (this) {
-                    if (Build.VERSION.SDK_INT < 21) {
+                    if (Build.VERSION.SDK_INT < 21 || mLeScanner == null) {
                         mBluetoothAdapter.startLeScan(this);
                     } else {
                         mLeScanner.startScan(filters, settings, mScanCallback);

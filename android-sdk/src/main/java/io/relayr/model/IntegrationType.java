@@ -17,16 +17,18 @@ public enum IntegrationType implements Serializable{
     }
 
     public static IntegrationType getByName(String typeName){
-        if (typeName != null) {
-            if (typeName.equals("wunderbar1"))
-                return WUNDERBAR_1;
-            else if (typeName.equals("wunderbar2"))
-                return WUNDERBAR_2;
-            else if (typeName.equals("homeconnect"))
-                return HOME_CONNECT;
-            else
-                return UNKNOWN;
-        }
-        return UNKNOWN;
+        return WUNDERBAR_1;
+        //TODO NEW_ONBOARDING
+//        if (typeName != null) {
+//            if (typeName.equals("wunderbar1"))
+//                return WUNDERBAR_1;
+//            else if (typeName.equals("wunderbar2"))
+//                return WUNDERBAR_2;
+//            else if (typeName.equals("homeconnect"))
+//                return HOME_CONNECT;
+//            else
+//                return UNKNOWN;
+//        }
+//        return UNKNOWN;
     }
 }
