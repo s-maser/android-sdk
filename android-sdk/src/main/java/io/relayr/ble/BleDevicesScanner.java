@@ -3,42 +3,73 @@ package io.relayr.ble;
 import android.annotation.TargetApi;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.le.BluetoothLeScanner;
+import android.bluetooth.le.ScanCallback;
+import android.bluetooth.le.ScanFilter;
+import android.bluetooth.le.ScanResult;
+import android.bluetooth.le.ScanSettings;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 class BleDevicesScanner implements Runnable, BluetoothAdapter.LeScanCallback {
 
     private static final String TAG = "BleDevicesScanner";
 
-    public static final long DEFAULT_SCAN_PERIOD = 7000;
-    public static final long INFINITE_SCAN = 2500;
+    public static final long DEFAULT_SCAN_PERIOD = 5;//seconds
 
-    private BluetoothAdapter bluetoothAdapter;
+    private BluetoothAdapter mBluetoothAdapter;
     private final Handler mainThreadHandler = new Handler(Looper.getMainLooper());
     private final LeScansPoster leScansPoster;
+
+    private ScanSettings settings;
+    private ScanCallback mScanCallback;
+    private BluetoothLeScanner mLeScanner;
+    private List<ScanFilter> filters = new ArrayList<>();
 
     private long scanPeriod = DEFAULT_SCAN_PERIOD;
     private Thread scanThread;
     private volatile boolean isScanning = false;
 
     public BleDevicesScanner(BluetoothAdapter adapter, BluetoothAdapter.LeScanCallback callback) {
-        bluetoothAdapter = adapter;
+        mBluetoothAdapter = adapter;
         leScansPoster = new LeScansPoster(callback);
+
+        if (Build.VERSION.SDK_INT >= 21) {
+            mLeScanner = adapter.getBluetoothLeScanner();
+            Log.e("BleDevicesScanner", "LeScanner is null");
+            settings = new ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build();
+
+            mScanCallback = new ScanCallback() {
+                @TargetApi(Build.VERSION_CODES.LOLLIPOP) @Override
+                public void onScanResult(int callbackType, ScanResult result) {
+                    onLeScan(result.getDevice(), result.getRssi(), result.getScanRecord().getBytes());
+                }
+
+                @TargetApi(Build.VERSION_CODES.LOLLIPOP) @Override
+                public void onBatchScanResults(List<ScanResult> results) {
+                    for (ScanResult result : results)
+                        onLeScan(result.getDevice(), result.getRssi(), result.getScanRecord().getBytes());
+                }
+
+                @Override
+                public void onScanFailed(int errorCode) {
+                }
+            };
+        }
     }
 
     public synchronized void setScanPeriod(long scanPeriod) {
-        this.scanPeriod = scanPeriod < 0 ? INFINITE_SCAN : scanPeriod;
+        this.scanPeriod = scanPeriod < 0 ? DEFAULT_SCAN_PERIOD : scanPeriod;
     }
 
     public boolean isScanning() {
         return scanThread != null && scanThread.isAlive();
-    }
-
-    public synchronized void startFastScan() {
-        scanPeriod = INFINITE_SCAN;
-        start();
     }
 
     public synchronized void start() {
@@ -55,7 +86,7 @@ class BleDevicesScanner implements Runnable, BluetoothAdapter.LeScanCallback {
         if (!isScanning()) return;
 
         isScanning = false;
-        bluetoothAdapter.stopLeScan(this);
+        stopScan();
 
         if (scanThread != null) {
             scanThread.interrupt();
@@ -63,26 +94,39 @@ class BleDevicesScanner implements Runnable, BluetoothAdapter.LeScanCallback {
         }
     }
 
-    @Override
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    private synchronized void stopScan() {
+        if (Build.VERSION.SDK_INT < 21 || mLeScanner == null) {
+            if (mBluetoothAdapter != null) mBluetoothAdapter.stopLeScan(this);
+        } else {
+            mLeScanner.flushPendingScanResults(mScanCallback);
+            mLeScanner.stopScan(mScanCallback);
+        }
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public void run() {
         try {
             isScanning = true;
             do {
                 synchronized (this) {
-                    bluetoothAdapter.startLeScan(this);
+                    if (Build.VERSION.SDK_INT < 21 || mLeScanner == null) {
+                        mBluetoothAdapter.startLeScan(this);
+                    } else {
+                        mLeScanner.startScan(filters, settings, mScanCallback);
+                    }
                 }
 
-                Thread.sleep(scanPeriod);
+                Thread.sleep(scanPeriod * 1000);
 
-                // although it should never be null sometimes it happens to be
                 synchronized (this) {
-                    if (bluetoothAdapter != null) bluetoothAdapter.stopLeScan(this);
+                    stopScan();
                 }
             } while (isScanning);
         } catch (InterruptedException ignore) {
         } finally {
             synchronized (this) {
-                bluetoothAdapter.stopLeScan(this);
+                stopScan();
             }
         }
     }
@@ -112,7 +156,6 @@ class BleDevicesScanner implements Runnable, BluetoothAdapter.LeScanCallback {
             this.scanRecord = scanRecord;
         }
 
-        @Override
         public void run() {
             leScanCallback.onLeScan(device, rssi, scanRecord);
         }

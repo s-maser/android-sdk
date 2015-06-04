@@ -40,8 +40,7 @@ public class BleDevicesCache {
         if (!mCache.containsKey(device)) {
             Set<BleDeviceType> deviceTypeSet = new HashSet<>(asList(BleDeviceType.from(device.getModel())));
             return RelayrSdk.getRelayrBleSdk()
-                    .scan(deviceTypeSet)
-                    .timeout(20, TimeUnit.SECONDS)
+                    .scan(deviceTypeSet, 20)
                     .flatMap(new Func1<List<BleDevice>, Observable<BleDevice>>() {
                         @Override
                         public Observable<BleDevice> call(final List<BleDevice> bleDevices) {
@@ -166,5 +165,4 @@ public class BleDevicesCache {
         }
         mCache.clear();
     }
-
 }

@@ -36,7 +36,10 @@ import static rx.Observable.error;
 public class OnBoardingV2Service extends BaseService {
 
     public enum OnBoardingStatus {
-        STATUS_SUCCESS, STATUS_UN_CONFIGURED, STATUS_WIFI_ERROR, STATUS_TCP_ERROR, UNKNOWN
+        SUCCESS, UN_CONFIGURED,
+        WIFI_ERROR, TCP_ERROR, MQTT_ERROR, UNKNOWN_ERROR,
+        WIFI_TRYING, TCP_TRYING, SSL_TRYING, MQTT_TRYING,
+        UNKNOWN
     }
 
     protected OnBoardingV2Service(BleDevice device, BluetoothGatt gatt,
@@ -45,7 +48,7 @@ public class OnBoardingV2Service extends BaseService {
     }
 
     public static Observable<OnBoardingV2Service> connect(final BleDevice bleDevice,
-                                                           final BluetoothDevice device) {
+                                                          final BluetoothDevice device) {
         final BluetoothGattReceiver receiver = new BluetoothGattReceiver();
         return doConnect(device, receiver, true)
                 .map(new Func1<BluetoothGatt, OnBoardingV2Service>() {

@@ -26,6 +26,7 @@ public class Device implements Serializable {
     private String firmwareVersion;
     private final String secret;
     private String integrationType;
+    private String externalId;
     @SerializedName("public") private boolean isPublic;
 
     public Device(String id, String name, Model model, String owner,
@@ -144,4 +145,11 @@ public class Device implements Serializable {
         return RelayrSdk.getRelayrApi().sendCommand(id, command);
     }
 
+    public String getExternalId() {
+        return externalId;
+    }
+
+    public void setExternalId(String externalId) {
+        this.externalId = externalId;
+    }
 }

@@ -1,5 +1,7 @@
 package io.relayr.websocket;
 
+import android.util.Log;
+
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttAsyncClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -33,9 +35,10 @@ abstract class WebSocket<T> {
     protected void publish(String topic, String payload) {
         try {
             final byte[] data = payload == null ? new byte[]{} : payload.getBytes();
-            final IMqttDeliveryToken publishToken = mClient.publish(topic, data, 1, false);
+            final IMqttDeliveryToken publishToken = mClient.publish(topic, data, 0, false);
             publishToken.waitForCompletion();
         } catch (MqttException e) {
+            Log.e("WebSocket", "Publishing error");
             e.printStackTrace();
         }
     }

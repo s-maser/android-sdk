@@ -28,6 +28,7 @@ public class WunderBar implements Serializable {
         wbDevices.addAll(devices);
     }
 
+    //WB2
     public WunderBar(Transmitter masterModule) {
         this(masterModule, new ArrayList<TransmitterDevice>(), IntegrationType.WUNDERBAR_2);
     }

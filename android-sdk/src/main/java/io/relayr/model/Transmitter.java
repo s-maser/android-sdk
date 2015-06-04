@@ -22,6 +22,7 @@ public class Transmitter implements Serializable {
     private String integrationType;
     private String name;
     private String clientId;
+    private MqttChannel.MqttCredentials credentials;
 
     public Transmitter(String owner, String name, IntegrationType type) {
         this.owner = owner;
@@ -65,10 +66,6 @@ public class Transmitter implements Serializable {
         return topic;
     }
 
-    public void setTopic(String topic) {
-        this.topic = topic;
-    }
-
     public IntegrationType getIntegrationType() {
         return IntegrationType.getByName(integrationType);
     }
@@ -81,20 +78,32 @@ public class Transmitter implements Serializable {
         return clientId;
     }
 
+    public MqttChannel.MqttCredentials getCredentials() {
+        return credentials;
+    }
+
+    public void setTopic(String topic) {
+        this.topic = topic;
+    }
+
     public void setClientId(String clientId) {
         this.clientId = clientId;
     }
 
-
-    @Override
-    public String toString() {
+    @Override public String toString() {
         return "Transmitter{" +
                 "id='" + id + '\'' +
                 ", secret='" + secret + '\'' +
                 ", owner='" + owner + '\'' +
                 ", topic='" + topic + '\'' +
-                ", type='" + integrationType + '\'' +
+                ", integrationType='" + integrationType + '\'' +
                 ", name='" + name + '\'' +
+                ", clientId='" + clientId + '\'' +
+                ", credentials=" + credentials +
                 '}';
+    }
+
+    public void setCredentials(MqttChannel.MqttCredentials credentials) {
+        this.credentials = credentials;
     }
 }
