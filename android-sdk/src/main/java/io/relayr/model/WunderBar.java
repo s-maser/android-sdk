@@ -9,7 +9,7 @@ import io.relayr.ble.BleDeviceType;
 
 public class WunderBar implements Serializable {
 
-    public final IntegrationType type;
+    public final AccountType type;
     public final Transmitter masterModule;
     public List<TransmitterDevice> wbDevices = new ArrayList<>();
 
@@ -17,20 +17,20 @@ public class WunderBar implements Serializable {
                      TransmitterDevice light, TransmitterDevice microphone,
                      TransmitterDevice thermometer, TransmitterDevice infrared,
                      TransmitterDevice bridge) {
-        this.type = IntegrationType.WUNDERBAR_1;
+        this.type = AccountType.WUNDERBAR_1;
         this.masterModule = masterModule;
         this.wbDevices = Arrays.asList(gyroscope, light, microphone, thermometer, infrared, bridge);
     }
 
-    public WunderBar(Transmitter masterModule, List<TransmitterDevice> devices, IntegrationType type) {
-        this.type = type;
+    public WunderBar(Transmitter masterModule, List<TransmitterDevice> devices, AccountType type) {
+        this.type = type == null ? AccountType.WUNDERBAR_1 : type;
         this.masterModule = masterModule;
         wbDevices.addAll(devices);
     }
 
     //WB2
     public WunderBar(Transmitter masterModule) {
-        this(masterModule, new ArrayList<TransmitterDevice>(), IntegrationType.WUNDERBAR_2);
+        this(masterModule, new ArrayList<TransmitterDevice>(), AccountType.WUNDERBAR_2);
     }
 
     public void addDevice(TransmitterDevice device) {
@@ -38,7 +38,7 @@ public class WunderBar implements Serializable {
     }
 
     public static WunderBar from(Transmitter masterModule, List<TransmitterDevice> devices) {
-        return new WunderBar(masterModule, devices, masterModule.getIntegrationType());
+        return new WunderBar(masterModule, devices, masterModule.getAccountType());
     }
 
     public TransmitterDevice getDevice(BleDeviceType type) {

@@ -1,5 +1,7 @@
 package io.relayr.model;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -19,15 +21,15 @@ public class Transmitter implements Serializable {
     public String secret;
     public String owner;
     private String topic;
-    private String integrationType;
     private String name;
     private String clientId;
     private MqttChannel.MqttCredentials credentials;
+    @SerializedName("integrationType") private String accountType;
 
-    public Transmitter(String owner, String name, IntegrationType type) {
+    public Transmitter(String owner, String name, AccountType type) {
         this.owner = owner;
         this.name = name;
-        this.integrationType = type.getName();
+        this.accountType = type.getName();
     }
 
     public Transmitter(String id, String secret, String owner, String name) {
@@ -35,7 +37,7 @@ public class Transmitter implements Serializable {
         this.secret = secret;
         this.owner = owner;
         this.name = name;
-        setIntegrationType(IntegrationType.WUNDERBAR_1);
+        setAccountType(AccountType.WUNDERBAR_1);
     }
 
     /**
@@ -66,12 +68,12 @@ public class Transmitter implements Serializable {
         return topic;
     }
 
-    public IntegrationType getIntegrationType() {
-        return IntegrationType.getByName(integrationType);
+    public AccountType getAccountType() {
+        return AccountType.getByName(accountType);
     }
 
-    public void setIntegrationType(IntegrationType integrationType) {
-        this.integrationType = integrationType.getName();
+    public void setAccountType(AccountType accountType) {
+        this.accountType = accountType.getName();
     }
 
     public String getClientId() {
@@ -96,7 +98,7 @@ public class Transmitter implements Serializable {
                 ", secret='" + secret + '\'' +
                 ", owner='" + owner + '\'' +
                 ", topic='" + topic + '\'' +
-                ", integrationType='" + integrationType + '\'' +
+                ", accountType='" + accountType + '\'' +
                 ", name='" + name + '\'' +
                 ", clientId='" + clientId + '\'' +
                 ", credentials=" + credentials +
